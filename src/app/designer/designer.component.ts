@@ -1,6 +1,8 @@
 import { OnInit, Component, ElementRef, NgZone } from '@angular/core';
 import * as PIXI from 'pixi.js';
-import { InteractionData, InteractionEvent } from 'pixi.js';
+import { InteractionEvent } from 'pixi.js';
+import { SpriteReference } from './spriteReference';
+import {v4 as uuidv4} from 'uuid';
 
 @Component({
   selector: 'app-designer',
@@ -8,104 +10,116 @@ import { InteractionData, InteractionEvent } from 'pixi.js';
   styleUrls: ['./designer.component.css']
 })
 export class DesignerComponent implements OnInit {
-  public app?: PIXI.Application = undefined;
+  public app?: PIXI.Application;
   public texture: PIXI.Texture = PIXI.Texture.WHITE;
-  public data?: InteractionData = undefined;
-  public alpha: any;
-  public dragging: any;
+  public xmlDoc: XMLDocument = document.implementation.createDocument(null, "objects");
 
   constructor(private elementRef: ElementRef, private ngZone: NgZone) {}
 
   ngOnInit(): void {
     this.ngZone.runOutsideAngular(() => {
+      // init application
       this.app = new PIXI.Application({backgroundColor: 0x1099bb});
       this.elementRef.nativeElement.appendChild(this.app.view);
-
       this.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
+      // load XML file
+      // TODO: implement
+      let designerData = localStorage.getItem("designerData");
+      if(designerData) this.loadSpritesFromLocal(designerData);
+      else this.initSpriteGeneration();
+    });
+  }
+
+  loadSpritesFromLocal(designerData: string){
+    console.log("Restoring data from local storage");
+
+    this.xmlDoc = new DOMParser().parseFromString(designerData,"text/xml");
+
+    const sprites = this.xmlDoc.getElementsByTagName("objects")[0].getElementsByTagName("sprite");
+    Array.from(sprites).forEach(sprite => {
+      this.createSprite(
+        sprite.getAttribute("id") as string,
+        Number(sprite.getElementsByTagName("x")[0].textContent),
+        Number(sprite.getElementsByTagName("y")[0].textContent)
+        );
+    });  
+  }
+  
+  initSpriteGeneration(){
+    console.log("Local storage empty. Starting from scratch...");
+    if(this.app){
+      // Debug create random batch sprites
       for (let i = 0; i < 10; i++) {
         this.createSprite(
+            uuidv4(),
             Math.floor(Math.random() * this.app.screen.width),
             Math.floor(Math.random() * this.app.screen.height),
         );
       }
-    });
+    }
   }
-  
-  createSprite(x: number, y: number) {
-      // create our little bunny friend..
+
+  createSprite(id: string, x: number, y: number, saveInXMLDoc: boolean = false) {
+      
+      const sr = new SpriteReference(id, new PIXI.Sprite(this.texture), false);
       const sprite = new PIXI.Sprite(this.texture);
-  
-      // enable the sprite to be interactive... this will allow it to respond to mouse and touch events
       sprite.interactive = true;
-  
-      // this button mode will mean the hand cursor appears when you roll over the sprite with your mouse
       sprite.buttonMode = true;
   
-      // center the anchor point
+      // center the anchor point and scale up
       sprite.anchor.set(0.5);
-  
-      // make it a bit bigger, so it's easier to grab
       sprite.scale.set(3);
   
+       // set default position and uuid for sprite
+       sprite.x = x;
+       sprite.y = y;
+
       // setup events for mouse + touch using
-      // the pointer events
       sprite
-          .on('pointerdown', this.onDragStart)
-          .on('pointerup', this.onDragEnd)
-          .on('pointerupoutside', this.onDragEnd)
-          .on('pointermove', this.onDragMove);
-  
-      // For mouse-only events
-      // .on('mousedown', onDragStart)
-      // .on('mouseup', onDragEnd)
-      // .on('mouseupoutside', onDragEnd)
-      // .on('mousemove', onDragMove);
-  
-      // For touch-only events
-      // .on('touchstart', onDragStart)
-      // .on('touchend', onDragEnd)
-      // .on('touchendoutside', onDragEnd)
-      // .on('touchmove', onDragMove);
-  
-      // move the sprite to its designated position
-      sprite.x = x;
-      sprite.y = y;
-  
+          .on('pointerdown', this.onDragStart.bind(this, sr))
+          .on('pointerup', this.onDragEnd.bind(this, sr))
+          .on('pointermove', this.onDragMove.bind(this, sr));
+
+      // save sprite transform data in XML documenmt
+      if(saveInXMLDoc){
+        let el = this.xmlDoc.getElementsByTagName("objects")[0].appendChild(this.xmlDoc.createElement("sprite"))
+        el.setAttribute("id", id)
+        el.appendChild(this.xmlDoc.createElement("x")).textContent = x.toString();
+        el.appendChild(this.xmlDoc.createElement("y")).textContent = y.toString();  
+      }
+      
       // add it to the stage
       if(this.app) this.app.stage.addChild(sprite);
   }
   
-  onDragStart(event: any) {
-      // store a reference to the data
-      // the reason for this is because of multitouch
-      // we want to track the movement of this particular touch
-      this.data = event.data;
-      this.alpha = 0.5;
-      this.dragging = true;
+  onDragStart (sr: SpriteReference, event: InteractionEvent) {
+    event.target.alpha = 0.5;
+    sr.dragging = true;
+    sr.data = event.data;
   }
   
-  onDragEnd() {
-      this.alpha = 1;
-      this.dragging = false;
-      // set the interaction data to null
-      this.data = undefined;
-  }
-  
-  onDragMove(evt: InteractionEvent) {
-      if (this.dragging) {
-          let newPosition = undefined;
-          if(this.data) { 
-            newPosition = this.data.getLocalPosition(evt.currentTarget.parent);
-            evt.currentTarget.x = newPosition.x;
-            evt.currentTarget.y = newPosition.y;
-          }
-      }
+  onDragEnd(sr: SpriteReference, event: InteractionEvent) {
+    event.target.alpha = 1;
+    sr.dragging = false;
+    sr.data = event.data;
 
+    // save new position in XML document
+    this.xmlDoc.querySelectorAll('[id="'+sr.id+'"] x')[0].textContent = event.currentTarget.x.toString();
+    this.xmlDoc.querySelectorAll('[id="'+sr.id+'"] y')[0].textContent = event.currentTarget.y.toString();
+  }
+  
+  onDragMove(sr: SpriteReference, event: InteractionEvent) {
+    if (sr.dragging) {
+      const newPosition = sr.data.getLocalPosition(event.currentTarget.parent);
+      event.currentTarget.x = newPosition.x;
+      event.currentTarget.y = newPosition.y;
+    }
   }
 
   destroy() {
     if(this.app) this.app.destroy();
+    localStorage.setItem("designerData", new XMLSerializer().serializeToString(this.xmlDoc.documentElement));
   }
 
   ngOnDestroy(): void {
