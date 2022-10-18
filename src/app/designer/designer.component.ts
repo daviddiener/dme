@@ -1,4 +1,4 @@
-import { OnInit, Component, ElementRef, NgZone } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import * as PIXI from 'pixi.js';
 import { InteractionEvent } from 'pixi.js';
 import { SpriteReference } from './spriteReference';
@@ -9,18 +9,22 @@ import {v4 as uuidv4} from 'uuid';
   templateUrl: './designer.component.html',
   styleUrls: ['./designer.component.css']
 })
-export class DesignerComponent implements OnInit {
+export class DesignerComponent implements AfterViewInit  {
   public app?: PIXI.Application;
   public texture: PIXI.Texture = PIXI.Texture.WHITE;
   public xmlDoc: XMLDocument = document.implementation.createDocument(null, "objects");
+  @ViewChild('divParent') div: ElementRef;
 
   constructor(private elementRef: ElementRef, private ngZone: NgZone) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {
       // init application
-      this.app = new PIXI.Application({backgroundColor: 0x1099bb});
-      this.elementRef.nativeElement.appendChild(this.app.view);
+      this.app = new PIXI.Application({
+        backgroundColor: 0x0d6efd
+      });
+      // this.elementRef.nativeElement.appendChild(this.app.view);
+      this.div.nativeElement.appendChild(this.app.view);
       this.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
       // load XML file
@@ -71,9 +75,19 @@ export class DesignerComponent implements OnInit {
       sprite.anchor.set(0.5);
       sprite.scale.set(3);
   
-       // set default position and uuid for sprite
-       sprite.x = x;
-       sprite.y = y;
+      // set default position and uuid for sprite
+      sprite.x = x;
+      sprite.y = y;
+
+      const text = sprite.addChild(new PIXI.Text('Test', {
+              fontFamily : 'Arial',
+              fontSize: 8,
+              align : 'center',
+            }
+            ))
+
+      text.resolution = 4;
+      text.anchor.set(0.5);
 
       // setup events for mouse + touch using
       sprite
@@ -115,6 +129,10 @@ export class DesignerComponent implements OnInit {
       event.currentTarget.x = newPosition.x;
       event.currentTarget.y = newPosition.y;
     }
+  }
+
+  addObject(){
+    this.createSprite(uuidv4(), 10, 10, true);
   }
 
   destroy() {
