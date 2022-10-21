@@ -42,7 +42,7 @@ export class SpriteReference {
         this.sprite.anchor.set(0.5);
         this.sprite.scale.set(3);
 
-        // set default position and uuid for sprite
+        // set default position for sprite
         this.sprite.x = x;
         this.sprite.y = y;
 
@@ -56,7 +56,6 @@ export class SpriteReference {
     }
 
     addTextBox(text: string) {
-        // add text
         this.textBox = this.sprite.addChild(new PIXI.Text(text, {
             fontFamily : 'Arial',
             fontSize: 8,
