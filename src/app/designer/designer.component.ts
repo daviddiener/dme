@@ -28,7 +28,10 @@ export class DesignerComponent implements AfterViewInit  {
         // load XML file
         let designerData = localStorage.getItem("designerData")
         if(designerData) this.loadSpritesFromLocal(designerData)
-        else console.log("Local storage empty. Starting from scratch...")
+        else {
+            console.log("Local storage empty. Starting from scratch...")
+            Global.xmlDoc = document.implementation.createDocument(null, "objects")
+        }
         });
     }
 
