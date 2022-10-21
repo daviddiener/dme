@@ -3,16 +3,15 @@ import { InteractionEvent } from 'pixi.js';
 import { ArrowReference } from './arrowReference';
 import { Global} from './../globals'
 
-export class SpriteReference {    
-    public texture: PIXI.Texture = PIXI.Texture.WHITE
+export class SpriteReference {  
+    public id: string  
+    public sprite: PIXI.Sprite
+    public arrowReferenceList: ArrowReference[] = new Array()
 
-    id: string
-    sprite: PIXI.Sprite
-    textBox: PIXI.Text
-    arrow: PIXI.Graphics
-    dragging: Boolean
-    data: any
-    arrowReferenceList: ArrowReference[] = new Array()
+    private texture: PIXI.Texture = PIXI.Texture.WHITE
+    private dragging: Boolean
+    private textBox: PIXI.Text
+    private data: any
     
     constructor(id: string, dragging: Boolean, x: number, y: number, text: string, saveInXml: boolean) {
         this.id = id
