@@ -1,10 +1,13 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-primary flex-sm-nowrap flex-wrap">
   <div class="container-fluid">
-      <button class="navbar-toggler flex-grow-sm-1 flex-grow-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar5">
+
+      <button class="navbar-toggler flex-grow-sm-1 flex-grow-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar5"  (click)="isCollapsed = !isCollapsed">
           <span class="navbar-toggler-icon"></span>
       </button>
+
       <a class="navbar-brand mx-auto" [routerLink]="['/home']">DME</a>
-      <div class="navbar-collapse collapse" id="navbar5">
+
+      <div class="navbar-collapse collapse" id="navbar5"  [(ngbCollapse)]="isCollapsed" (click)="isCollapsed = !isCollapsed">
           <ul class="navbar-nav me-auto">
               <li class="nav-item">
                   <a class="nav-link" [routerLink]="['/designer']">Designer</a>
