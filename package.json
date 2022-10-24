@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "build:prod": "ng build --configuration production --base-href https://daviddiener.github.io/dme/"
+    "build:prod": "ng build --configuration production --base-href https://dme.daviddiener.de/"
   },
   "private": true,
   "dependencies": {
