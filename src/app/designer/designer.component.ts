@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import * as PIXI from 'pixi.js';
-import { SpriteReference } from './spriteReference';
+import { PlaceReference as PlaceReference } from './placeReference';
 import {v4 as uuidv4} from 'uuid';
 import { Global} from './../globals'
-import { ArrowReference } from './arrowReference';
+import { ArcReference } from './arcReference';
 
 @Component({
     selector: 'app-designer',
@@ -13,9 +13,7 @@ import { ArrowReference } from './arrowReference';
 export class DesignerComponent implements AfterViewInit  {
     @ViewChild('divParent') div: ElementRef
     canvas: ElementRef
-    spriteReferenceList: SpriteReference[] = new Array()
-
-    // mySubscription;
+    placeReferenceList: PlaceReference[] = new Array()
 
     constructor(private ngZone: NgZone) {}
 
@@ -31,34 +29,34 @@ export class DesignerComponent implements AfterViewInit  {
 
         // load XML file
         let designerData = localStorage.getItem("designerData")
-        if(designerData) this.loadSpritesFromLocal(designerData)
+        if(designerData) this.loadDataFromLocal(designerData)
         else this.createNewXMLDocument()
         });
     }
 
-    loadSpritesFromLocal(designerData: string){
+    loadDataFromLocal(designerData: string){
         console.log("Restoring data from local storage")
 
         Global.xmlDoc = new DOMParser().parseFromString(designerData,"text/xml")
 
-        // GENERATE OBJECTS
+        // GENERATE PLACES
         Array.from(Global.xmlDoc
             .getElementsByTagName("pnml")[0]
             .getElementsByTagName("net")[0]
             .getElementsByTagName("page")[0]
-            .getElementsByTagName("place")).forEach(sprite => {
-            this.spriteReferenceList.push(new SpriteReference(
-                sprite.getAttribute("id") as string, 
+            .getElementsByTagName("place")).forEach(place => {
+            this.placeReferenceList.push(new PlaceReference(
+                place.getAttribute("id") as string, 
                 false, 
-                Number(sprite
+                Number(place
                     .getElementsByTagName("graphics")[0]
                     .getElementsByTagName("position")[0]
                     .getAttribute("x")),
-                Number(sprite
+                Number(place
                     .getElementsByTagName("graphics")[0]
                     .getElementsByTagName("position")[0]
                     .getAttribute("y")),
-                sprite
+                place
                     .getElementsByTagName("name")[0]
                     .getElementsByTagName("text")[0]
                     .textContent as string,
@@ -66,19 +64,22 @@ export class DesignerComponent implements AfterViewInit  {
                 ))
         })
 
-        // GENERATE ARROWS
-        this.spriteReferenceList.forEach(sr => {
-            // if we have a pointTo reference we create arrows
-            let targetId: Element
-            if(targetId = Global.xmlDoc.querySelectorAll('[id="'+sr.id+'"] pointsTo')[0]) {
-                let tmpArrow = new ArrowReference(sr.id, String(targetId.textContent), sr.sprite)
-                sr.arrowReferenceList.push(tmpArrow)
+        // GENERATE ARCS
+        Array.from(Global.xmlDoc
+            .getElementsByTagName("pnml")[0]
+            .getElementsByTagName("net")[0]
+            .getElementsByTagName("page")[0]
+            .getElementsByTagName("arc")).forEach(arc => {
+                let tmpArc;
+                let sourceRef = this.placeReferenceList.find(el => el.id == String(arc.getAttribute("source")))
+                if(sourceRef) {
+                    tmpArc = new ArcReference(String(arc.getAttribute("source")), String(arc.getAttribute("target")), sourceRef.sprite)
+                    sourceRef.arcReferenceList.push(tmpArc)
+                }
 
-                let targetRefs = this.spriteReferenceList.find(el => el.id == String(targetId.textContent))
-                if(targetRefs) targetRefs.arrowReferenceList.push(tmpArrow)
-                else console.warn("Could not find target id " + String(targetId.textContent) + " in XMLdoc.")
-            }
-        })
+                let targetRef = this.placeReferenceList.find(el => el.id == String(arc.getAttribute("target")))
+                if(targetRef && tmpArc) targetRef.arcReferenceList.push(tmpArc)
+            })
     }
 
     createNewXMLDocument(){
@@ -91,7 +92,7 @@ export class DesignerComponent implements AfterViewInit  {
     }
   
     addObject(){
-        new SpriteReference(uuidv4(), false, 10, 10, "Test", true)
+        new PlaceReference(uuidv4(), false, 30, 30, "Test", true)
     }
 
     deleteLocalStorage(){

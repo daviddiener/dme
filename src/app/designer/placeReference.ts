@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
 import { InteractionEvent } from 'pixi.js';
-import { ArrowReference } from './arrowReference';
-import { Global} from './../globals'
+import { ArcReference } from './arcReference';
+import { Global} from '../globals'
 
-export class SpriteReference {  
+export class PlaceReference {  
     public id: string  
     public sprite: PIXI.Sprite
-    public arrowReferenceList: ArrowReference[] = new Array()
+    public arcReferenceList: ArcReference[] = new Array()
 
     private texture: PIXI.Texture = PIXI.Texture.WHITE
     private dragging: Boolean
@@ -17,11 +17,11 @@ export class SpriteReference {
         this.id = id
         this.dragging = dragging
         
-        this.addSprite(x, y)
+        this.addPlace(x, y)
         this.addTextBox(textValue)
 
         if(saveInXml){
-            // save sprite transform data in XML documenmt
+            // save place transform data in XML documenmt
             const parent = Global.xmlDoc
             .getElementsByTagName("pnml")[0]
             .getElementsByTagName("net")[0]
@@ -43,7 +43,7 @@ export class SpriteReference {
 
     }
 
-    addSprite(x: number, y: number) {
+    addPlace(x: number, y: number) {
         this.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
         this.sprite = new PIXI.Sprite(this.texture);
@@ -93,8 +93,8 @@ export class SpriteReference {
         Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("x", event.currentTarget.x.toString())
         Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("y", event.currentTarget.y.toString())
     
-        this.arrowReferenceList.forEach(arrowReference => {
-            arrowReference.redrawArrow()
+        this.arcReferenceList.forEach(ar => {
+            ar.redrawArc()
         })
     }
   
