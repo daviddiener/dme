@@ -13,20 +13,32 @@ export class SpriteReference {
     private textBox: PIXI.Text
     private data: any
     
-    constructor(id: string, dragging: Boolean, x: number, y: number, text: string, saveInXml: boolean) {
+    constructor(id: string, dragging: Boolean, x: number, y: number, textValue: string, saveInXml: boolean) {
         this.id = id
         this.dragging = dragging
         
         this.addSprite(x, y)
-        this.addTextBox(text)
+        this.addTextBox(textValue)
 
         if(saveInXml){
             // save sprite transform data in XML documenmt
-            let el = Global.xmlDoc.getElementsByTagName("objects")[0].appendChild(Global.xmlDoc.createElement("sprite"))
-            el.setAttribute("id", id)
-            el.appendChild(Global.xmlDoc.createElement("x")).textContent = x.toString()
-            el.appendChild(Global.xmlDoc.createElement("y")).textContent = y.toString()
-            el.appendChild(Global.xmlDoc.createElement("text")).textContent = text
+            const parent = Global.xmlDoc
+            .getElementsByTagName("pnml")[0]
+            .getElementsByTagName("net")[0]
+            .getElementsByTagName("page")[0]
+            .appendChild(Global.xmlDoc.createElement("place"))
+
+            parent.setAttribute("id", id)
+
+            const graphics = parent.appendChild(Global.xmlDoc.createElement("graphics"))
+            const position = graphics.appendChild(Global.xmlDoc.createElement("position"))
+
+            position.setAttribute("x", x.toString())
+            position.setAttribute("y", y.toString())
+
+            const name = parent.appendChild(Global.xmlDoc.createElement("name"))
+            const text = name.appendChild(Global.xmlDoc.createElement("text"))
+            text.textContent = textValue
         }
 
     }
@@ -78,8 +90,8 @@ export class SpriteReference {
         this.data = event.data;
 
         // save new position in XML document
-        Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] x')[0].textContent = event.currentTarget.x.toString();
-        Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] y')[0].textContent = event.currentTarget.y.toString();
+        Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("x", event.currentTarget.x.toString())
+        Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("y", event.currentTarget.y.toString())
     
         this.arrowReferenceList.forEach(arrowReference => {
             arrowReference.redrawArrow()

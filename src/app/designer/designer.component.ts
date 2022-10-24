@@ -12,7 +12,10 @@ import { ArrowReference } from './arrowReference';
 })
 export class DesignerComponent implements AfterViewInit  {
     @ViewChild('divParent') div: ElementRef
+    canvas: ElementRef
     spriteReferenceList: SpriteReference[] = new Array()
+
+    // mySubscription;
 
     constructor(private ngZone: NgZone) {}
 
@@ -23,15 +26,13 @@ export class DesignerComponent implements AfterViewInit  {
             backgroundColor: 0x0d6efd
         });
 
+        this.div.nativeElement.innerHTML = ''
         this.div.nativeElement.appendChild(Global.app.view)
 
         // load XML file
         let designerData = localStorage.getItem("designerData")
         if(designerData) this.loadSpritesFromLocal(designerData)
-        else {
-            console.log("Local storage empty. Starting from scratch...")
-            Global.xmlDoc = document.implementation.createDocument(null, "objects")
-        }
+        else this.createNewXMLDocument()
         });
     }
 
@@ -41,14 +42,26 @@ export class DesignerComponent implements AfterViewInit  {
         Global.xmlDoc = new DOMParser().parseFromString(designerData,"text/xml")
 
         // GENERATE OBJECTS
-        const sprites = Global.xmlDoc.getElementsByTagName("objects")[0].getElementsByTagName("sprite")
-        Array.from(sprites).forEach(sprite => {
+        Array.from(Global.xmlDoc
+            .getElementsByTagName("pnml")[0]
+            .getElementsByTagName("net")[0]
+            .getElementsByTagName("page")[0]
+            .getElementsByTagName("place")).forEach(sprite => {
             this.spriteReferenceList.push(new SpriteReference(
                 sprite.getAttribute("id") as string, 
                 false, 
-                Number(sprite.getElementsByTagName("x")[0].textContent),
-                Number(sprite.getElementsByTagName("y")[0].textContent),
-                sprite.getElementsByTagName("text")[0].textContent as string,
+                Number(sprite
+                    .getElementsByTagName("graphics")[0]
+                    .getElementsByTagName("position")[0]
+                    .getAttribute("x")),
+                Number(sprite
+                    .getElementsByTagName("graphics")[0]
+                    .getElementsByTagName("position")[0]
+                    .getAttribute("y")),
+                sprite
+                    .getElementsByTagName("name")[0]
+                    .getElementsByTagName("text")[0]
+                    .textContent as string,
                 false
                 ))
         })
@@ -67,17 +80,28 @@ export class DesignerComponent implements AfterViewInit  {
             }
         })
     }
+
+    createNewXMLDocument(){
+        console.log("Local storage empty. Starting from scratch...")
+        Global.xmlDoc = document.implementation.createDocument(null, "pnml")
+
+        const pnml = Global.xmlDoc.getElementsByTagName("pnml")[0]
+        const net = pnml.appendChild(Global.xmlDoc.createElement("net"))
+        net.appendChild(Global.xmlDoc.createElement("page"))
+    }
   
     addObject(){
         new SpriteReference(uuidv4(), false, 10, 10, "Test", true)
     }
 
-    destroy() {
+    deleteLocalStorage(){
+        localStorage.clear()
         if(Global.app) Global.app.destroy()
-        localStorage.setItem("designerData", new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
+        this.ngAfterViewInit()
     }
 
     ngOnDestroy(): void {
-        this.destroy()
+        if(Global.app) Global.app.destroy()
+        localStorage.setItem("designerData", new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
     }
 }
