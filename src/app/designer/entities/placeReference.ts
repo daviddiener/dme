@@ -1,22 +1,27 @@
-import * as PIXI from 'pixi.js';
-import { InteractionEvent } from 'pixi.js';
-import { ArcReference } from './arcReference';
-import { Global} from '../globals'
+import * as PIXI from 'pixi.js'
+import { InteractionEvent } from 'pixi.js'
+import { ArcReference } from './arcReference'
+import { Global} from '../../globals'
+import { DesignerComponent } from '../designer.component';
+import {v4 as uuidv4} from 'uuid';
 
 export class PlaceReference {  
     public id: string  
     public sprite: PIXI.Sprite
     public arcReferenceList: ArcReference[] = new Array()
 
-    private texture: PIXI.Texture = PIXI.Texture.WHITE
+    private designerComponent: DesignerComponent
+    private defaultTexture: PIXI.Texture = PIXI.Texture.WHITE
     private dragging: Boolean
+    private clickable: Boolean = false
     private textBox: PIXI.Text
     private data: any
     
-    constructor(id: string, dragging: Boolean, x: number, y: number, textValue: string, saveInXml: boolean) {
+    constructor(id: string, dragging: Boolean, x: number, y: number, textValue: string, saveInXml: boolean, designerComponent: DesignerComponent) {
         this.id = id
         this.dragging = dragging
-        
+        this.designerComponent = designerComponent
+
         this.addPlace(x, y)
         this.addTextBox(textValue)
 
@@ -44,27 +49,28 @@ export class PlaceReference {
     }
 
     addPlace(x: number, y: number) {
-        this.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+        this.defaultTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST
 
-        this.sprite = new PIXI.Sprite(this.texture);
-        this.sprite.interactive = true;
-        this.sprite.buttonMode = true;
+        this.sprite = new PIXI.Sprite(this.defaultTexture)
+        this.sprite.interactive = true
+        this.sprite.buttonMode = true
         
         // center the anchor point and scale up
-        this.sprite.anchor.set(0.5);
-        this.sprite.scale.set(3);
+        this.sprite.anchor.set(0.5)
+        this.sprite.scale.set(3)
 
         // set default position for sprite
-        this.sprite.x = x;
-        this.sprite.y = y;
+        this.sprite.x = x
+        this.sprite.y = y
 
         // setup events for mouse + touch using
         this.sprite
             .on('pointerdown', this.onDragStart.bind(this))
+            .on('pointermove', this.onDragMove.bind(this))
             .on('pointerup', this.onDragEnd.bind(this))
-            .on('pointermove', this.onDragMove.bind(this));
+            .on('click', this.onClick.bind(this))
 
-        Global.app.stage.addChild(this.sprite);
+        Global.app.stage.addChild(this.sprite)
     }
 
     addTextBox(text: string) {
@@ -72,22 +78,32 @@ export class PlaceReference {
             fontFamily : 'Arial',
             fontSize: 8,
             align : 'center',
-        }));
+        }))
 
-        this.textBox.resolution = 4;
-        this.textBox.anchor.set(0.5);
+        this.textBox.resolution = 4
+        this.textBox.anchor.set(0.5)
     }
 
     onDragStart (event: InteractionEvent) {
-        event.target.alpha = 0.5;
-        this.dragging = true;
-        this.data = event.data;
+        event.target.alpha = 0.5
+        this.dragging = true
+        this.data = event.data
+        this.clickable = true
+    }
+
+    onDragMove(event: InteractionEvent) {
+        if (this.dragging) {
+            this.clickable = false
+            const newPosition = this.data.getLocalPosition(event.currentTarget.parent);
+            event.currentTarget.x = newPosition.x
+            event.currentTarget.y = newPosition.y
+        }
     }
   
     onDragEnd(event: InteractionEvent) {
-        event.target.alpha = 1;
-        this.dragging = false;
-        this.data = event.data;
+        event.target.alpha = 1
+        this.dragging = false
+        this.data = event.data
 
         // save new position in XML document
         Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("x", event.currentTarget.x.toString())
@@ -97,12 +113,14 @@ export class PlaceReference {
             ar.redrawArc()
         })
     }
-  
-    onDragMove(event: InteractionEvent) {
-        if (this.dragging) {
-            const newPosition = this.data.getLocalPosition(event.currentTarget.parent);
-            event.currentTarget.x = newPosition.x;
-            event.currentTarget.y = newPosition.y;
+
+    onClick(){
+        if(this.clickable) {
+            if(this.designerComponent.createArcInProgress) {
+                this.designerComponent.addArc(uuidv4(), this.designerComponent.arcSourceNode.id, this.id, "testArc", true)
+            } else {
+                this.designerComponent.activateCreateArcBtn(this)
+            }
         }
     }
 }

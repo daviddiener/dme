@@ -9,6 +9,7 @@ import { DesignerComponent } from './designer/designer.component';
 import { ModelExtractorComponent } from './model-extractor/model-extractor.component';
 import { HomeComponent } from './home/home.component';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     NgbModule,
     BrowserAnimationsModule,
