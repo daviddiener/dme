@@ -5,6 +5,7 @@ import {v4 as uuidv4} from 'uuid';
 import { Global} from './../globals'
 import { ArcReference } from './entities/arcReference';
 import {  ChangeDetectorRef } from '@angular/core';
+import { XMLService } from '../services/xml.service';
 
 @Component({
     selector: 'app-designer',
@@ -19,7 +20,10 @@ export class DesignerComponent implements AfterViewInit  {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private placeReferenceList: PlaceReference[] = new Array()
 
-    constructor(private ngZone: NgZone, private cdr: ChangeDetectorRef) {}
+    constructor(private ngZone: NgZone, 
+        private cdr: ChangeDetectorRef,
+        private xmlService: XMLService
+        ) {}
 
     ngAfterViewInit(): void {
         this.ngZone.runOutsideAngular(() => {
@@ -35,7 +39,7 @@ export class DesignerComponent implements AfterViewInit  {
             // load XML file
             let designerData = localStorage.getItem("designerData")
             if(designerData) this.loadDataFromLocal(designerData)
-            else this.createNewXMLDocument()
+            else this.xmlService.createNewXMLDocument()
         });
     }
 
@@ -45,11 +49,7 @@ export class DesignerComponent implements AfterViewInit  {
         Global.xmlDoc = new DOMParser().parseFromString(designerData,"text/xml")
 
         // GENERATE PLACES
-        Array.from(Global.xmlDoc
-            .getElementsByTagName("pnml")[0]
-            .getElementsByTagName("net")[0]
-            .getElementsByTagName("page")[0]
-            .getElementsByTagName("place")).forEach(place => {
+        Array.from(this.xmlService.getAllNodes()).forEach(place => {
             this.placeReferenceList.push(new PlaceReference(
                 place.getAttribute("id") as string, 
                 false, 
@@ -66,16 +66,13 @@ export class DesignerComponent implements AfterViewInit  {
                     .getElementsByTagName("text")[0]
                     .textContent),
                 false,
-                this
+                this,
+                this.xmlService
                 ))
         })
 
         // GENERATE ARCS
-        Array.from(Global.xmlDoc
-            .getElementsByTagName("pnml")[0]
-            .getElementsByTagName("net")[0]
-            .getElementsByTagName("page")[0]
-            .getElementsByTagName("arc")).forEach(arc => {
+        Array.from(this.xmlService.getAllArcs()).forEach(arc => {
                 this.addArc(String(arc.getAttribute("id")), 
                 String(arc.getAttribute("source")), 
                 String(arc.getAttribute("target")), 
@@ -86,25 +83,16 @@ export class DesignerComponent implements AfterViewInit  {
                 false)
             })
     }
-
-    createNewXMLDocument(){
-        console.log("Local storage empty. Starting from scratch...")
-        Global.xmlDoc = document.implementation.createDocument(null, "pnml")
-
-        const pnml = Global.xmlDoc.getElementsByTagName("pnml")[0]
-        const net = pnml.appendChild(Global.xmlDoc.createElement("net"))
-        net.appendChild(Global.xmlDoc.createElement("page"))
-    }
   
     addObject(){
-        this.placeReferenceList.push(new PlaceReference(uuidv4(), false, 30, 30, "Test", true, this))
+        this.placeReferenceList.push(new PlaceReference(uuidv4(), false, 30, 30, "Test", true, this, this.xmlService))
     }
     
     addArc(id: string, sourceId: string, targetId: string, textValue: string, saveInXml: boolean){
         let tmpArc;
         let sourceRef = this.placeReferenceList.find(el => el.id == sourceId)
         if(sourceRef) {
-            tmpArc = new ArcReference(id, sourceId, targetId, textValue, sourceRef.sprite, saveInXml)
+            tmpArc = new ArcReference(id, sourceId, targetId, textValue, sourceRef.sprite, saveInXml, this.xmlService)
             sourceRef.arcReferenceList.push(tmpArc)
         }
 

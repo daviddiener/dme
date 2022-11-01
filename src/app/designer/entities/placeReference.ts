@@ -4,6 +4,7 @@ import { ArcReference } from './arcReference'
 import { Global} from '../../globals'
 import { DesignerComponent } from '../designer.component';
 import {v4 as uuidv4} from 'uuid';
+import { XMLService } from 'src/app/services/xml.service';
 
 export class PlaceReference {  
     public id: string  
@@ -11,40 +12,25 @@ export class PlaceReference {
     public arcReferenceList: ArcReference[] = new Array()
 
     private designerComponent: DesignerComponent
+    public xmlService: XMLService
     private defaultTexture: PIXI.Texture = PIXI.Texture.WHITE
     private dragging: Boolean
     private clickable: Boolean = false
     private textBox: PIXI.Text
     private data: any
     
-    constructor(id: string, dragging: Boolean, x: number, y: number, textValue: string, saveInXml: boolean, designerComponent: DesignerComponent) {
+    constructor(id: string, dragging: Boolean, x: number, y: number, textValue: string, saveInXml: boolean, designerComponent: DesignerComponent, xmlService: XMLService) {
         this.id = id
         this.dragging = dragging
         this.designerComponent = designerComponent
+        this.xmlService = xmlService
 
+        // add PIXI.js objects
         this.addPlace(x, y)
         this.addTextBox(textValue)
 
-        if(saveInXml){
-            // save place transform data in XML documenmt
-            const parent = Global.xmlDoc
-            .getElementsByTagName("pnml")[0]
-            .getElementsByTagName("net")[0]
-            .getElementsByTagName("page")[0]
-            .appendChild(Global.xmlDoc.createElement("place"))
-
-            parent.setAttribute("id", id)
-
-            const graphics = parent.appendChild(Global.xmlDoc.createElement("graphics"))
-            const position = graphics.appendChild(Global.xmlDoc.createElement("position"))
-
-            position.setAttribute("x", x.toString())
-            position.setAttribute("y", y.toString())
-
-            const name = parent.appendChild(Global.xmlDoc.createElement("name"))
-            const text = name.appendChild(Global.xmlDoc.createElement("text"))
-            text.textContent = textValue
-        }
+        // save object in global XML
+        if(saveInXml) xmlService.createNode(id, x, y, textValue)
 
     }
 
@@ -106,8 +92,7 @@ export class PlaceReference {
         this.data = event.data
 
         // save new position in XML document
-        Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("x", event.currentTarget.x.toString())
-        Global.xmlDoc.querySelectorAll('[id="'+this.id+'"] graphics position')[0].setAttribute("y", event.currentTarget.y.toString())
+        this.xmlService.updateNodePosition(this.id, event.currentTarget.x, event.currentTarget.y)
     
         this.arcReferenceList.forEach(ar => {
             ar.redrawArc()

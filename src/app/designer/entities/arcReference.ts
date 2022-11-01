@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { XMLService } from 'src/app/services/xml.service';
 import { Global} from '../../globals'
 
 export class ArcReference {
@@ -7,37 +8,24 @@ export class ArcReference {
     private startId: string
     private targetId: string
     private parent: PIXI.Sprite
+    private xmlService: XMLService
 
     private line: PIXI.Graphics
     private triangleSrite: PIXI.Sprite
     private textBox: PIXI.Text
 
-    constructor(id: string, startId: string, targetId: string, textValue: string, parent: PIXI.Sprite, saveInXml: boolean){
+    constructor(id: string, startId: string, targetId: string, textValue: string, parent: PIXI.Sprite, saveInXml: boolean, xmlService: XMLService){
         this.id = id
         this.startId = startId
         this.targetId = targetId
         this.parent = parent
+        this.xmlService = xmlService
 
         this.addArc()
         this.addTextBox(textValue)
         this.redrawArc()
 
-        if(saveInXml){
-            // save arc data in XML documenmt
-            const parent = Global.xmlDoc
-            .getElementsByTagName("pnml")[0]
-            .getElementsByTagName("net")[0]
-            .getElementsByTagName("page")[0]
-            .appendChild(Global.xmlDoc.createElement("arc"))
-
-            parent.setAttribute("id", this.id)
-            parent.setAttribute("source", this.startId)
-            parent.setAttribute("target", this.targetId)
-
-            const inscription = parent.appendChild(Global.xmlDoc.createElement("inscription"))
-            const text = inscription.appendChild(Global.xmlDoc.createElement("text"))
-            text.textContent = textValue
-        }
+        if(saveInXml) this.xmlService.createArc(id, startId, targetId, textValue)
     }
 
     addArc() {
@@ -64,18 +52,15 @@ export class ArcReference {
     }
     
     redrawArc(){
-        const startX = Number(Global.xmlDoc.querySelectorAll('[id="'+this.startId+'"] graphics position')[0].getAttribute("x"))
-        const startY = Number(Global.xmlDoc.querySelectorAll('[id="'+this.startId+'"] graphics position')[0].getAttribute("y"))
-
-        const endX = Number(Global.xmlDoc.querySelectorAll('[id="'+this.targetId+'"] graphics position')[0].getAttribute("x"))
-        const endY = Number(Global.xmlDoc.querySelectorAll('[id="'+this.targetId+'"] graphics position')[0].getAttribute("y"))
+        const start = this.xmlService.getNodePosition(this.startId)
+        const end = this.xmlService.getNodePosition(this.targetId)
 
         this.line.clear()
-        this.line.position.set(startX + this.parent.width / 2, startY)
+        this.line.position.set(start[0] + this.parent.width / 2, start[1])
         this.line.lineStyle(5, 0xffffff)
-        .lineTo(endX - startX  - this.parent.width, endY - startY)
+        .lineTo(end[0] - start[0]  - this.parent.width, end[1] - start[1])
 
-        this.triangleSrite.position.set(endX - startX - this.parent.width, endY - startY)
-        this.textBox.position.set((endX + startX) / 2, (endY + startY) / 2)
+        this.triangleSrite.position.set(end[0] - start[0] - this.parent.width, end[1] - start[1])
+        this.textBox.position.set((end[0] + start[0]) / 2, (end[1] + start[1]) / 2)
     }
 }
