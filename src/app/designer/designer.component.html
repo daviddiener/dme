@@ -5,7 +5,12 @@
                 <button mat-raised-button color="primary" mat-button (click)='addObject()'>Create new object</button>
             </div>
             <div class="float-end">
-                <button mat-raised-button color="warn" mat-button (click)='deleteLocalStorage()'>Delete All</button>
+                <button mat-raised-button color="primary" mat-button (click)='saveNetToXML()'>        
+                    <mat-icon>save</mat-icon>
+                </button>
+                <button mat-raised-button color="warn" mat-button (click)='deleteLocalStorage()'>
+                    <mat-icon>delete</mat-icon>
+                </button>
             </div>
         </div>
         <div class="col-sm float-end">

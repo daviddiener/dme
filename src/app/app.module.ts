@@ -9,6 +9,7 @@ import { DesignerComponent } from './designer/designer.component';
 import { ModelExtractorComponent } from './model-extractor/model-extractor.component';
 import { HomeComponent } from './home/home.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
@@ -24,7 +25,8 @@ import { CommonModule } from '@angular/common';
     AppRoutingModule,
     NgbModule,
     BrowserAnimationsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

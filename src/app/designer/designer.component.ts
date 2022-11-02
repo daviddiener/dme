@@ -136,6 +136,11 @@ export class DesignerComponent implements AfterViewInit  {
         Global.app.renderer.resize(this.div.nativeElement.offsetWidth, this.div.nativeElement.offsetHeight)
     }
 
+    saveNetToXML(){
+        localStorage.setItem("designerData", new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
+        alert("Saved net to XML in local storage")
+    }
+
     ngOnDestroy(): void {
         if(Global.app) Global.app.destroy()
         localStorage.setItem("designerData", new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
