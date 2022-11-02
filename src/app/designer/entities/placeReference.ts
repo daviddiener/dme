@@ -54,7 +54,7 @@ export class PlaceReference {
             .on('pointerdown', this.onDragStart.bind(this))
             .on('pointermove', this.onDragMove.bind(this))
             .on('pointerup', this.onDragEnd.bind(this))
-            .on('click', this.onClick.bind(this))
+            .on('pointerupoutside', this.onDragEnd.bind(this))
 
         Global.app.stage.addChild(this.sprite)
     }
@@ -74,20 +74,30 @@ export class PlaceReference {
         event.target.alpha = 0.5
         this.dragging = true
         this.data = event.data
-        this.clickable = true
+        this.clickable = true;
+
+        // Wait for 80 ms to register button click
+        (async () => {     
+            await this.delay(80);
+            this.clickable = false
+        })()
+
     }
 
     onDragMove(event: InteractionEvent) {
         if (this.dragging) {
-            this.clickable = false
-            const newPosition = this.data.getLocalPosition(event.currentTarget.parent);
+            const newPosition = this.data.getLocalPosition(event.currentTarget.parent)
             event.currentTarget.x = newPosition.x
             event.currentTarget.y = newPosition.y
         }
     }
+
+    delay(ms: number) {
+        return new Promise( resolve => setTimeout(resolve, ms) );
+    }
   
     onDragEnd(event: InteractionEvent) {
-        event.target.alpha = 1
+        event.currentTarget.alpha = 1
         this.dragging = false
         this.data = event.data
 
@@ -97,9 +107,8 @@ export class PlaceReference {
         this.arcReferenceList.forEach(ar => {
             ar.redrawArc()
         })
-    }
 
-    onClick(){
+        // handle node click if still clickable
         if(this.clickable) {
             if(this.designerComponent.createArcInProgress) {
                 this.designerComponent.addArc(uuidv4(), this.designerComponent.arcSourceNode.id, this.id, "testArc", true)
