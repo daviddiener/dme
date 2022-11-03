@@ -1,32 +1,45 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary flex-sm-nowrap flex-wrap">
-  <div class="container-fluid">
+<nav
+    class="navbar navbar-expand-sm navbar-dark bg-primary flex-sm-nowrap flex-wrap"
+>
+    <div class="container-fluid">
+        <button
+            class="navbar-toggler flex-grow-sm-1 flex-grow-0 me-2"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbar5"
+            (click)="isCollapsed = !isCollapsed"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <button class="navbar-toggler flex-grow-sm-1 flex-grow-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar5"  (click)="isCollapsed = !isCollapsed">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+        <a class="navbar-brand mx-auto" [routerLink]="['/home']">DME</a>
 
-    <a class="navbar-brand mx-auto" [routerLink]="['/home']">DME</a>
-
-    <div class="navbar-collapse collapse" id="navbar5"  [(ngbCollapse)]="isCollapsed" (click)="isCollapsed = !isCollapsed">
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/designer']">Designer</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/extractor']">Data Model Extractor</a>
-            </li>
-        </ul>
-        <ul class="flex-grow-1">
-            <!--spacer-->
-        </ul>
-        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-            <span class="navbar-text">
-                Version: {{version}}
-            </span>
-        </ul>
+        <div
+            class="navbar-collapse collapse"
+            id="navbar5"
+            [(ngbCollapse)]="isCollapsed"
+            (click)="isCollapsed = !isCollapsed"
+        >
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/designer']"
+                        >Designer</a
+                    >
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/extractor']"
+                        >Data Model Extractor</a
+                    >
+                </li>
+            </ul>
+            <ul class="flex-grow-1">
+                <!--spacer-->
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                <span class="navbar-text"> Version: {{ version }} </span>
+            </ul>
+        </div>
     </div>
-    
-  </div>
 </nav>
 
 <router-outlet></router-outlet>
