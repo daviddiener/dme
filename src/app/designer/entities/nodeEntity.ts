@@ -12,28 +12,24 @@ import { DesignerComponent } from '../designer.component'
 import { v4 as uuidv4 } from 'uuid'
 import { XMLService } from 'src/app/services/xml.service'
 
-export class PlaceReference {
-    public id: string
+export abstract class NodeEntity {
     public sprite: Sprite
     public arcReferenceList: ArcReference[] = []
 
-    private designerComponent: DesignerComponent
-    public xmlService: XMLService
-    private defaultTexture: Texture = Texture.WHITE
-    private dragging: boolean
     private clickable = false
     private textBox: Text
     private data: InteractionData
 
     constructor(
-        id: string,
-        dragging: boolean,
+        public id: string,
+        private dragging: boolean,
         x: number,
         y: number,
         textValue: string,
-        saveInXml: boolean,
-        designerComponent: DesignerComponent,
-        xmlService: XMLService
+        _saveInXml: boolean,
+        private designerComponent: DesignerComponent,
+        public xmlService: XMLService,
+        public defaultTexture: Texture = Texture.EMPTY
     ) {
         this.id = id
         this.dragging = dragging
@@ -41,14 +37,11 @@ export class PlaceReference {
         this.xmlService = xmlService
 
         // add PIXI.js objects
-        this.addPlace(x, y)
+        this.addGraphicsObject(x, y)
         this.addTextBox(textValue)
-
-        // save object in global XML
-        if (saveInXml) xmlService.createNode(id, x, y, textValue)
     }
 
-    addPlace(x: number, y: number) {
+    addGraphicsObject(x: number, y: number) {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
 
         this.sprite = new Sprite(this.defaultTexture)
@@ -57,7 +50,7 @@ export class PlaceReference {
 
         // center the anchor point and scale up
         this.sprite.anchor.set(0.5)
-        this.sprite.scale.set(3)
+        this.sprite.scale.set(0.1)
 
         // set default position for sprite
         this.sprite.x = x
@@ -77,12 +70,13 @@ export class PlaceReference {
         this.textBox = this.sprite.addChild(
             new Text(text, {
                 fontFamily: 'Arial',
-                fontSize: 8,
+                fontSize: 12,
                 align: 'center',
             })
         )
 
-        this.textBox.resolution = 4
+        this.textBox.resolution = 1
+        this.textBox.scale.set(10)
         this.textBox.anchor.set(0.5)
     }
 
@@ -94,7 +88,7 @@ export class PlaceReference {
 
         // Wait for 80 ms to register button click
         ;(async () => {
-            await this.delay(80)
+            await new Promise((resolve) => setTimeout(resolve, 80))
             this.clickable = false
         })()
     }
@@ -107,10 +101,6 @@ export class PlaceReference {
             event.currentTarget.x = newPosition.x
             event.currentTarget.y = newPosition.y
         }
-    }
-
-    delay(ms: number) {
-        return new Promise((resolve) => setTimeout(resolve, ms))
     }
 
     onDragEnd(event: InteractionEvent) {

@@ -1,27 +1,25 @@
-import * as PIXI from 'pixi.js'
+import { Texture, Sprite, Graphics, Text } from 'pixi.js'
 import { XMLService } from 'src/app/services/xml.service'
 import { Global } from '../../globals'
 
 export class ArcReference {
-    public triangleTexture: PIXI.Texture = PIXI.Texture.from(
-        'assets/triangle.png'
-    )
+    public triangleTexture: Texture = Texture.from('assets/triangle.png')
     public id: string
     private startId: string
     private targetId: string
-    private parent: PIXI.Sprite
+    private parent: Sprite
     private xmlService: XMLService
 
-    private line: PIXI.Graphics
-    private triangleSrite: PIXI.Sprite
-    private textBox: PIXI.Text
+    private line: Graphics
+    private triangleSrite: Sprite
+    private textBox: Text
 
     constructor(
         id: string,
         startId: string,
         targetId: string,
         textValue: string,
-        parent: PIXI.Sprite,
+        parent: Sprite,
         saveInXml: boolean,
         xmlService: XMLService
     ) {
@@ -33,16 +31,22 @@ export class ArcReference {
 
         this.addArc()
         this.addTextBox(textValue)
-        this.redrawArc()
+
+         // Wait a little bit for the parent sprites to scale properly
+         ;(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 50))
+            this.redrawArc()
+        })()
 
         if (saveInXml)
             this.xmlService.createArc(id, startId, targetId, textValue)
     }
 
+
     addArc() {
-        this.line = this.parent.addChild(new PIXI.Graphics())
+        this.line = this.parent.addChild(new Graphics())
         this.triangleSrite = this.line.addChild(
-            new PIXI.Sprite(this.triangleTexture)
+            new Sprite(this.triangleTexture)
         )
         this.triangleSrite.scale.set(0.05)
         this.triangleSrite.anchor.set(0.75, 0.5)
@@ -52,7 +56,7 @@ export class ArcReference {
     }
 
     addTextBox(text: string) {
-        this.textBox = new PIXI.Text(text, {
+        this.textBox = new Text(text, {
             fontFamily: 'Arial',
             fontSize: 22,
             align: 'center',

@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core'
 import { Global } from './../globals'
 
+export enum NodeType {
+    place = 'place',
+    transition = 'transition',
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -14,12 +19,18 @@ export class XMLService {
         net.appendChild(Global.xmlDoc.createElement('page'))
     }
 
-    public createNode(id: string, x: number, y: number, textValue: string) {
+    public createNode(
+        id: string,
+        x: number,
+        y: number,
+        textValue: string,
+        nodeType: NodeType
+    ) {
         const parent = Global.xmlDoc
             .getElementsByTagName('pnml')[0]
             .getElementsByTagName('net')[0]
             .getElementsByTagName('page')[0]
-            .appendChild(Global.xmlDoc.createElement('place'))
+            .appendChild(Global.xmlDoc.createElement(nodeType))
 
         parent.setAttribute('id', id)
 
@@ -72,12 +83,20 @@ export class XMLService {
             .setAttribute('y', y.toString())
     }
 
-    public getAllNodes(): HTMLCollectionOf<Element> {
+    public getAllPlaces(): HTMLCollectionOf<Element> {
         return Global.xmlDoc
             .getElementsByTagName('pnml')[0]
             .getElementsByTagName('net')[0]
             .getElementsByTagName('page')[0]
             .getElementsByTagName('place')
+    }
+
+    public getAllTransitions(): HTMLCollectionOf<Element> {
+        return Global.xmlDoc
+            .getElementsByTagName('pnml')[0]
+            .getElementsByTagName('net')[0]
+            .getElementsByTagName('page')[0]
+            .getElementsByTagName('transition')
     }
 
     public getNodePosition(id: string): [number, number] {

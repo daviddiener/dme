@@ -6,12 +6,14 @@ import {
     ViewChild,
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
-import { PlaceReference as PlaceReference } from './entities/placeReference'
+import { PlaceEntity } from './entities/placeEntity'
 import { v4 as uuidv4 } from 'uuid'
 import { Global } from './../globals'
 import { ArcReference } from './entities/arcReference'
 import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
+import { NodeEntity } from './entities/nodeEntity'
+import { TransitionEntity } from './entities/transitionEntity'
 
 @Component({
     selector: 'app-designer',
@@ -21,10 +23,10 @@ import { XMLService } from '../services/xml.service'
 export class DesignerComponent implements AfterViewInit {
     public arcBtnIsVisible = false
     public createArcInProgress = false
-    public arcSourceNode: PlaceReference
+    public arcSourceNode: NodeEntity
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
-    private placeReferenceList: PlaceReference[] = []
+    private placeReferenceList: NodeEntity[] = []
 
     constructor(
         private ngZone: NgZone,
@@ -59,9 +61,9 @@ export class DesignerComponent implements AfterViewInit {
         )
 
         // GENERATE PLACES
-        Array.from(this.xmlService.getAllNodes()).forEach((place) => {
+        Array.from(this.xmlService.getAllPlaces()).forEach((place) => {
             this.placeReferenceList.push(
-                new PlaceReference(
+                new PlaceEntity(
                     place.getAttribute('id') as string,
                     false,
                     Number(
@@ -88,6 +90,38 @@ export class DesignerComponent implements AfterViewInit {
             )
         })
 
+        // GENERATE Transitions
+        Array.from(this.xmlService.getAllTransitions()).forEach(
+            (transition) => {
+                this.placeReferenceList.push(
+                    new TransitionEntity(
+                        transition.getAttribute('id') as string,
+                        false,
+                        Number(
+                            transition
+                                .getElementsByTagName('graphics')[0]
+                                .getElementsByTagName('position')[0]
+                                .getAttribute('x')
+                        ),
+                        Number(
+                            transition
+                                .getElementsByTagName('graphics')[0]
+                                .getElementsByTagName('position')[0]
+                                .getAttribute('y')
+                        ),
+                        String(
+                            transition
+                                .getElementsByTagName('name')[0]
+                                .getElementsByTagName('text')[0].textContent
+                        ),
+                        false,
+                        this,
+                        this.xmlService
+                    )
+                )
+            }
+        )
+
         // GENERATE ARCS
         Array.from(this.xmlService.getAllArcs()).forEach((arc) => {
             this.addArc(
@@ -104,9 +138,24 @@ export class DesignerComponent implements AfterViewInit {
         })
     }
 
-    addObject() {
+    addPlace() {
         this.placeReferenceList.push(
-            new PlaceReference(
+            new PlaceEntity(
+                uuidv4(),
+                false,
+                30,
+                30,
+                'Test',
+                true,
+                this,
+                this.xmlService
+            )
+        )
+    }
+
+    addTransition() {
+        this.placeReferenceList.push(
+            new TransitionEntity(
                 uuidv4(),
                 false,
                 30,
@@ -162,7 +211,7 @@ export class DesignerComponent implements AfterViewInit {
         }
     }
 
-    public activateCreateArcBtn(sourceNode: PlaceReference) {
+    public activateCreateArcBtn(sourceNode: NodeEntity) {
         if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff // reset old node tint
 
         this.arcSourceNode = sourceNode
