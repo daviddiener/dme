@@ -15,6 +15,7 @@ import { XMLService } from 'src/app/services/xml.service'
 export abstract class NodeEntity {
     public sprite: Sprite
     public arcReferenceList: ArcReference[] = []
+    public promise: Promise<void>
 
     private clickable = false
     private textBox: Text
@@ -43,8 +44,20 @@ export abstract class NodeEntity {
 
     addGraphicsObject(x: number, y: number) {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
-
         this.sprite = new Sprite(this.defaultTexture)
+
+        if(this.sprite.texture.valid) {
+            // resolve immediately
+            this.promise = new Promise<void>((resolve) => { resolve() })
+        } else {
+            // wait for texture to be valid
+            this.promise = new Promise<void>((resolve) => { 
+                this.sprite.texture.on('update', () => {
+                    resolve() 
+                }) 
+            })
+        }
+        
         this.sprite.interactive = true
         this.sprite.buttonMode = true
 

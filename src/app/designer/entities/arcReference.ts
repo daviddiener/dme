@@ -31,12 +31,7 @@ export class ArcReference {
 
         this.addArc()
         this.addTextBox(textValue)
-
-        // Wait a little bit for the parent sprites to scale properly
-        ;(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 50))
-            this.redrawArc()
-        })()
+        this.redrawArc()
 
         if (saveInXml)
             this.xmlService.createArc(id, startId, targetId, textValue)

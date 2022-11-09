@@ -26,7 +26,8 @@ export class DesignerComponent implements AfterViewInit {
     public arcSourceNode: NodeEntity
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
-    private placeReferenceList: NodeEntity[] = []
+    private nodeReferenceList: NodeEntity[] = []
+    private promiseList: Promise<void>[] = []
 
     constructor(
         private ngZone: NgZone,
@@ -62,7 +63,7 @@ export class DesignerComponent implements AfterViewInit {
 
         // GENERATE PLACES
         Array.from(this.xmlService.getAllPlaces()).forEach((place) => {
-            this.placeReferenceList.push(
+            this.nodeReferenceList.push(
                 new PlaceEntity(
                     place.getAttribute('id') as string,
                     false,
@@ -93,7 +94,7 @@ export class DesignerComponent implements AfterViewInit {
         // GENERATE Transitions
         Array.from(this.xmlService.getAllTransitions()).forEach(
             (transition) => {
-                this.placeReferenceList.push(
+                this.nodeReferenceList.push(
                     new TransitionEntity(
                         transition.getAttribute('id') as string,
                         false,
@@ -122,24 +123,35 @@ export class DesignerComponent implements AfterViewInit {
             }
         )
 
-        // GENERATE ARCS
-        Array.from(this.xmlService.getAllArcs()).forEach((arc) => {
-            this.addArc(
-                String(arc.getAttribute('id')),
-                String(arc.getAttribute('source')),
-                String(arc.getAttribute('target')),
-                String(
-                    arc
-                        .getElementsByTagName('inscription')[0]
-                        .getElementsByTagName('text')[0].textContent
-                ),
-                false
-            )
+        // Collect promises
+        this.nodeReferenceList.forEach((node) => {
+            this.promiseList.push(node.promise)
         })
+        
+        // GENERATE ARCS
+        /* 
+        Wait for the promises of the parent sprites to update the texture - necessary, 
+        otherwise heigt and width will be 0 and the anchorpoint for the arcs will be wrong 
+        */
+        Promise.all(this.promiseList).then(() => {
+            Array.from(this.xmlService.getAllArcs()).forEach((arc) => {
+                this.addArc(
+                    String(arc.getAttribute('id')),
+                    String(arc.getAttribute('source')),
+                    String(arc.getAttribute('target')),
+                    String(
+                        arc
+                            .getElementsByTagName('inscription')[0]
+                            .getElementsByTagName('text')[0].textContent
+                    ),
+                    false
+                )
+            })
+        })  
     }
 
     addPlace() {
-        this.placeReferenceList.push(
+        this.nodeReferenceList.push(
             new PlaceEntity(
                 uuidv4(),
                 false,
@@ -154,7 +166,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     addTransition() {
-        this.placeReferenceList.push(
+        this.nodeReferenceList.push(
             new TransitionEntity(
                 uuidv4(),
                 false,
@@ -176,7 +188,7 @@ export class DesignerComponent implements AfterViewInit {
         saveInXml: boolean
     ) {
         let tmpArc
-        const sourceRef = this.placeReferenceList.find(
+        const sourceRef = this.nodeReferenceList.find(
             (el) => el.id == sourceId
         )
         if (sourceRef) {
@@ -192,7 +204,7 @@ export class DesignerComponent implements AfterViewInit {
             sourceRef.arcReferenceList.push(tmpArc)
         }
 
-        const targetRef = this.placeReferenceList.find(
+        const targetRef = this.nodeReferenceList.find(
             (el) => el.id == targetId
         )
         if (targetRef && tmpArc) targetRef.arcReferenceList.push(tmpArc)
@@ -249,6 +261,7 @@ export class DesignerComponent implements AfterViewInit {
 
     ngOnDestroy(): void {
         if (Global.app) Global.app.destroy()
+
         localStorage.setItem(
             'designerData',
             new XMLSerializer().serializeToString(Global.xmlDoc.documentElement)
