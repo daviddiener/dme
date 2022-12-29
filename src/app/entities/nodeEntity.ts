@@ -7,8 +7,8 @@ import {
     SCALE_MODES,
 } from 'pixi.js'
 import { ArcReference } from './arcReference'
-import { Global } from '../../globals'
-import { DesignerComponent } from '../designer.component'
+import { Global } from '../globals'
+import { DesignerComponent } from '../designer/designer.component'
 import { v4 as uuidv4 } from 'uuid'
 import { XMLService } from 'src/app/services/xml.service'
 
@@ -16,9 +16,9 @@ export abstract class NodeEntity {
     public sprite: Sprite
     public arcReferenceList: ArcReference[] = []
     public promise: Promise<void>
-
-    private clickable = false
+    
     private textBox: Text
+    private clickable = false
     private data: InteractionData
 
     constructor(
@@ -46,18 +46,20 @@ export abstract class NodeEntity {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         this.sprite = new Sprite(this.defaultTexture)
 
-        if(this.sprite.texture.valid) {
+        if (this.sprite.texture.valid) {
             // resolve immediately
-            this.promise = new Promise<void>((resolve) => { resolve() })
+            this.promise = new Promise<void>((resolve) => {
+                resolve()
+            })
         } else {
             // wait for texture to be valid
-            this.promise = new Promise<void>((resolve) => { 
+            this.promise = new Promise<void>((resolve) => {
                 this.sprite.texture.on('update', () => {
-                    resolve() 
-                }) 
+                    resolve()
+                })
             })
         }
-        
+
         this.sprite.interactive = true
         this.sprite.buttonMode = true
 
@@ -139,12 +141,17 @@ export abstract class NodeEntity {
                     uuidv4(),
                     this.designerComponent.arcSourceNode.id,
                     this.id,
-                    'testArc',
+                    'a',
                     true
                 )
             } else {
                 this.designerComponent.activateCreateArcBtn(this)
             }
         }
+    }
+
+    public changeName(newName: string){
+        this.textBox.text = newName
+        this.xmlService.updateNodeName(this.id, newName)
     }
 }

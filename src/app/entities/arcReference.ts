@@ -1,6 +1,6 @@
 import { Texture, Sprite, Graphics, Text } from 'pixi.js'
 import { XMLService } from 'src/app/services/xml.service'
-import { Global } from '../../globals'
+import { Global } from '../globals'
 
 export class ArcReference {
     public triangleTexture: Texture = Texture.from('assets/triangle.png')

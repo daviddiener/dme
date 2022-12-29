@@ -47,6 +47,10 @@ export class XMLService {
         const name = parent.appendChild(Global.xmlDoc.createElement('name'))
         const text = name.appendChild(Global.xmlDoc.createElement('text'))
         text.textContent = textValue
+
+        const owner = parent.appendChild(Global.xmlDoc.createElement('owner'))
+        const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
+        text2.textContent = '-'
     }
 
     public createArc(
@@ -81,6 +85,45 @@ export class XMLService {
         Global.xmlDoc
             .querySelectorAll('[id="' + id + '"] graphics position')[0]
             .setAttribute('y', y.toString())
+    }
+
+    public updateNodeName(id: string, newName: string) {
+        Global.xmlDoc
+            .querySelectorAll('[id="' + id + '"] name text')[0]
+            .textContent = newName        
+    }
+
+    public getNodeName(id: string) : string {
+        const name = Global.xmlDoc
+        .querySelectorAll('[id="' + id + '"] name text')[0]
+        .textContent?.toString()
+
+        return name !== undefined ? name : '';
+    }
+
+    public updateNodeOwner(id: string, newOwner: string) {
+        Global.xmlDoc
+            .querySelectorAll('[id="' + id + '"] owner text')[0]
+            .textContent = newOwner        
+    }
+
+    public getNodeOwner(id: string) : string {
+        const owner = Global.xmlDoc
+        .querySelectorAll('[id="' + id + '"] owner text')[0]
+        .textContent?.toString()
+
+        return owner !== undefined ? owner : '';
+    }
+
+    public getAllOwners() : any[]{
+
+        const tmp = new Array();
+        Global.xmlDoc.querySelectorAll('owner text').forEach(element => {
+            tmp.push(element.textContent)
+        })
+                
+        let uniqueItems = [...new Set(tmp)]
+        return uniqueItems
     }
 
     public getAllPlaces(): HTMLCollectionOf<Element> {

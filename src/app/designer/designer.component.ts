@@ -6,14 +6,14 @@ import {
     ViewChild,
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
-import { PlaceEntity } from './entities/placeEntity'
+import { PlaceEntity } from '../entities/placeEntity'
 import { v4 as uuidv4 } from 'uuid'
 import { Global } from './../globals'
-import { ArcReference } from './entities/arcReference'
+import { ArcReference } from '../entities/arcReference'
 import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
-import { NodeEntity } from './entities/nodeEntity'
-import { TransitionEntity } from './entities/transitionEntity'
+import { NodeEntity } from '../entities/nodeEntity'
+import { TransitionEntity } from '../entities/transitionEntity'
 
 @Component({
     selector: 'app-designer',
@@ -24,6 +24,9 @@ export class DesignerComponent implements AfterViewInit {
     public arcBtnIsVisible = false
     public createArcInProgress = false
     public arcSourceNode: NodeEntity
+
+    public name = 'not set';
+    owner = 'not set';
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private nodeReferenceList: NodeEntity[] = []
@@ -127,7 +130,7 @@ export class DesignerComponent implements AfterViewInit {
         this.nodeReferenceList.forEach((node) => {
             this.promiseList.push(node.promise)
         })
-        
+
         // GENERATE ARCS
         /* 
         Wait for the promises of the parent sprites to update the texture - necessary, 
@@ -147,7 +150,7 @@ export class DesignerComponent implements AfterViewInit {
                     false
                 )
             })
-        })  
+        })
     }
 
     addPlace() {
@@ -188,9 +191,7 @@ export class DesignerComponent implements AfterViewInit {
         saveInXml: boolean
     ) {
         let tmpArc
-        const sourceRef = this.nodeReferenceList.find(
-            (el) => el.id == sourceId
-        )
+        const sourceRef = this.nodeReferenceList.find((el) => el.id == sourceId)
         if (sourceRef) {
             tmpArc = new ArcReference(
                 id,
@@ -204,9 +205,7 @@ export class DesignerComponent implements AfterViewInit {
             sourceRef.arcReferenceList.push(tmpArc)
         }
 
-        const targetRef = this.nodeReferenceList.find(
-            (el) => el.id == targetId
-        )
+        const targetRef = this.nodeReferenceList.find((el) => el.id == targetId)
         if (targetRef && tmpArc) targetRef.arcReferenceList.push(tmpArc)
 
         this.createArcInProgress = false
@@ -229,6 +228,10 @@ export class DesignerComponent implements AfterViewInit {
         this.arcSourceNode = sourceNode
         this.arcSourceNode.sprite.tint = 0x71beeb
         this.arcBtnIsVisible = true
+
+        this.name = this.xmlService.getNodeName(this.arcSourceNode.id)
+        this.owner = this.xmlService.getNodeOwner(this.arcSourceNode.id)
+
         this.cdr.detectChanges()
     }
 
@@ -249,6 +252,14 @@ export class DesignerComponent implements AfterViewInit {
             this.div.nativeElement.offsetWidth,
             this.div.nativeElement.offsetHeight
         )
+    }
+
+    updateName(){
+        this.arcSourceNode.changeName(this.name)
+    }
+
+    updateOwner(){
+        this.xmlService.updateNodeOwner(this.arcSourceNode.id, this.owner)
     }
 
     saveNetToXML() {

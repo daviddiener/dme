@@ -1,6 +1,6 @@
 import { NodeEntity } from './nodeEntity'
 import { Texture } from 'pixi.js'
-import { DesignerComponent } from '../designer.component'
+import { DesignerComponent } from '../designer/designer.component'
 import { XMLService, NodeType } from 'src/app/services/xml.service'
 
 export class TransitionEntity extends NodeEntity {

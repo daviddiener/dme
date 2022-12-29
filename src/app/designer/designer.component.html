@@ -1,79 +1,107 @@
 <div class="container">
     <div class="row">
-        <div class="col-sm">
-            <div class="float-start">
-                <button
-                    mat-raised-button
-                    color="primary"
-                    mat-button
-                    (click)="addPlace()"
-                >
-                    Create new place
-                </button>
-                <button
-                    mat-raised-button
-                    color="primary"
-                    mat-button
-                    (click)="addTransition()"
-                >
-                    Create new transition
-                </button>
+        <div class="col-9">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="float-start">
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            mat-button
+                            (click)="addPlace()"
+                        >
+                            Create new place
+                        </button>
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            mat-button
+                            (click)="addTransition()"
+                        >
+                            Create new transition
+                        </button>
+                    </div>
+                    <div class="float-end">
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            mat-button
+                            (click)="saveNetToXML()"
+                        >
+                            <mat-icon>save</mat-icon>
+                        </button>
+                        <button
+                            mat-raised-button
+                            color="warn"
+                            mat-button
+                            (click)="deleteLocalStorage()"
+                        >
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-sm float-end">
+                    <div class="float-end">
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            mat-button
+                            (click)="startCreateArc()"
+                            *ngIf="arcBtnIsVisible && !createArcInProgress == true"
+                        >
+                            Create Arc
+                        </button>
+                        <button
+                            mat-raised-button
+                            color="disabled"
+                            mat-button
+                            (click)="startCreateArc()"
+                            *ngIf="arcBtnIsVisible && createArcInProgress == true"
+                        >
+                            Create Arc
+                        </button>
+                        <button
+                            mat-raised-button
+                            color="secondary"
+                            mat-button
+                            (click)="deactivateCreateArcBtn()"
+                            *ngIf="arcBtnIsVisible == true"
+                        >
+                            Deselect Node
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="float-end">
-                <button
-                    mat-raised-button
-                    color="primary"
-                    mat-button
-                    (click)="saveNetToXML()"
-                >
-                    <mat-icon>save</mat-icon>
-                </button>
-                <button
-                    mat-raised-button
-                    color="warn"
-                    mat-button
-                    (click)="deleteLocalStorage()"
-                >
-                    <mat-icon>delete</mat-icon>
-                </button>
-            </div>
+
+            <div
+            class="col-sm-12"
+            (window:resize)="adjustCanvasSize()"
+            id="pixiCanvasContainer"
+            #pixiCanvasContainer
+            ></div>
         </div>
-        <div class="col-sm float-end">
-            <div class="float-end">
-                <button
-                    mat-raised-button
-                    color="primary"
-                    mat-button
-                    (click)="startCreateArc()"
-                    *ngIf="arcBtnIsVisible && !createArcInProgress == true"
-                >
-                    Create Arc
-                </button>
-                <button
-                    mat-raised-button
-                    color="disabled"
-                    mat-button
-                    (click)="startCreateArc()"
-                    *ngIf="arcBtnIsVisible && createArcInProgress == true"
-                >
-                    Create Arc
-                </button>
-                <button
-                    mat-raised-button
-                    color="secondary"
-                    mat-button
-                    (click)="deactivateCreateArcBtn()"
-                    *ngIf="arcBtnIsVisible == true"
-                >
-                    Deselect Node
-                </button>
-            </div>
+        <div class="col-3">
+                <form appearance="outline">
+                    <label *ngIf="arcBtnIsVisible == true">Name</label>
+                    <input 
+                    matInput 
+                    *ngIf="arcBtnIsVisible == true"  
+                    [(ngModel)]='name'
+                    name = 'nameInput'
+                    (change)="updateName()"
+ 
+                    >
+                </form>
+                <form appearance="outline">
+                    <label *ngIf="arcBtnIsVisible == true">Owner</label>
+                    <input 
+                    matInput 
+                    *ngIf="arcBtnIsVisible == true"    
+                    [(ngModel)] = 'owner' 
+                    name = 'ownerInput'
+                    (change)="updateOwner()"
+                    >
+                </form>
         </div>
     </div>
-    <div
-        class="col-sm-12"
-        (window:resize)="adjustCanvasSize()"
-        id="pixiCanvasContainer"
-        #pixiCanvasContainer
-    ></div>
 </div>

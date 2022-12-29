@@ -11,6 +11,9 @@ import { HomeComponent } from './home/home.component'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { CommonModule } from '@angular/common'
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [
@@ -27,6 +30,9 @@ import { CommonModule } from '@angular/common'
         BrowserAnimationsModule,
         MatButtonModule,
         MatIconModule,
+        MatInputModule,
+        MatFormFieldModule,
+        FormsModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
