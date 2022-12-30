@@ -3,7 +3,7 @@ import { Texture } from 'pixi.js'
 import { DesignerComponent } from '../designer/designer.component'
 import { XMLService, NodeType } from 'src/app/services/xml.service'
 
-export class PlaceEntity extends NodeEntity {
+export class ClassEntity extends NodeEntity {
     constructor(
         id: string,
         x: number,
@@ -21,8 +21,8 @@ export class PlaceEntity extends NodeEntity {
             saveInXml,
             designerComponent,
             xmlService,
-            Texture.from('assets/place.png'),
-            true
+            Texture.from('assets/transition.png'),
+            false
         )
 
         // save object in global XML

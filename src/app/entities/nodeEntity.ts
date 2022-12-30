@@ -19,30 +19,30 @@ export abstract class NodeEntity {
     
     private textBox: Text
     private clickable = false
+    private dragging = false
     private data: InteractionData
 
     constructor(
         public id: string,
-        private dragging: boolean,
         x: number,
         y: number,
         textValue: string,
         _saveInXml: boolean,
-        private designerComponent: DesignerComponent,
+        private designerComponent: DesignerComponent | undefined,
         public xmlService: XMLService,
-        public defaultTexture: Texture = Texture.EMPTY
+        public defaultTexture: Texture = Texture.EMPTY,
+        private isInteractive: boolean
     ) {
         this.id = id
-        this.dragging = dragging
         this.designerComponent = designerComponent
         this.xmlService = xmlService
 
         // add PIXI.js objects
-        this.addGraphicsObject(x, y)
+        this.addGraphicsObject(x, y, isInteractive)
         this.addTextBox(textValue)
     }
 
-    addGraphicsObject(x: number, y: number) {
+    addGraphicsObject(x: number, y: number, isInteractive: boolean) {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         this.sprite = new Sprite(this.defaultTexture)
 
@@ -60,8 +60,8 @@ export abstract class NodeEntity {
             })
         }
 
-        this.sprite.interactive = true
-        this.sprite.buttonMode = true
+        this.sprite.interactive = isInteractive
+        this.sprite.buttonMode = isInteractive
 
         // center the anchor point and scale up
         this.sprite.anchor.set(0.5)
@@ -101,9 +101,9 @@ export abstract class NodeEntity {
         this.data = event.data
         this.clickable = true
 
-        // Wait for 80 ms to register button click
+        // Wait for 250 ms to register button click
         ;(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 80))
+            await new Promise((resolve) => setTimeout(resolve, 250))
             this.clickable = false
         })()
     }
@@ -135,7 +135,7 @@ export abstract class NodeEntity {
         })
 
         // handle node click if still clickable
-        if (this.clickable) {
+        if (this.clickable && this.designerComponent) {
             if (this.designerComponent.createArcInProgress) {
                 this.designerComponent.addArc(
                     uuidv4(),

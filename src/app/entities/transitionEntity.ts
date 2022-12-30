@@ -6,24 +6,23 @@ import { XMLService, NodeType } from 'src/app/services/xml.service'
 export class TransitionEntity extends NodeEntity {
     constructor(
         id: string,
-        dragging: boolean,
         x: number,
         y: number,
         textValue: string,
         saveInXml: boolean,
-        designerComponent: DesignerComponent,
+        designerComponent: DesignerComponent | undefined,
         xmlService: XMLService
     ) {
         super(
             id,
-            dragging,
             x,
             y,
             textValue,
             saveInXml,
             designerComponent,
             xmlService,
-            Texture.from('assets/transition.png')
+            Texture.from('assets/transition.png'),
+            true
         )
 
         // save object in global XML

@@ -6,9 +6,14 @@ import {
     ViewChild,
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
+import { v4 as uuidv4 } from 'uuid'
 import { Global } from './../globals'
 import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
+import { NodeEntity } from '../entities/nodeEntity'
+import { PlaceEntity } from '../entities/placeEntity'
+import { TransitionEntity } from '../entities/transitionEntity'
+import { ClassEntity } from '../entities/classEntity'
 
 @Component({
     selector: 'app-model-extractor',
@@ -42,15 +47,53 @@ export class ModelExtractorComponent implements AfterViewInit {
                     designerData,
                     'text/xml'
                 )
-
-                console.log(this.xmlService.getAllOwners())
             
+                this.generateOwners()
 
-                // for (let i = 0; i < this.xmlService.getAllPlaces().length; i++) {
-                //     console.log(this.xmlService.getAllPlaces()[i]);
-                // }
+                this.generateActions()
 
             } else alert('No valid xml string found')
+        })
+    }
+
+    generateActions() {
+        let xPosition = 100
+
+        Array.from(this.xmlService.getAllPlaces()).forEach((place) => {
+            new ClassEntity(
+                uuidv4(),
+                xPosition,
+                250,
+                String(
+                    place
+                        .getElementsByTagName('name')[0]
+                        .getElementsByTagName('text')[0].textContent
+                ),
+                false,
+                undefined,
+                this.xmlService
+            )
+    
+            xPosition += 150
+
+        })
+
+    }
+
+    generateOwners() {
+        let xPosition = 100
+        this.xmlService.getAllOwners().forEach(element => {
+            new ClassEntity(
+                uuidv4(),
+                xPosition,
+                50,
+                element,
+                false,
+                undefined,
+                this.xmlService
+            )
+    
+            xPosition += 150
         })
     }
 

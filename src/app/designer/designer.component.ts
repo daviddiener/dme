@@ -69,7 +69,6 @@ export class DesignerComponent implements AfterViewInit {
             this.nodeReferenceList.push(
                 new PlaceEntity(
                     place.getAttribute('id') as string,
-                    false,
                     Number(
                         place
                             .getElementsByTagName('graphics')[0]
@@ -100,7 +99,6 @@ export class DesignerComponent implements AfterViewInit {
                 this.nodeReferenceList.push(
                     new TransitionEntity(
                         transition.getAttribute('id') as string,
-                        false,
                         Number(
                             transition
                                 .getElementsByTagName('graphics')[0]
@@ -157,7 +155,6 @@ export class DesignerComponent implements AfterViewInit {
         this.nodeReferenceList.push(
             new PlaceEntity(
                 uuidv4(),
-                false,
                 30,
                 30,
                 'Test',
@@ -172,7 +169,6 @@ export class DesignerComponent implements AfterViewInit {
         this.nodeReferenceList.push(
             new TransitionEntity(
                 uuidv4(),
-                false,
                 30,
                 30,
                 'Test',
