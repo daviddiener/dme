@@ -59,30 +59,37 @@ export class ModelExtractorComponent implements AfterViewInit {
     generateActions() {
         let xPosition = 100
 
-        Array.from(this.xmlService.getAllPlaces()).forEach((place) => {
+        let generatedObjectIds: (string | null)[] = []
+        Array.from(this.xmlService.getAllArcs()).forEach(element => {
+            generatedObjectIds.push(element.getAttribute('target'))
+        });
+
+        this.xmlService.getDistinctPlaces().forEach((place) => {
+
+            // set sprite tint to red if the class is an existing (external) object
+            let color:number = 0xFF0000
+            if(generatedObjectIds.some(x => x === this.xmlService.getNodeIdByName(place))){
+                color = 0xFFFFFF
+            }
+
             new ClassEntity(
                 uuidv4(),
                 xPosition,
                 250,
-                String(
-                    place
-                        .getElementsByTagName('name')[0]
-                        .getElementsByTagName('text')[0].textContent
-                ),
+                String(place),
                 false,
                 undefined,
-                this.xmlService
+                this.xmlService,
+                color
             )
-    
             xPosition += 150
-
         })
 
     }
 
     generateOwners() {
         let xPosition = 100
-        this.xmlService.getAllOwners().forEach(element => {
+        this.xmlService.getDistinctOwners().forEach(element => {
             new ClassEntity(
                 uuidv4(),
                 xPosition,
@@ -90,7 +97,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                 element,
                 false,
                 undefined,
-                this.xmlService
+                this.xmlService,
+                0xFFFFFF
             )
     
             xPosition += 150

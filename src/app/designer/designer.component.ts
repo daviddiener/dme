@@ -25,7 +25,7 @@ export class DesignerComponent implements AfterViewInit {
     public createArcInProgress = false
     public arcSourceNode: NodeEntity
 
-    public name = 'not set';
+    name = 'not set';
     owner = 'not set';
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef

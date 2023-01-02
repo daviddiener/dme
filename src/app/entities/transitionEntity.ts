@@ -22,7 +22,8 @@ export class TransitionEntity extends NodeEntity {
             designerComponent,
             xmlService,
             Texture.from('assets/transition.png'),
-            true
+            true,
+            0xFFFFFF
         )
 
         // save object in global XML

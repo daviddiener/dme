@@ -115,11 +115,29 @@ export class XMLService {
         return owner !== undefined ? owner : '';
     }
 
-    public getAllOwners() : any[]{
+    public getDistinctOwners() : any[]{
 
         const tmp = new Array();
         Global.xmlDoc.querySelectorAll('owner text').forEach(element => {
             tmp.push(element.textContent)
+        })
+                
+        let uniqueItems = [...new Set(tmp)]
+        return uniqueItems
+    }
+
+    public getDistinctPlaces() : any[]{
+
+        const tmp = new Array();
+
+        Array.from(Global.xmlDoc
+            .getElementsByTagName('pnml')[0]
+            .getElementsByTagName('net')[0]
+            .getElementsByTagName('page')[0]
+            .getElementsByTagName('place')).forEach(element => {
+                tmp.push(element
+                    .getElementsByTagName('name')[0]
+                    .getElementsByTagName('text')[0].textContent)
         })
                 
         let uniqueItems = [...new Set(tmp)]
@@ -132,6 +150,21 @@ export class XMLService {
             .getElementsByTagName('net')[0]
             .getElementsByTagName('page')[0]
             .getElementsByTagName('place')
+    }
+
+    public getNodeIdByName(name: string): any {
+        let id = null
+        Array.from(Global.xmlDoc
+            .querySelectorAll('place')).forEach(element =>{ 
+            if(element
+                .getElementsByTagName('name')[0]
+                .getElementsByTagName('text')[0].textContent == name) {
+                    id = element.getAttribute('id')
+                }
+                
+        })
+
+        return id
     }
 
     public getAllTransitions(): HTMLCollectionOf<Element> {

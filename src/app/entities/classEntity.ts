@@ -11,7 +11,8 @@ export class ClassEntity extends NodeEntity {
         textValue: string,
         saveInXml: boolean,
         designerComponent: DesignerComponent | undefined,
-        xmlService: XMLService
+        xmlService: XMLService,
+        tint: number
     ) {
         super(
             id,
@@ -22,7 +23,8 @@ export class ClassEntity extends NodeEntity {
             designerComponent,
             xmlService,
             Texture.from('assets/transition.png'),
-            false
+            false,
+            tint
         )
 
         // save object in global XML

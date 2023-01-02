@@ -31,20 +31,22 @@ export abstract class NodeEntity {
         private designerComponent: DesignerComponent | undefined,
         public xmlService: XMLService,
         public defaultTexture: Texture = Texture.EMPTY,
-        private isInteractive: boolean
+        private isInteractive: boolean,
+        private tint: number
     ) {
         this.id = id
         this.designerComponent = designerComponent
         this.xmlService = xmlService
 
         // add PIXI.js objects
-        this.addGraphicsObject(x, y, isInteractive)
+        this.addGraphicsObject(x, y, isInteractive, tint)
         this.addTextBox(textValue)
     }
 
-    addGraphicsObject(x: number, y: number, isInteractive: boolean) {
+    addGraphicsObject(x: number, y: number, isInteractive: boolean, tint: number) {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         this.sprite = new Sprite(this.defaultTexture)
+        this.sprite.tint = tint
 
         if (this.sprite.texture.valid) {
             // resolve immediately
