@@ -1,4 +1,4 @@
-import { Texture, Sprite, Graphics, Text } from 'pixi.js'
+import { Texture, Sprite, Graphics, Text, InteractionEvent } from 'pixi.js'
 import { XMLService } from 'src/app/services/xml.service'
 import { Global } from '../globals'
 
@@ -19,6 +19,7 @@ export class ArcReference {
         startId: string,
         targetId: string,
         textValue: string,
+        cardinality: string,
         parent: Sprite,
         saveInXml: boolean,
         xmlService: XMLService
@@ -30,11 +31,11 @@ export class ArcReference {
         this.xmlService = xmlService
 
         this.addArc()
-        this.addTextBox(textValue)
+        this.addTextBox(cardinality)
         this.redrawArc()
 
         if (saveInXml)
-            this.xmlService.createArc(id, startId, targetId, textValue)
+            this.xmlService.createArc(id, startId, targetId, textValue, cardinality)
     }
 
     addArc() {
@@ -58,6 +59,12 @@ export class ArcReference {
 
         this.textBox.resolution = 4
         this.textBox.anchor.set(0.5)
+        
+        this.textBox.interactive = true
+        this.textBox.buttonMode = true
+
+        // setup events for mouse + touch using
+        this.textBox.on('pointerdown', this.onClick.bind(this))
 
         Global.app.stage.addChild(this.textBox)
     }
@@ -80,5 +87,18 @@ export class ArcReference {
             (end[0] + start[0]) / 2,
             (end[1] + start[1]) / 2
         )
+    }
+
+    onClick(event: InteractionEvent) {
+        const text = event.target as Text
+
+        if(text.text == '1') {
+            text.text = '*'
+            this.xmlService.updateArcCardinality(this.id, '*')
+        }
+        else {
+            text.text = '1'
+            this.xmlService.updateArcCardinality(this.id, '1')
+        }
     }
 }

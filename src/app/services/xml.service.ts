@@ -57,7 +57,8 @@ export class XMLService {
         id: string,
         startId: string,
         targetId: string,
-        textValue: string
+        textValue: string,
+        cardinality: string
     ) {
         const parent = Global.xmlDoc
             .getElementsByTagName('pnml')[0]
@@ -69,14 +70,22 @@ export class XMLService {
         parent.setAttribute('source', startId)
         parent.setAttribute('target', targetId)
 
-        const inscription = parent.appendChild(
-            Global.xmlDoc.createElement('inscription')
-        )
-        const text = inscription.appendChild(
-            Global.xmlDoc.createElement('text')
-        )
-        text.textContent = textValue
+        const text1 = parent.appendChild(Global.xmlDoc.createElement('inscription'))
+                            .appendChild(Global.xmlDoc.createElement('text'))
+        text1.textContent = textValue
+
+        const text2 = parent.appendChild(Global.xmlDoc.createElement('cardinality'))
+                            .appendChild(Global.xmlDoc.createElement('text'))
+        text2.textContent = cardinality
+
     }
+
+    public updateArcCardinality(id: string, newCardinality: string) {
+        Global.xmlDoc
+            .querySelectorAll('[id="' + id + '"] cardinality text')[0]
+            .textContent = newCardinality        
+    }
+
 
     public updateNodePosition(id: string, x: number, y: number) {
         Global.xmlDoc

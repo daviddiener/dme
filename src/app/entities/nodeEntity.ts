@@ -28,11 +28,11 @@ export abstract class NodeEntity {
         y: number,
         textValue: string,
         _saveInXml: boolean,
-        private designerComponent: DesignerComponent | undefined,
+        public designerComponent: DesignerComponent | undefined,
         public xmlService: XMLService,
         public defaultTexture: Texture = Texture.EMPTY,
-        private isInteractive: boolean,
-        private tint: number
+        isInteractive: boolean,
+        tint: number
     ) {
         this.id = id
         this.designerComponent = designerComponent
@@ -144,6 +144,7 @@ export abstract class NodeEntity {
                     this.designerComponent.arcSourceNode.id,
                     this.id,
                     'a',
+                    '1',
                     true
                 )
             } else {

@@ -144,7 +144,10 @@ export class DesignerComponent implements AfterViewInit {
                         arc
                             .getElementsByTagName('inscription')[0]
                             .getElementsByTagName('text')[0].textContent
-                    ),
+                    ),  
+                    String(arc
+                        .getElementsByTagName('cardinality')[0]
+                        .getElementsByTagName('text')[0].textContent),
                     false
                 )
             })
@@ -184,6 +187,7 @@ export class DesignerComponent implements AfterViewInit {
         sourceId: string,
         targetId: string,
         textValue: string,
+        cardinality: string,
         saveInXml: boolean
     ) {
         let tmpArc
@@ -194,6 +198,7 @@ export class DesignerComponent implements AfterViewInit {
                 sourceId,
                 targetId,
                 textValue,
+                cardinality,
                 sourceRef.sprite,
                 saveInXml,
                 this.xmlService
