@@ -6,15 +6,17 @@ import {
     Sprite,
     SCALE_MODES,
 } from 'pixi.js'
-import { ArcReference } from './arcReference'
+import { ArcReference as Arc } from './arcReference'
 import { Global } from '../globals'
 import { DesignerComponent } from '../designer/designer.component'
 import { v4 as uuidv4 } from 'uuid'
 import { XMLService } from 'src/app/services/xml.service'
+import { Relation } from './relation'
 
 export abstract class NodeEntity {
     public sprite: Sprite
-    public arcReferenceList: ArcReference[] = []
+    public arcList: Arc[]= []
+    public relationList: Relation[]= []
     public promise: Promise<void>
     
     private textBox: Text
@@ -24,19 +26,21 @@ export abstract class NodeEntity {
 
     constructor(
         public id: string,
-        x: number,
-        y: number,
-        textValue: string,
-        _saveInXml: boolean,
+        public x: number,
+        public y: number,
+        public textValue: string,
         public designerComponent: DesignerComponent | undefined,
         public xmlService: XMLService,
         public defaultTexture: Texture = Texture.EMPTY,
         isInteractive: boolean,
-        tint: number
+        tint: number,
+        public savePositionOnDrag: boolean
     ) {
         this.id = id
+        this.textValue = textValue
         this.designerComponent = designerComponent
         this.xmlService = xmlService
+        this.savePositionOnDrag = savePositionOnDrag
 
         // add PIXI.js objects
         this.addGraphicsObject(x, y, isInteractive, tint)
@@ -126,14 +130,18 @@ export abstract class NodeEntity {
         this.data = event.data
 
         // save new position in XML document
-        this.xmlService.updateNodePosition(
-            this.id,
-            event.currentTarget.x,
-            event.currentTarget.y
-        )
+        if(this.savePositionOnDrag)
+            this.xmlService.updateNodePosition(
+                this.id,
+                event.currentTarget.x,
+                event.currentTarget.y
+            )
 
-        this.arcReferenceList.forEach((ar) => {
-            ar.redrawArc()
+        this.arcList.forEach((ar) => {
+            ar.redraw()
+        })
+        this.relationList.forEach((ar) => {
+            ar.redraw()
         })
 
         // handle node click if still clickable

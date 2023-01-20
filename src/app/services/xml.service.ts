@@ -102,7 +102,7 @@ export class XMLService {
             .textContent = newName        
     }
 
-    public getNodeName(id: string) : string {
+    public getNodeName(id: string|null) : string {
         const name = Global.xmlDoc
         .querySelectorAll('[id="' + id + '"] name text')[0]
         .textContent?.toString()
@@ -205,5 +205,13 @@ export class XMLService {
             .getElementsByTagName('net')[0]
             .getElementsByTagName('page')[0]
             .getElementsByTagName('arc')
+    }
+
+    public getAllArcsWithSource(id: string|null): NodeListOf<Element> {
+        return Global.xmlDoc.querySelectorAll('[source="' + id + '"]')
+    }
+
+    public getAllArcsWithTarget(id: string|null): NodeListOf<Element> {
+        return Global.xmlDoc.querySelectorAll('[target="' + id + '"]')
     }
 }

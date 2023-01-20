@@ -11,6 +11,7 @@ import { Global } from './../globals'
 import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
+import { Relation } from '../entities/relation'
 import { PlaceEntity } from '../entities/placeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
 import { ClassEntity } from '../entities/classEntity'
@@ -22,6 +23,7 @@ import { ClassEntity } from '../entities/classEntity'
 })
 export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
+    private nodeReferenceList: NodeEntity[] = []
 
     constructor(
         private ngZone: NgZone,
@@ -52,12 +54,39 @@ export class ModelExtractorComponent implements AfterViewInit {
 
                 this.generateActions()
 
+                this.generateCardinalities()
+
             } else alert('No valid xml string found')
         })
+    }
+    generateCardinalities() {
+        Array.from(this.xmlService.getAllTransitions()).forEach(element => {
+            const id = element.getAttribute('id')
+            const predecessor = this.xmlService.getAllArcsWithTarget(id)[0]
+            const successor = this.xmlService.getAllArcsWithSource(id)[0]
+
+            // check for null before extracting the names of the 2 classes we want to connect with a relation
+            if(successor && predecessor) {
+                const predecessorName = this.xmlService.getNodeName(predecessor.getAttribute('source'))
+                const successorName = this.xmlService.getNodeName(successor.getAttribute('target'))
+
+                // if the names of the classes are the same we dont want to generate a realtion
+                if(predecessorName != successorName){
+                    this.addRelation(
+                        predecessorName,
+                        successorName,
+                        String(predecessor.getElementsByTagName('cardinality')[0].getElementsByTagName('text')[0].textContent),
+                        String(successor.getElementsByTagName('cardinality')[0].getElementsByTagName('text')[0].textContent)
+                    )
+                }
+            }
+            
+        });
     }
 
     generateActions() {
         let xPosition = 100
+        let yPosition = 250
 
         let generatedObjectIds: (string | null)[] = []
         Array.from(this.xmlService.getAllArcs()).forEach(element => {
@@ -72,17 +101,20 @@ export class ModelExtractorComponent implements AfterViewInit {
                 color = 0xFFFFFF
             }
 
-            new ClassEntity(
-                uuidv4(),
-                xPosition,
-                250,
-                String(place),
-                false,
-                undefined,
-                this.xmlService,
-                color
+            this.nodeReferenceList.push(
+                new ClassEntity(
+                    uuidv4(),
+                    xPosition,
+                    yPosition,
+                    String(place),
+                    undefined,
+                    this.xmlService,
+                    color
+                )
             )
+
             xPosition += 150
+            yPosition += 100
         })
 
     }
@@ -90,15 +122,16 @@ export class ModelExtractorComponent implements AfterViewInit {
     generateOwners() {
         let xPosition = 100
         this.xmlService.getDistinctOwners().forEach(element => {
-            new ClassEntity(
-                uuidv4(),
-                xPosition,
-                50,
-                element,
-                false,
-                undefined,
-                this.xmlService,
-                0xFFFFFF
+            this.nodeReferenceList.push(
+                new ClassEntity(
+                    uuidv4(),
+                    xPosition,
+                    50,
+                    element,
+                    undefined,
+                    this.xmlService,
+                    0xFFFFFF
+                )
             )
     
             xPosition += 150
@@ -111,4 +144,29 @@ export class ModelExtractorComponent implements AfterViewInit {
             this.div.nativeElement.offsetHeight
         )
     }
+
+    addRelation(
+        sourceName: string,
+        targetName: string,
+        textValueC1: string,
+        textValueC2: string,
+    ) {
+        const sourceRef = this.nodeReferenceList.find((el) => el.textValue == sourceName)
+        const targetRef = this.nodeReferenceList.find((el) => el.textValue == targetName)
+
+        let tmpRelation
+        if(sourceRef && targetRef){
+            tmpRelation = new Relation(
+                sourceRef,
+                targetRef,
+                textValueC1,
+                textValueC2,
+                sourceRef.sprite
+            )
+            
+            sourceRef.relationList.push(tmpRelation)
+            targetRef.relationList.push(tmpRelation)
+        }
+    }
+
 }

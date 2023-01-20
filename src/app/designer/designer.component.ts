@@ -203,11 +203,11 @@ export class DesignerComponent implements AfterViewInit {
                 saveInXml,
                 this.xmlService
             )
-            sourceRef.arcReferenceList.push(tmpArc)
+            sourceRef.arcList.push(tmpArc)
         }
 
         const targetRef = this.nodeReferenceList.find((el) => el.id == targetId)
-        if (targetRef && tmpArc) targetRef.arcReferenceList.push(tmpArc)
+        if (targetRef && tmpArc) targetRef.arcList.push(tmpArc)
 
         this.createArcInProgress = false
         this.deactivateCreateArcBtn()

@@ -9,7 +9,6 @@ export class ClassEntity extends NodeEntity {
         x: number,
         y: number,
         textValue: string,
-        saveInXml: boolean,
         designerComponent: DesignerComponent | undefined,
         xmlService: XMLService,
         tint: number
@@ -19,16 +18,13 @@ export class ClassEntity extends NodeEntity {
             x,
             y,
             textValue,
-            saveInXml,
             designerComponent,
             xmlService,
             Texture.from('assets/transition.png'),
-            false,
-            tint
+            true,
+            tint,
+            false
         )
 
-        // save object in global XML
-        if (saveInXml)
-            xmlService.createNode(id, x, y, textValue, NodeType.place)
     }
 }

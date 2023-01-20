@@ -32,7 +32,7 @@ export class ArcReference {
 
         this.addArc()
         this.addTextBox(cardinality)
-        this.redrawArc()
+        this.redraw()
 
         if (saveInXml)
             this.xmlService.createArc(id, startId, targetId, textValue, cardinality)
@@ -69,7 +69,7 @@ export class ArcReference {
         Global.app.stage.addChild(this.textBox)
     }
 
-    redrawArc() {
+    redraw() {
         const start = this.xmlService.getNodePosition(this.startId)
         const end = this.xmlService.getNodePosition(this.targetId)
 

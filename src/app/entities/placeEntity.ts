@@ -18,12 +18,12 @@ export class PlaceEntity extends NodeEntity {
             x,
             y,
             textValue,
-            saveInXml,
             designerComponent,
             xmlService,
             Texture.from('assets/place.png'),
             true,
-            0xFFFFFF
+            0xFFFFFF,
+            true
         )
 
         // save object in global XML
