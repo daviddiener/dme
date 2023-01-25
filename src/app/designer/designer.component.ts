@@ -322,7 +322,6 @@ export class DesignerComponent implements AfterViewInit {
                 localStorage.setItem('designerData', text)
                 if (Global.app) Global.app.destroy()
                 this.ngAfterViewInit()
-                console.log(this.nodeReferenceList)
             })
             .catch(err => {
                 alert('Failed to read clipboard contents ' + err);
