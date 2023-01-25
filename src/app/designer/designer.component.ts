@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     Component,
     ElementRef,
-    NgZone,
     ViewChild,
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
@@ -10,7 +9,6 @@ import { PlaceEntity } from '../entities/placeEntity'
 import { v4 as uuidv4 } from 'uuid'
 import { Global } from './../globals'
 import { ArcReference } from '../entities/arcReference'
-import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
@@ -27,33 +25,54 @@ export class DesignerComponent implements AfterViewInit {
 
     name = 'not set';
     owner = 'not set';
+    markingName = 'not set';
+    data: { name: string; type: string }[] = []
+
+    types = ["xs:integer", "xs:Boolean", "xs:string", "xs:date"];
+
+    column_schema = [
+    {
+        key: "name",
+        type: "text",
+        label: "Name"
+    },
+    {
+        key: "type",
+        type: "type",
+        label: "Type"
+    },
+    {
+        key: "isEdit",
+        type: "isEdit",
+        label: ""
+      }
+    ]
+
+    displayedColumns: string[] = this.column_schema.map(col => col.key);
+      
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private nodeReferenceList: NodeEntity[] = []
     private promiseList: Promise<void>[] = []
 
     constructor(
-        private ngZone: NgZone,
-        private cdr: ChangeDetectorRef,
         private xmlService: XMLService
     ) {}
 
     ngAfterViewInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            // init application
-            Global.app = new PIXI.Application({
-                backgroundColor: 0x0d6efd,
-            })
-
-            this.div.nativeElement.innerHTML = ''
-            this.div.nativeElement.appendChild(Global.app.view)
-            this.adjustCanvasSize()
-
-            // load XML file
-            const designerData = localStorage.getItem('designerData')
-            if (designerData) this.loadDataFromLocal(designerData)
-            else this.xmlService.createNewXMLDocument()
+        // init application
+        Global.app = new PIXI.Application({
+            backgroundColor: 0x0d6efd,
         })
+
+        this.div.nativeElement.innerHTML = ''
+        this.div.nativeElement.appendChild(Global.app.view)
+        this.adjustCanvasSize()
+
+        // load XML file
+        const designerData = localStorage.getItem('designerData')
+        if (designerData) this.loadDataFromLocal(designerData)
+        else this.xmlService.createNewXMLDocument()
     }
 
     loadDataFromLocal(designerData: string) {
@@ -232,20 +251,18 @@ export class DesignerComponent implements AfterViewInit {
 
         this.name = this.xmlService.getNodeName(this.arcSourceNode.id)
         this.owner = this.xmlService.getNodeOwner(this.arcSourceNode.id)
-
-        this.cdr.detectChanges()
+        this.data = this.xmlService.getNodeMarking(this.arcSourceNode.id)
+        this.markingName = this.xmlService.getNodeMarkingDataObjectName(this.arcSourceNode.id)
     }
 
     public deactivateCreateArcBtn() {
         if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff // reset node tint
 
         this.arcBtnIsVisible = false
-        this.cdr.detectChanges()
     }
 
     startCreateArc() {
         this.createArcInProgress = true
-        this.cdr.detectChanges()
     }
 
     adjustCanvasSize() {
@@ -259,8 +276,27 @@ export class DesignerComponent implements AfterViewInit {
         this.arcSourceNode.changeName(this.name)
     }
 
-    updateOwner(){
+    updateRole(){
         this.xmlService.updateNodeOwner(this.arcSourceNode.id, this.owner)
+    }
+
+    addRow() {
+        const newRow = {"name": "", "type": "", isEdit: true}
+        this.data = [...this.data, newRow];
+    }
+
+    addRowDone(element: any) {
+        element.isEdit = !element.isEdit
+        this.updateNodeMarking()
+    }
+
+    updateNodeMarking(){
+        this.xmlService.updateNodeMarking(this.arcSourceNode.id, this.markingName, this.data)
+    }
+
+    removeRow(name: string) {
+        this.data = this.data.filter((u) => u.name !== name);
+        this.updateNodeMarking()
     }
 
     saveNetToXML() {

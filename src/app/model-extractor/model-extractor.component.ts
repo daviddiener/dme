@@ -23,7 +23,7 @@ import { ClassEntity } from '../entities/classEntity'
 })
 export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
-    private nodeReferenceList: NodeEntity[] = []
+    private classReferenceList: NodeEntity[] = []
 
     constructor(
         private ngZone: NgZone,
@@ -52,13 +52,15 @@ export class ModelExtractorComponent implements AfterViewInit {
             
                 this.generateOwners()
 
-                this.generateActions()
+                this.generateClassesFromMarkings()
 
                 this.generateCardinalities()
 
             } else alert('No valid xml string found')
         })
     }
+
+
     generateCardinalities() {
         Array.from(this.xmlService.getAllTransitions()).forEach(element => {
             const id = element.getAttribute('id')
@@ -67,8 +69,8 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             // check for null before extracting the names of the 2 classes we want to connect with a relation
             if(successor && predecessor) {
-                const predecessorName = this.xmlService.getNodeName(predecessor.getAttribute('source'))
-                const successorName = this.xmlService.getNodeName(successor.getAttribute('target'))
+                const predecessorName = this.xmlService.getNodeMarkingDataObjectName(predecessor.getAttribute('source'))
+                const successorName = this.xmlService.getNodeMarkingDataObjectName(successor.getAttribute('target'))
 
                 // if the names of the classes are the same we dont want to generate a realtion
                 if(predecessorName != successorName){
@@ -84,37 +86,47 @@ export class ModelExtractorComponent implements AfterViewInit {
         });
     }
 
-    generateActions() {
+    generateClassesFromMarkings() {
         let xPosition = 100
         let yPosition = 250
 
-        let generatedObjectIds: (string | null)[] = []
+        let objectsWithIncomingArcs: (string | null)[] = []
         Array.from(this.xmlService.getAllArcs()).forEach(element => {
-            generatedObjectIds.push(element.getAttribute('target'))
+            objectsWithIncomingArcs.push(element.getAttribute('target'))
         });
 
-        this.xmlService.getDistinctPlaces().forEach((place) => {
+        
+        Array.from(this.xmlService.getAllPlaces()).forEach((place) => {
+            let marking = place.getElementsByTagName('marking')
+            // check if the place has a marking
+            if(marking.length > 0) {
+                // check if a class with the same marking name has already been created
+                if(this.classReferenceList.find((el) => el.textValue == marking[0].getAttribute('name')) == undefined){
+                     // set sprite tint to red if the class is an existing (external) object
+                    let color:number = 0xFF0000
+                    if(objectsWithIncomingArcs.some(x => x == String(place.getAttribute('id')))){
+                        color = 0xFFFFFF
+                    }
 
-            // set sprite tint to red if the class is an existing (external) object
-            let color:number = 0xFF0000
-            if(generatedObjectIds.some(x => x === this.xmlService.getNodeIdByName(place))){
-                color = 0xFFFFFF
+                    // create the class
+                    this.classReferenceList.push(
+                        new ClassEntity(
+                            uuidv4(),
+                            xPosition,
+                            yPosition,
+                            String(marking[0].getAttribute('name')),
+                            undefined,
+                            this.xmlService,
+                            color
+                        )
+                    )
+
+                    xPosition += 150
+                    yPosition += 100
+                }
+
+               
             }
-
-            this.nodeReferenceList.push(
-                new ClassEntity(
-                    uuidv4(),
-                    xPosition,
-                    yPosition,
-                    String(place),
-                    undefined,
-                    this.xmlService,
-                    color
-                )
-            )
-
-            xPosition += 150
-            yPosition += 100
         })
 
     }
@@ -122,7 +134,7 @@ export class ModelExtractorComponent implements AfterViewInit {
     generateOwners() {
         let xPosition = 100
         this.xmlService.getDistinctOwners().forEach(element => {
-            this.nodeReferenceList.push(
+            this.classReferenceList.push(
                 new ClassEntity(
                     uuidv4(),
                     xPosition,
@@ -151,8 +163,8 @@ export class ModelExtractorComponent implements AfterViewInit {
         textValueC1: string,
         textValueC2: string,
     ) {
-        const sourceRef = this.nodeReferenceList.find((el) => el.textValue == sourceName)
-        const targetRef = this.nodeReferenceList.find((el) => el.textValue == targetName)
+        const sourceRef = this.classReferenceList.find((el) => el.textValue == sourceName)
+        const targetRef = this.classReferenceList.find((el) => el.textValue == targetName)
 
         let tmpRelation
         if(sourceRef && targetRef){

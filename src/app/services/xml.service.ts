@@ -10,6 +10,7 @@ export enum NodeType {
     providedIn: 'root',
 })
 export class XMLService {
+
     public createNewXMLDocument() {
         console.log('Local storage empty. Starting from scratch...')
         Global.xmlDoc = document.implementation.createDocument(null, 'pnml')
@@ -96,6 +97,51 @@ export class XMLService {
             .setAttribute('y', y.toString())
     }
 
+    public getNodeMarking(id: string): { name: string; type: string }[] {
+        let data : { name: string; type: string }[] = []
+
+        const marking = Global.xmlDoc.querySelectorAll('[id="' + id + '"] marking')
+
+        if(marking.length > 0){
+            Array.from(marking[0].getElementsByTagName('xs:element')).forEach(element => {
+                data.push({"name": String(element.getAttribute('name')), "type": String(element.getAttribute('type'))})    
+            });
+        }
+
+        return data
+    }
+
+    public getNodeMarkingDataObjectName(id: string | null): string {
+        const marking = Global.xmlDoc.querySelectorAll('[id="' + id + '"] marking')
+        if(marking.length > 0){
+            return String(marking[0].getAttribute('name'))
+        } else {
+            return ''
+        }
+    }
+
+    public updateNodeMarking(id: string, dataObjectName: string, data: { name: string; type: string }[]) {
+        const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')        
+        let marking: Element
+
+        if(node[0].getElementsByTagName('marking').length > 0){ 
+            node[0].removeChild(node[0].getElementsByTagName('marking')[0])           
+        }
+
+        // create marking tag again
+        marking = node[0].appendChild(Global.xmlDoc.createElement('marking'))
+        marking.setAttribute('xmlns:xs', "http://www.w3.org/2001/XMLSchema")
+        marking.setAttribute('name', dataObjectName)
+
+        data.forEach(element => {
+            let tmp = marking.appendChild(Global.xmlDoc.createElement('xs:element'))
+            tmp.setAttribute("name", element.name)
+            tmp.setAttribute("type", element.type)
+        });
+
+        return data
+    }
+
     public updateNodeName(id: string, newName: string) {
         Global.xmlDoc
             .querySelectorAll('[id="' + id + '"] name text')[0]
@@ -135,20 +181,12 @@ export class XMLService {
         return uniqueItems
     }
 
-    public getDistinctPlaces() : any[]{
-
+    public getDistinctMarkings(){
         const tmp = new Array();
-
-        Array.from(Global.xmlDoc
-            .getElementsByTagName('pnml')[0]
-            .getElementsByTagName('net')[0]
-            .getElementsByTagName('page')[0]
-            .getElementsByTagName('place')).forEach(element => {
-                tmp.push(element
-                    .getElementsByTagName('name')[0]
-                    .getElementsByTagName('text')[0].textContent)
+        Global.xmlDoc.querySelectorAll('marking').forEach(element => {
+            tmp.push(element.getAttribute('name'))
         })
-                
+      
         let uniqueItems = [...new Set(tmp)]
         return uniqueItems
     }
