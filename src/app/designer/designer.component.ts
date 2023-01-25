@@ -12,6 +12,7 @@ import { ArcReference } from '../entities/arcReference'
 import { XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-designer',
@@ -56,7 +57,8 @@ export class DesignerComponent implements AfterViewInit {
     private promiseList: Promise<void>[] = []
 
     constructor(
-        private xmlService: XMLService
+        private xmlService: XMLService,
+        private clipboard: Clipboard
     ) {}
 
     ngAfterViewInit(): void {
@@ -306,6 +308,27 @@ export class DesignerComponent implements AfterViewInit {
         )
         alert('Saved net to XML in local storage')
     }
+
+    saveNetToClipboard() {
+        this.clipboard.copy(new XMLSerializer().serializeToString(Global.xmlDoc.documentElement));
+
+        alert('Saved net to clipboard')
+    }
+
+    readNetFromClipboard() {
+        navigator.clipboard.readText()
+            .then(text => {
+                this.nodeReferenceList = []
+                localStorage.setItem('designerData', text)
+                if (Global.app) Global.app.destroy()
+                this.ngAfterViewInit()
+                console.log(this.nodeReferenceList)
+            })
+            .catch(err => {
+                alert('Failed to read clipboard contents ' + err);
+            });
+    }
+    
 
     ngOnDestroy(): void {
         if (Global.app) Global.app.destroy()

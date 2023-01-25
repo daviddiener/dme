@@ -29,6 +29,22 @@
                     </button>
                     <button
                         mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="saveNetToClipboard()"
+                    >
+                        <mat-icon>content_copy</mat-icon>
+                    </button>
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="readNetFromClipboard()"
+                    >
+                        <mat-icon>content_paste_go</mat-icon>
+                    </button>
+                    <button
+                        mat-raised-button
                         color="warn"
                         mat-button
                         (click)="deleteLocalStorage()"

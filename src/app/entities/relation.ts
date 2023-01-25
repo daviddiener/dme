@@ -1,12 +1,10 @@
 import { Texture, Sprite, Graphics, Text, InteractionEvent } from 'pixi.js'
-import { XMLService } from 'src/app/services/xml.service'
 import { Global } from '../globals'
 import { NodeEntity } from './nodeEntity'
 
 export class Relation {
     public triangleTexture: Texture = Texture.from('assets/triangle.png')
     private parent: Sprite
-    private xmlService: XMLService
 
     private line: Graphics
     private textBoxC1: Text
