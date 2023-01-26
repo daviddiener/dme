@@ -117,9 +117,6 @@
                 (change)="updateNodeMarking()"
                 >
             </mat-form-field>
-            <article class="table-header">
-                <button class="button-add-row" mat-button (click)="addRow()">Add Row</button>
-            </article>
             <table mat-table [dataSource]="this.data">
                 <ng-container [matColumnDef]="col.key" *ngFor="let col of this.column_schema">
                     <th mat-header-cell *matHeaderCellDef>
@@ -160,6 +157,9 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
+            <article class="table-header">
+                <button class="button-add-row" mat-button (click)="addRow()">Add Row</button>
+            </article>
         </div>
     </div>
 </div>

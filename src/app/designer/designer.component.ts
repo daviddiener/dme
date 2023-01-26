@@ -78,8 +78,6 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     loadDataFromLocal(designerData: string) {
-        console.log('Restoring data from local storage')
-
         Global.xmlDoc = new DOMParser().parseFromString(
             designerData,
             'text/xml'

@@ -44,7 +44,6 @@ export class ModelExtractorComponent implements AfterViewInit {
             // load XML file
             const designerData = localStorage.getItem('designerData')
             if (designerData) {
-                console.log('Grabbing data from local storage')
                 Global.xmlDoc = new DOMParser().parseFromString(
                     designerData,
                     'text/xml'
