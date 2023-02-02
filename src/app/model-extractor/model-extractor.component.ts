@@ -6,7 +6,6 @@ import {
     ViewChild,
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
-import { v4 as uuidv4 } from 'uuid'
 import { Global } from './../globals'
 import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
@@ -15,6 +14,7 @@ import { Relation } from '../entities/relation'
 import { PlaceEntity } from '../entities/placeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
 import { ClassEntity } from '../entities/classEntity'
+import { getUUID } from '../services/helper.service'
 
 @Component({
     selector: 'app-model-extractor',
@@ -110,7 +110,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                     // create the class
                     this.classReferenceList.push(
                         new ClassEntity(
-                            uuidv4(),
+                            getUUID(),
                             xPosition,
                             yPosition,
                             String(marking[0].getAttribute('name')),
@@ -135,7 +135,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         this.xmlService.getDistinctOwners().forEach(element => {
             this.classReferenceList.push(
                 new ClassEntity(
-                    uuidv4(),
+                    getUUID(),
                     xPosition,
                     50,
                     element,

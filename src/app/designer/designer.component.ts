@@ -6,7 +6,7 @@ import {
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
 import { PlaceEntity } from '../entities/placeEntity'
-import { v4 as uuidv4 } from 'uuid'
+import { getUUID } from '../services/helper.service'
 import { Global } from './../globals'
 import { ArcReference } from '../entities/arcReference'
 import { XMLService } from '../services/xml.service'
@@ -176,7 +176,7 @@ export class DesignerComponent implements AfterViewInit {
     addPlace() {
         this.nodeReferenceList.push(
             new PlaceEntity(
-                uuidv4(),
+                getUUID(),
                 30,
                 30,
                 'Test',
@@ -190,7 +190,7 @@ export class DesignerComponent implements AfterViewInit {
     addTransition() {
         this.nodeReferenceList.push(
             new TransitionEntity(
-                uuidv4(),
+                getUUID(),
                 30,
                 30,
                 'Test',

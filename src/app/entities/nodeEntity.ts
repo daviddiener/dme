@@ -9,9 +9,9 @@ import {
 import { ArcReference as Arc } from './arcReference'
 import { Global } from '../globals'
 import { DesignerComponent } from '../designer/designer.component'
-import { v4 as uuidv4 } from 'uuid'
 import { XMLService } from 'src/app/services/xml.service'
 import { Relation } from './relation'
+import { getUUID } from '../services/helper.service'
 
 export abstract class NodeEntity {
     public sprite: Sprite
@@ -148,7 +148,7 @@ export abstract class NodeEntity {
         if (this.clickable && this.designerComponent) {
             if (this.designerComponent.createArcInProgress) {
                 this.designerComponent.addArc(
-                    uuidv4(),
+                    getUUID(),
                     this.designerComponent.arcSourceNode.id,
                     this.id,
                     'a',

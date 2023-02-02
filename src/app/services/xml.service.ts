@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Global } from './../globals'
+import { getUUID } from './helper.service'
 
 export enum NodeType {
     place = 'place',
@@ -16,8 +17,15 @@ export class XMLService {
         Global.xmlDoc = document.implementation.createDocument(null, 'pnml')
 
         const pnml = Global.xmlDoc.getElementsByTagName('pnml')[0]
+        pnml.setAttribute('xmlns', 'http://www.pnml.org/version-2009/grammar/pnml')
         const net = pnml.appendChild(Global.xmlDoc.createElement('net'))
-        net.appendChild(Global.xmlDoc.createElement('page'))
+        net.setAttribute('id', getUUID())
+        net.setAttribute('type', 'http://www.pnml.org/version-2009/grammar/highlevelnet')
+        const name = net.appendChild(Global.xmlDoc.createElement('name'))
+        const text = name.appendChild(Global.xmlDoc.createElement('text'))
+        text.textContent = 'Example Net for Data Model Extraction'
+        const page = net.appendChild(Global.xmlDoc.createElement('page'))
+        page.setAttribute('id', getUUID())
     }
 
     public createNode(
@@ -42,8 +50,8 @@ export class XMLService {
             Global.xmlDoc.createElement('position')
         )
 
-        position.setAttribute('x', x.toString())
-        position.setAttribute('y', y.toString())
+        position.setAttribute('x', Math.round(x).toString())
+        position.setAttribute('y', Math.round(y).toString())
 
         const name = parent.appendChild(Global.xmlDoc.createElement('name'))
         const text = name.appendChild(Global.xmlDoc.createElement('text'))
@@ -91,10 +99,10 @@ export class XMLService {
     public updateNodePosition(id: string, x: number, y: number) {
         Global.xmlDoc
             .querySelectorAll('[id="' + id + '"] graphics position')[0]
-            .setAttribute('x', x.toString())
+            .setAttribute('x', Math.round(x).toString())
         Global.xmlDoc
             .querySelectorAll('[id="' + id + '"] graphics position')[0]
-            .setAttribute('y', y.toString())
+            .setAttribute('y', Math.round(y).toString())
     }
 
     public getNodeMarking(id: string): { name: string; type: string }[] {
