@@ -76,8 +76,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                     this.addRelation(
                         predecessorName,
                         successorName,
-                        String(predecessor.getElementsByTagName('cardinality')[0].getElementsByTagName('text')[0].textContent),
-                        String(successor.getElementsByTagName('cardinality')[0].getElementsByTagName('text')[0].textContent)
+                        String(predecessor.getElementsByTagName('cardinality')[0].textContent),
+                        String(successor.getElementsByTagName('cardinality')[0].textContent)
                     )
                 }
             }

@@ -83,15 +83,14 @@ export class XMLService {
                             .appendChild(Global.xmlDoc.createElement('text'))
         text1.textContent = textValue
 
-        const text2 = parent.appendChild(Global.xmlDoc.createElement('cardinality'))
-                            .appendChild(Global.xmlDoc.createElement('text'))
+        const text2 = parent.appendChild(Global.xmlDoc.createElement('hlinscription'))
         text2.textContent = cardinality
 
     }
 
     public updateArcCardinality(id: string, newCardinality: string) {
         Global.xmlDoc
-            .querySelectorAll('[id="' + id + '"] cardinality text')[0]
+            .querySelectorAll('[id="' + id + '"] hlinscription')[0]
             .textContent = newCardinality        
     }
 

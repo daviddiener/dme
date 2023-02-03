@@ -165,8 +165,7 @@ export class DesignerComponent implements AfterViewInit {
                             .getElementsByTagName('text')[0].textContent
                     ),  
                     String(arc
-                        .getElementsByTagName('cardinality')[0]
-                        .getElementsByTagName('text')[0].textContent),
+                        .getElementsByTagName('hlinscription')[0].textContent),
                     false
                 )
             })
