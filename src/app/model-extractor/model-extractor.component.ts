@@ -81,7 +81,6 @@ export class ModelExtractorComponent implements AfterViewInit {
                     )
                 }
             }
-            
         });
     }
 
@@ -132,7 +131,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateOwners() {
         let xPosition = 100
-        this.xmlService.getDistinctOwners().forEach(element => {
+        this.xmlService.getTransitionOwnersDistinct().forEach(element => {
             this.classReferenceList.push(
                 new ClassEntity(
                     getUUID(),

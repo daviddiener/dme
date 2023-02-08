@@ -9,10 +9,11 @@ import { PlaceEntity } from '../entities/placeEntity'
 import { getUUID } from '../services/helper.service'
 import { Global } from './../globals'
 import { ArcReference } from '../entities/arcReference'
-import { XMLService } from '../services/xml.service'
+import { NodeType, XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
 import { Clipboard } from '@angular/cdk/clipboard';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-designer',
@@ -20,7 +21,8 @@ import { Clipboard } from '@angular/cdk/clipboard';
     styleUrls: ['./designer.component.css'],
 })
 export class DesignerComponent implements AfterViewInit {
-    public arcBtnIsVisible = false
+    public placeSelected = false
+    public transitionSelected = false
     public createArcInProgress = false
     public arcSourceNode: NodeEntity
 
@@ -57,6 +59,7 @@ export class DesignerComponent implements AfterViewInit {
     private promiseList: Promise<void>[] = []
 
     constructor(
+        private _snackBar: MatSnackBar,
         private xmlService: XMLService,
         private clipboard: Clipboard
     ) {}
@@ -228,7 +231,7 @@ export class DesignerComponent implements AfterViewInit {
         if (targetRef && tmpArc) targetRef.arcList.push(tmpArc)
 
         this.createArcInProgress = false
-        this.deactivateCreateArcBtn()
+        this.deactivatePropertiesPanel()
     }
 
     deleteLocalStorage() {
@@ -238,26 +241,40 @@ export class DesignerComponent implements AfterViewInit {
             localStorage.clear()
             if (Global.app) Global.app.destroy()
             this.ngAfterViewInit()
+            this.openSnackBar('Deleted all nodes')
         }
     }
 
-    public activateCreateArcBtn(sourceNode: NodeEntity) {
-        if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff // reset old node tint
+    public activatePropertiesPanel(sourceNode: NodeEntity) {
+        // reset panel if previously selected
+        this.placeSelected = false
+        this.transitionSelected = false
 
+        // reset old node tint
+        if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff 
         this.arcSourceNode = sourceNode
         this.arcSourceNode.sprite.tint = 0x71beeb
-        this.arcBtnIsVisible = true
 
-        this.name = this.xmlService.getNodeName(this.arcSourceNode.id)
-        this.owner = this.xmlService.getNodeOwner(this.arcSourceNode.id)
-        this.data = this.xmlService.getNodeMarking(this.arcSourceNode.id)
-        this.markingName = this.xmlService.getNodeMarkingDataObjectName(this.arcSourceNode.id)
+        // get node data
+        this.name = this.xmlService.getNodeNameById(this.arcSourceNode.id)
+
+        if(sourceNode.nodeType == NodeType.transition) {
+            this.transitionSelected = true
+            this.owner = this.xmlService.getTransitionOwner(this.arcSourceNode.id)
+        }
+
+        if(sourceNode.nodeType == NodeType.place) {
+            this.placeSelected = true
+            this.data = this.xmlService.getNodeMarking(this.arcSourceNode.id)
+            this.markingName = this.xmlService.getNodeMarkingDataObjectName(this.arcSourceNode.id)
+        }
     }
 
-    public deactivateCreateArcBtn() {
+    public deactivatePropertiesPanel() {
         if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff // reset node tint
 
-        this.arcBtnIsVisible = false
+        this.placeSelected = false
+        this.transitionSelected = false
     }
 
     startCreateArc() {
@@ -276,7 +293,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     updateRole(){
-        this.xmlService.updateNodeOwner(this.arcSourceNode.id, this.owner)
+        this.xmlService.updateTransitionOwner(this.arcSourceNode.id, this.owner)
     }
 
     addRow() {
@@ -286,16 +303,16 @@ export class DesignerComponent implements AfterViewInit {
 
     addRowDone(element: any) {
         element.isEdit = !element.isEdit
-        this.updateNodeMarking()
+        this.updatePlaceMarking()
     }
 
-    updateNodeMarking(){
-        this.xmlService.updateNodeMarking(this.arcSourceNode.id, this.markingName, this.data)
+    updatePlaceMarking(){
+        this.xmlService.updatePlaceMarking(this.arcSourceNode.id, this.markingName, this.data)
     }
 
     removeRow(name: string) {
         this.data = this.data.filter((u) => u.name !== name);
-        this.updateNodeMarking()
+        this.updatePlaceMarking()
     }
 
     saveNetToXML() {
@@ -303,27 +320,41 @@ export class DesignerComponent implements AfterViewInit {
             'designerData',
             new XMLSerializer().serializeToString(Global.xmlDoc.documentElement)
         )
-        alert('Saved net to XML in local storage')
+        this.openSnackBar('Saved net to XML in local storage')
     }
 
     saveNetToClipboard() {
         this.clipboard.copy(new XMLSerializer().serializeToString(Global.xmlDoc.documentElement));
 
-        alert('Saved net to clipboard')
+        this.openSnackBar('Saved net to clipboard')
     }
 
     readNetFromClipboard() {
+        const backup = localStorage.getItem('designerData')
+
         navigator.clipboard.readText()
             .then(text => {
-                this.nodeReferenceList = []
                 localStorage.setItem('designerData', text)
+                this.nodeReferenceList = []
                 if (Global.app) Global.app.destroy()
                 this.ngAfterViewInit()
+                this.openSnackBar('Successfully imported clipboard content');
             })
             .catch(err => {
-                alert('Failed to read clipboard contents ' + err);
+                if(backup) {
+                    localStorage.setItem('designerData', backup)
+                    this.nodeReferenceList = []
+                    if (Global.app) Global.app.destroy()
+                    this.ngAfterViewInit()
+                }
+
+                this.openSnackBar('Failed to parse clipboard content ' + err);
             });
     }
+
+    openSnackBar(message: string) {
+        this._snackBar.open(message, '', {duration: 2000});
+      }
     
 
     ngOnDestroy(): void {

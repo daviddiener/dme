@@ -23,7 +23,8 @@ export class PlaceEntity extends NodeEntity {
             Texture.from('assets/place.png'),
             true,
             0xFFFFFF,
-            true
+            true,
+            NodeType.place
         )
 
         // save object in global XML

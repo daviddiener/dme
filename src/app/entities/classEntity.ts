@@ -23,7 +23,8 @@ export class ClassEntity extends NodeEntity {
             Texture.from('assets/transition.png'),
             true,
             tint,
-            false
+            false,
+            NodeType.class
         )
 
     }

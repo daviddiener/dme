@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 // Components
 import { AppRoutingModule } from './app-routing.module'
@@ -41,6 +42,7 @@ import { HomeComponent } from './home/home.component'
         FormsModule,
         MatTableModule,
         MatSelectModule,
+        MatSnackBarModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

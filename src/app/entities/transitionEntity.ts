@@ -23,7 +23,8 @@ export class TransitionEntity extends NodeEntity {
             Texture.from('assets/transition.png'),
             true,
             0xFFFFFF,
-            true
+            true,
+            NodeType.transition
         )
 
         // save object in global XML

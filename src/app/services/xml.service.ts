@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { Global } from './../globals'
 import { getUUID } from './helper.service'
-
 export enum NodeType {
     place = 'place',
     transition = 'transition',
+    class = 'class',
 }
 
 @Injectable({
@@ -57,9 +57,12 @@ export class XMLService {
         const text = name.appendChild(Global.xmlDoc.createElement('text'))
         text.textContent = textValue
 
-        const owner = parent.appendChild(Global.xmlDoc.createElement('owner'))
-        const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
-        text2.textContent = '-'
+        // if the node is a transition, create a ownership tag
+        if(nodeType==NodeType.transition){
+            const owner = parent.appendChild(Global.xmlDoc.createElement('owner'))
+            const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
+            text2.textContent = '-'
+        }
     }
 
     public createArc(
@@ -127,7 +130,7 @@ export class XMLService {
         }
     }
 
-    public updateNodeMarking(id: string, dataObjectName: string, data: { name: string; type: string }[]) {
+    public updatePlaceMarking(id: string, dataObjectName: string, data: { name: string; type: string }[]) {
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')        
         let marking: Element
 
@@ -155,7 +158,7 @@ export class XMLService {
             .textContent = newName        
     }
 
-    public getNodeName(id: string|null) : string {
+    public getNodeNameById(id: string|null) : string {
         const name = Global.xmlDoc
         .querySelectorAll('[id="' + id + '"] name text')[0]
         .textContent?.toString()
@@ -163,13 +166,13 @@ export class XMLService {
         return name !== undefined ? name : '';
     }
 
-    public updateNodeOwner(id: string, newOwner: string) {
+    public updateTransitionOwner(id: string, newOwner: string) {
         Global.xmlDoc
             .querySelectorAll('[id="' + id + '"] owner text')[0]
             .textContent = newOwner        
     }
 
-    public getNodeOwner(id: string) : string {
+    public getTransitionOwner(id: string) : string {
         const owner = Global.xmlDoc
         .querySelectorAll('[id="' + id + '"] owner text')[0]
         .textContent?.toString()
@@ -177,7 +180,7 @@ export class XMLService {
         return owner !== undefined ? owner : '';
     }
 
-    public getDistinctOwners() : any[]{
+    public getTransitionOwnersDistinct() : string[]{
 
         const tmp = new Array();
         Global.xmlDoc.querySelectorAll('owner text').forEach(element => {
@@ -186,6 +189,17 @@ export class XMLService {
                 
         let uniqueItems = [...new Set(tmp)]
         return uniqueItems
+    }
+
+    public getTransitionOwners() : Element[]{
+
+        const tmp = new Array();
+        Global.xmlDoc.querySelectorAll('transition').forEach(element => {
+            tmp.push(element)
+        })
+
+                
+        return tmp
     }
 
     public getDistinctMarkings(){

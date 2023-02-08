@@ -9,7 +9,7 @@ import {
 import { ArcReference as Arc } from './arcReference'
 import { Global } from '../globals'
 import { DesignerComponent } from '../designer/designer.component'
-import { XMLService } from 'src/app/services/xml.service'
+import { NodeType, XMLService } from 'src/app/services/xml.service'
 import { Relation } from './relation'
 import { getUUID } from '../services/helper.service'
 
@@ -34,7 +34,8 @@ export abstract class NodeEntity {
         public defaultTexture: Texture = Texture.EMPTY,
         isInteractive: boolean,
         tint: number,
-        public savePositionOnDrag: boolean
+        public savePositionOnDrag: boolean,
+        public nodeType: NodeType
     ) {
         this.id = id
         this.textValue = textValue
@@ -156,7 +157,7 @@ export abstract class NodeEntity {
                     true
                 )
             } else {
-                this.designerComponent.activateCreateArcBtn(this)
+                this.designerComponent.activatePropertiesPanel(this)
             }
         }
     }
