@@ -26,6 +26,5 @@ export class ClassEntity extends NodeEntity {
             false,
             NodeType.class
         )
-
     }
 }

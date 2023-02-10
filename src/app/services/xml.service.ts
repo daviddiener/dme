@@ -11,16 +11,21 @@ export enum NodeType {
     providedIn: 'root',
 })
 export class XMLService {
-
     public createNewXMLDocument() {
         console.log('Local storage empty. Starting from scratch...')
         Global.xmlDoc = document.implementation.createDocument(null, 'pnml')
 
         const pnml = Global.xmlDoc.getElementsByTagName('pnml')[0]
-        pnml.setAttribute('xmlns', 'http://www.pnml.org/version-2009/grammar/pnml')
+        pnml.setAttribute(
+            'xmlns',
+            'http://www.pnml.org/version-2009/grammar/pnml'
+        )
         const net = pnml.appendChild(Global.xmlDoc.createElement('net'))
         net.setAttribute('id', getUUID())
-        net.setAttribute('type', 'http://www.pnml.org/version-2009/grammar/highlevelnet')
+        net.setAttribute(
+            'type',
+            'http://www.pnml.org/version-2009/grammar/highlevelnet'
+        )
         const name = net.appendChild(Global.xmlDoc.createElement('name'))
         const text = name.appendChild(Global.xmlDoc.createElement('text'))
         text.textContent = 'Example Net for Data Model Extraction'
@@ -58,8 +63,10 @@ export class XMLService {
         text.textContent = textValue
 
         // if the node is a transition, create a ownership tag
-        if(nodeType==NodeType.transition){
-            const owner = parent.appendChild(Global.xmlDoc.createElement('owner'))
+        if (nodeType == NodeType.transition) {
+            const owner = parent.appendChild(
+                Global.xmlDoc.createElement('owner')
+            )
             const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
             text2.textContent = '-'
         }
@@ -82,21 +89,22 @@ export class XMLService {
         parent.setAttribute('source', startId)
         parent.setAttribute('target', targetId)
 
-        const text1 = parent.appendChild(Global.xmlDoc.createElement('inscription'))
-                            .appendChild(Global.xmlDoc.createElement('text'))
+        const text1 = parent
+            .appendChild(Global.xmlDoc.createElement('inscription'))
+            .appendChild(Global.xmlDoc.createElement('text'))
         text1.textContent = textValue
 
-        const text2 = parent.appendChild(Global.xmlDoc.createElement('hlinscription'))
+        const text2 = parent.appendChild(
+            Global.xmlDoc.createElement('hlinscription')
+        )
         text2.textContent = cardinality
-
     }
 
     public updateArcCardinality(id: string, newCardinality: string) {
-        Global.xmlDoc
-            .querySelectorAll('[id="' + id + '"] hlinscription')[0]
-            .textContent = newCardinality        
+        Global.xmlDoc.querySelectorAll(
+            '[id="' + id + '"] hlinscription'
+        )[0].textContent = newCardinality
     }
-
 
     public updateNodePosition(id: string, x: number, y: number) {
         Global.xmlDoc
@@ -108,107 +116,120 @@ export class XMLService {
     }
 
     public getNodeMarking(id: string): { name: string; type: string }[] {
-        let data : { name: string; type: string }[] = []
+        const data: { name: string; type: string }[] = []
 
-        const marking = Global.xmlDoc.querySelectorAll('[id="' + id + '"] marking')
+        const marking = Global.xmlDoc.querySelectorAll(
+            '[id="' + id + '"] marking'
+        )
 
-        if(marking.length > 0){
-            Array.from(marking[0].getElementsByTagName('xs:element')).forEach(element => {
-                data.push({"name": String(element.getAttribute('name')), "type": String(element.getAttribute('type'))})    
-            });
+        if (marking.length > 0) {
+            Array.from(marking[0].getElementsByTagName('xs:element')).forEach(
+                (element) => {
+                    data.push({
+                        name: String(element.getAttribute('name')),
+                        type: String(element.getAttribute('type')),
+                    })
+                }
+            )
         }
 
         return data
     }
 
     public getNodeMarkingDataObjectName(id: string | null): string {
-        const marking = Global.xmlDoc.querySelectorAll('[id="' + id + '"] marking')
-        if(marking.length > 0){
+        const marking = Global.xmlDoc.querySelectorAll(
+            '[id="' + id + '"] marking'
+        )
+        if (marking.length > 0) {
             return String(marking[0].getAttribute('name'))
         } else {
             return ''
         }
     }
 
-    public updatePlaceMarking(id: string, dataObjectName: string, data: { name: string; type: string }[]) {
-        const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')        
-        let marking: Element
+    public updatePlaceMarking(
+        id: string,
+        dataObjectName: string,
+        data: { name: string; type: string }[]
+    ) {
+        const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
 
-        if(node[0].getElementsByTagName('marking').length > 0){ 
-            node[0].removeChild(node[0].getElementsByTagName('marking')[0])           
+        if (node[0].getElementsByTagName('marking').length > 0) {
+            node[0].removeChild(node[0].getElementsByTagName('marking')[0])
         }
 
         // create marking tag again
-        marking = node[0].appendChild(Global.xmlDoc.createElement('marking'))
-        marking.setAttribute('xmlns:xs', "http://www.w3.org/2001/XMLSchema")
+        const marking = node[0].appendChild(
+            Global.xmlDoc.createElement('marking')
+        )
+        marking.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
         marking.setAttribute('name', dataObjectName)
 
-        data.forEach(element => {
-            let tmp = marking.appendChild(Global.xmlDoc.createElement('xs:element'))
-            tmp.setAttribute("name", element.name)
-            tmp.setAttribute("type", element.type)
-        });
+        data.forEach((element) => {
+            const tmp = marking.appendChild(
+                Global.xmlDoc.createElement('xs:element')
+            )
+            tmp.setAttribute('name', element.name)
+            tmp.setAttribute('type', element.type)
+        })
 
         return data
     }
 
     public updateNodeName(id: string, newName: string) {
-        Global.xmlDoc
-            .querySelectorAll('[id="' + id + '"] name text')[0]
-            .textContent = newName        
+        Global.xmlDoc.querySelectorAll(
+            '[id="' + id + '"] name text'
+        )[0].textContent = newName
     }
 
-    public getNodeNameById(id: string|null) : string {
+    public getNodeNameById(id: string | null): string {
         const name = Global.xmlDoc
-        .querySelectorAll('[id="' + id + '"] name text')[0]
-        .textContent?.toString()
+            .querySelectorAll('[id="' + id + '"] name text')[0]
+            .textContent?.toString()
 
-        return name !== undefined ? name : '';
+        return name !== undefined ? name : ''
     }
 
     public updateTransitionOwner(id: string, newOwner: string) {
-        Global.xmlDoc
-            .querySelectorAll('[id="' + id + '"] owner text')[0]
-            .textContent = newOwner        
+        Global.xmlDoc.querySelectorAll(
+            '[id="' + id + '"] owner text'
+        )[0].textContent = newOwner
     }
 
-    public getTransitionOwner(id: string) : string {
+    public getTransitionOwner(id: string): string {
         const owner = Global.xmlDoc
-        .querySelectorAll('[id="' + id + '"] owner text')[0]
-        .textContent?.toString()
+            .querySelectorAll('[id="' + id + '"] owner text')[0]
+            .textContent?.toString()
 
-        return owner !== undefined ? owner : '';
+        return owner !== undefined ? owner : ''
     }
 
-    public getTransitionOwnersDistinct() : string[]{
-
-        const tmp = new Array();
-        Global.xmlDoc.querySelectorAll('owner text').forEach(element => {
-            tmp.push(element.textContent)
+    public getTransitionOwnersDistinct(): string[] {
+        const tmp: string[] = []
+        Global.xmlDoc.querySelectorAll('owner text').forEach((element) => {
+            tmp.push(String(element.textContent))
         })
-                
-        let uniqueItems = [...new Set(tmp)]
+
+        const uniqueItems = [...new Set(tmp)]
         return uniqueItems
     }
 
-    public getTransitionOwners() : Element[]{
-
-        const tmp = new Array();
-        Global.xmlDoc.querySelectorAll('transition').forEach(element => {
+    public getTransitionOwners(): Element[] {
+        const tmp: Element[] = []
+        Global.xmlDoc.querySelectorAll('transition').forEach((element) => {
             tmp.push(element)
         })
 
-                
         return tmp
     }
 
-    public getDistinctMarkings(){
-        const tmp = new Array();
-        Global.xmlDoc.querySelectorAll('marking').forEach(element => {
-            tmp.push(element.getAttribute('name'))
+    public getDistinctMarkings(): string[] {
+        const tmp: string[] = []
+        Global.xmlDoc.querySelectorAll('marking').forEach((element) => {
+            tmp.push(String(element.getAttribute('name')))
         })
-      
-        let uniqueItems = [...new Set(tmp)]
+
+        const uniqueItems = [...new Set(tmp)]
         return uniqueItems
     }
 
@@ -220,17 +241,19 @@ export class XMLService {
             .getElementsByTagName('place')
     }
 
-    public getNodeIdByName(name: string): any {
+    public getNodeIdByName(name: string): string | null {
         let id = null
-        Array.from(Global.xmlDoc
-            .querySelectorAll('place')).forEach(element =>{ 
-            if(element
-                .getElementsByTagName('name')[0]
-                .getElementsByTagName('text')[0].textContent == name) {
+        Array.from(Global.xmlDoc.querySelectorAll('place')).forEach(
+            (element) => {
+                if (
+                    element
+                        .getElementsByTagName('name')[0]
+                        .getElementsByTagName('text')[0].textContent == name
+                ) {
                     id = element.getAttribute('id')
                 }
-                
-        })
+            }
+        )
 
         return id
     }
@@ -266,11 +289,11 @@ export class XMLService {
             .getElementsByTagName('arc')
     }
 
-    public getAllArcsWithSource(id: string|null): NodeListOf<Element> {
+    public getAllArcsWithSource(id: string | null): NodeListOf<Element> {
         return Global.xmlDoc.querySelectorAll('[source="' + id + '"]')
     }
 
-    public getAllArcsWithTarget(id: string|null): NodeListOf<Element> {
+    public getAllArcsWithTarget(id: string | null): NodeListOf<Element> {
         return Global.xmlDoc.querySelectorAll('[target="' + id + '"]')
     }
 }

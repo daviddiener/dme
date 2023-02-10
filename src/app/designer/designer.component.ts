@@ -1,9 +1,4 @@
-import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    ViewChild,
-} from '@angular/core'
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core'
 import { PlaceEntity } from '../entities/placeEntity'
 import { getUUID, initializePixiApplication } from '../services/helper.service'
 import { Global } from './../globals'
@@ -11,8 +6,8 @@ import { ArcReference } from '../entities/arcReference'
 import { NodeType, XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
-import { Clipboard } from '@angular/cdk/clipboard';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Clipboard } from '@angular/cdk/clipboard'
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 @Component({
     selector: 'app-designer',
@@ -25,32 +20,32 @@ export class DesignerComponent implements AfterViewInit {
     public createArcInProgress = false
     public arcSourceNode: NodeEntity
 
-    public name = 'not set';
-    public owner = 'not set';
-    public markingName = 'not set';
+    public name = 'not set'
+    public owner = 'not set'
+    public markingName = 'not set'
     public data: { name: string; type: string }[] = []
 
-    public types = ["xs:integer", "xs:Boolean", "xs:string", "xs:date"];
+    public types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date']
 
     public column_schema = [
-    {
-        key: "name",
-        type: "text",
-        label: "Name"
-    },
-    {
-        key: "type",
-        type: "type",
-        label: "Type"
-    },
-    {
-        key: "isEdit",
-        type: "isEdit",
-        label: ""
-      }
+        {
+            key: 'name',
+            type: 'text',
+            label: 'Name',
+        },
+        {
+            key: 'type',
+            type: 'type',
+            label: 'Type',
+        },
+        {
+            key: 'isEdit',
+            type: 'isEdit',
+            label: '',
+        },
     ]
 
-    public displayedColumns: string[] = this.column_schema.map(col => col.key);
+    public displayedColumns: string[] = this.column_schema.map((col) => col.key)
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private nodeReferenceList: NodeEntity[] = []
@@ -68,7 +63,7 @@ export class DesignerComponent implements AfterViewInit {
         this.div.nativeElement.innerHTML = ''
         this.div.nativeElement.appendChild(Global.app.view)
         this.adjustCanvasSize()
-        
+
         // load XML file
         const designerData = localStorage.getItem('designerData')
         if (designerData) this.loadDataFromLocal(designerData)
@@ -161,9 +156,10 @@ export class DesignerComponent implements AfterViewInit {
                         arc
                             .getElementsByTagName('inscription')[0]
                             .getElementsByTagName('text')[0].textContent
-                    ),  
-                    String(arc
-                        .getElementsByTagName('hlinscription')[0].textContent),
+                    ),
+                    String(
+                        arc.getElementsByTagName('hlinscription')[0].textContent
+                    ),
                     false
                 )
             })
@@ -246,22 +242,26 @@ export class DesignerComponent implements AfterViewInit {
         this.transitionSelected = false
 
         // reset old node tint
-        if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff 
+        if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff
         this.arcSourceNode = sourceNode
         this.arcSourceNode.sprite.tint = 0x71beeb
 
         // get node data
         this.name = this.xmlService.getNodeNameById(this.arcSourceNode.id)
 
-        if(sourceNode.nodeType == NodeType.transition) {
+        if (sourceNode.nodeType == NodeType.transition) {
             this.transitionSelected = true
-            this.owner = this.xmlService.getTransitionOwner(this.arcSourceNode.id)
+            this.owner = this.xmlService.getTransitionOwner(
+                this.arcSourceNode.id
+            )
         }
 
-        if(sourceNode.nodeType == NodeType.place) {
+        if (sourceNode.nodeType == NodeType.place) {
             this.placeSelected = true
             this.data = this.xmlService.getNodeMarking(this.arcSourceNode.id)
-            this.markingName = this.xmlService.getNodeMarkingDataObjectName(this.arcSourceNode.id)
+            this.markingName = this.xmlService.getNodeMarkingDataObjectName(
+                this.arcSourceNode.id
+            )
         }
     }
 
@@ -283,30 +283,35 @@ export class DesignerComponent implements AfterViewInit {
         )
     }
 
-    updateName(){
+    updateName() {
         this.arcSourceNode.changeName(this.name)
     }
 
-    updateRole(){
+    updateRole() {
         this.xmlService.updateTransitionOwner(this.arcSourceNode.id, this.owner)
     }
 
     addRow() {
-        const newRow = {"name": "", "type": "", isEdit: true}
-        this.data = [...this.data, newRow];
+        const newRow = { name: '', type: '', isEdit: true }
+        this.data = [...this.data, newRow]
     }
 
+    // eslint-disable-next-line
     addRowDone(element: any) {
         element.isEdit = !element.isEdit
         this.updatePlaceMarking()
     }
 
-    updatePlaceMarking(){
-        this.xmlService.updatePlaceMarking(this.arcSourceNode.id, this.markingName, this.data)
+    updatePlaceMarking() {
+        this.xmlService.updatePlaceMarking(
+            this.arcSourceNode.id,
+            this.markingName,
+            this.data
+        )
     }
 
     removeRow(name: string) {
-        this.data = this.data.filter((u) => u.name !== name);
+        this.data = this.data.filter((u) => u.name !== name)
         this.updatePlaceMarking()
     }
 
@@ -319,7 +324,9 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     saveNetToClipboard() {
-        this.clipboard.copy(new XMLSerializer().serializeToString(Global.xmlDoc.documentElement));
+        this.clipboard.copy(
+            new XMLSerializer().serializeToString(Global.xmlDoc.documentElement)
+        )
 
         this.openSnackBar('Saved net to clipboard')
     }
@@ -327,30 +334,30 @@ export class DesignerComponent implements AfterViewInit {
     readNetFromClipboard() {
         const backup = localStorage.getItem('designerData')
 
-        navigator.clipboard.readText()
-            .then(text => {
+        navigator.clipboard
+            .readText()
+            .then((text) => {
                 localStorage.setItem('designerData', text)
                 this.nodeReferenceList = []
                 if (Global.app) Global.app.destroy()
                 this.ngAfterViewInit()
-                this.openSnackBar('Successfully imported clipboard content');
+                this.openSnackBar('Successfully imported clipboard content')
             })
-            .catch(err => {
-                if(backup) {
+            .catch((err) => {
+                if (backup) {
                     localStorage.setItem('designerData', backup)
                     this.nodeReferenceList = []
                     if (Global.app) Global.app.destroy()
                     this.ngAfterViewInit()
                 }
 
-                this.openSnackBar('Failed to parse clipboard content ' + err);
-            });
+                this.openSnackBar('Failed to parse clipboard content ' + err)
+            })
     }
 
     openSnackBar(message: string) {
-        this._snackBar.open(message, '', {duration: 2000});
-      }
-    
+        this._snackBar.open(message, '', { duration: 2000 })
+    }
 
     ngOnDestroy(): void {
         if (Global.app) Global.app.destroy()

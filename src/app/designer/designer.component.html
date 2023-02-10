@@ -59,7 +59,10 @@
                             color="primary"
                             mat-button
                             (click)="startCreateArc()"
-                            *ngIf="(placeSelected || transitionSelected) && !createArcInProgress == true"
+                            *ngIf="
+                                (placeSelected || transitionSelected) &&
+                                !createArcInProgress == true
+                            "
                         >
                             Create Arc
                         </button>
@@ -68,7 +71,10 @@
                             color="disabled"
                             mat-button
                             (click)="startCreateArc()"
-                            *ngIf="(placeSelected || transitionSelected) && createArcInProgress == true"
+                            *ngIf="
+                                (placeSelected || transitionSelected) &&
+                                createArcInProgress == true
+                            "
                         >
                             Create Arc
                         </button>
@@ -86,80 +92,111 @@
             </div>
 
             <div
-            class="col-sm-12"
-            (window:resize)="adjustCanvasSize()"
-            id="pixiCanvasContainer"
-            #pixiCanvasContainer
+                class="col-sm-12"
+                (window:resize)="adjustCanvasSize()"
+                id="pixiCanvasContainer"
+                #pixiCanvasContainer
             ></div>
         </div>
         <div class="col-3">
-            <mat-form-field appearance="outline" *ngIf="placeSelected || transitionSelected">
-                    <mat-label>Name</mat-label>
-                    <input 
-                    matInput 
-                    [(ngModel)]='name'
-                    (change)="updateName()"
-                    >
+            <mat-form-field
+                appearance="outline"
+                *ngIf="placeSelected || transitionSelected"
+            >
+                <mat-label>Name</mat-label>
+                <input matInput [(ngModel)]="name" (change)="updateName()" />
             </mat-form-field>
             <mat-form-field appearance="outline" *ngIf="transitionSelected">
                 <mat-label>Role</mat-label>
-                <input 
-                matInput 
-                [(ngModel)] = 'owner' 
-                (change)="updateRole()"
-                >
+                <input matInput [(ngModel)]="owner" (change)="updateRole()" />
             </mat-form-field>
             <mat-form-field appearance="outline" *ngIf="placeSelected">
                 <mat-label>Marking Name</mat-label>
-                <input 
-                matInput 
-                [(ngModel)] = 'markingName' 
-                (change)="updatePlaceMarking()"
-                >
+                <input
+                    matInput
+                    [(ngModel)]="markingName"
+                    (change)="updatePlaceMarking()"
+                />
             </mat-form-field>
             <div *ngIf="placeSelected">
                 <table mat-table [dataSource]="this.data">
-                    <ng-container [matColumnDef]="col.key" *ngFor="let col of this.column_schema">
+                    <ng-container
+                        [matColumnDef]="col.key"
+                        *ngFor="let col of this.column_schema"
+                    >
                         <th mat-header-cell *matHeaderCellDef>
-                        {{ col.label }}
+                            {{ col.label }}
                         </th>
-                        <td mat-cell *matCellDef="let element">
-                        <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
-                            <div class="btn-edit" *ngSwitchCase="'isEdit'">
-                            <button mat-button (click)="element.isEdit = !element.isEdit">
-                                Edit
-                            </button>
-                            <button mat-button class="button-remove" (click)="removeRow(element.name)">
-                                Delete
-                            </button>
+                        <td mat-cell *[matCellDef]="let element">
+                            <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
+                                <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                                    <button
+                                        mat-button
+                                        (click)="
+                                            element.isEdit = !element.isEdit
+                                        "
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        mat-button
+                                        class="button-remove"
+                                        (click)="removeRow(element.name)"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                                <span *ngSwitchDefault>
+                                    {{ element[col.key] }}
+                                </span>
                             </div>
-                            <span *ngSwitchDefault>
-                            {{ element[col.key] }}
-                            </span>
-                        </div>
-                        <div [ngSwitch]="col.type" *ngIf="element.isEdit">
-                            <div class="btn-edit" *ngSwitchCase="'isEdit'">
-                            <button mat-button (click)="addRowDone(element)">Done</button>
+                            <div [ngSwitch]="col.type" *ngIf="element.isEdit">
+                                <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                                    <button
+                                        mat-button
+                                        (click)="addRowDone(element)"
+                                    >
+                                        Done
+                                    </button>
+                                </div>
+                                <mat-form-field
+                                    *ngSwitchCase="'type'"
+                                    appearance="fill"
+                                >
+                                    <mat-label>Choose a type</mat-label>
+                                    <mat-select [(ngModel)]="element[col.key]">
+                                        <mat-option
+                                            *ngFor="let type of types"
+                                            [value]="type"
+                                        >
+                                            {{ type }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field *ngSwitchDefault>
+                                    <input
+                                        [type]="col.type"
+                                        matInput
+                                        [(ngModel)]="element[col.key]"
+                                    />
+                                </mat-form-field>
                             </div>
-                            <mat-form-field *ngSwitchCase="'type'" appearance="fill">
-                                <mat-label>Choose a type</mat-label>
-                                <mat-select [(ngModel)]="element[col.key]">
-                                    <mat-option *ngFor="let type of types" [value]="type">
-                                    {{ type }}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-form-field *ngSwitchDefault>
-                            <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
-                            </mat-form-field>
-                        </div>
                         </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                    <tr
+                        mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                    ></tr>
                 </table>
                 <article class="table-header">
-                    <button class="button-add-row" mat-button (click)="addRow()">Add Row</button>
+                    <button
+                        class="button-add-row"
+                        mat-button
+                        (click)="addRow()"
+                    >
+                        Add Row
+                    </button>
                 </article>
             </div>
         </div>

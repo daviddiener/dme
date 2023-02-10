@@ -22,7 +22,7 @@ export class PlaceEntity extends NodeEntity {
             xmlService,
             Texture.from('assets/place.png'),
             true,
-            0xFFFFFF,
+            0xffffff,
             true,
             NodeType.place
         )

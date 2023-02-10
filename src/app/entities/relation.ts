@@ -1,4 +1,4 @@
-import { Texture, Sprite, Graphics, Text, InteractionEvent } from 'pixi.js'
+import { Texture, Sprite, Graphics, Text } from 'pixi.js'
 import { Global } from '../globals'
 import { NodeEntity } from './nodeEntity'
 
@@ -14,7 +14,7 @@ export class Relation {
         public targetNode: NodeEntity,
         private parent: Sprite,
         textValueC1: string,
-        textValueC2: string,
+        textValueC2: string
     ) {
         this.startNode = startNode
         this.targetNode = targetNode
@@ -26,7 +26,7 @@ export class Relation {
 
     addArc() {
         this.line = this.parent.addChild(new Graphics())
-       
+
         // add it to the stage
         Global.viewport.addChild(this.line)
     }
@@ -40,7 +40,7 @@ export class Relation {
         })
 
         this.textBoxC1.resolution = 4
-        this.textBoxC1.anchor.set(-3,0)
+        this.textBoxC1.anchor.set(-3, 0)
 
         Global.viewport.addChild(this.textBoxC1)
 
@@ -52,17 +52,25 @@ export class Relation {
         })
 
         this.textBoxC2.resolution = 4
-        this.textBoxC2.anchor.set(3,0)
+        this.textBoxC2.anchor.set(3, 0)
 
         Global.viewport.addChild(this.textBoxC2)
     }
 
     redraw() {
         this.line.clear()
-        this.line.position.set(this.startNode.sprite.x + this.parent.width / 2, this.startNode.sprite.y)
+        this.line.position.set(
+            this.startNode.sprite.x + this.parent.width / 2,
+            this.startNode.sprite.y
+        )
         this.line
             .lineStyle(5, 0xffffff)
-            .lineTo(this.targetNode.sprite.x - this.startNode.sprite.x - this.parent.width, this.targetNode.sprite.y - this.startNode.sprite.y)
+            .lineTo(
+                this.targetNode.sprite.x -
+                    this.startNode.sprite.x -
+                    this.parent.width,
+                this.targetNode.sprite.y - this.startNode.sprite.y
+            )
 
         this.textBoxC1.position.set(
             this.startNode.sprite.x,

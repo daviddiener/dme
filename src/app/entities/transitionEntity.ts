@@ -22,7 +22,7 @@ export class TransitionEntity extends NodeEntity {
             xmlService,
             Texture.from('assets/transition.png'),
             true,
-            0xFFFFFF,
+            0xffffff,
             true,
             NodeType.transition
         )

@@ -35,7 +35,13 @@ export class ArcReference {
         this.redraw()
 
         if (saveInXml)
-            this.xmlService.createArc(id, startId, targetId, textValue, cardinality)
+            this.xmlService.createArc(
+                id,
+                startId,
+                targetId,
+                textValue,
+                cardinality
+            )
     }
 
     addArc() {
@@ -59,7 +65,7 @@ export class ArcReference {
 
         this.textBox.resolution = 4
         this.textBox.anchor.set(0.5)
-        
+
         this.textBox.interactive = true
         this.textBox.buttonMode = true
 
@@ -92,11 +98,10 @@ export class ArcReference {
     onClick(event: InteractionEvent) {
         const text = event.target as Text
 
-        if(text.text == '1') {
+        if (text.text == '1') {
             text.text = '*'
             this.xmlService.updateArcCardinality(this.id, '*')
-        }
-        else {
+        } else {
             text.text = '1'
             this.xmlService.updateArcCardinality(this.id, '1')
         }

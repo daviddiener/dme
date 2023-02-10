@@ -15,10 +15,10 @@ import { getUUID } from '../services/helper.service'
 
 export abstract class NodeEntity {
     public sprite: Sprite
-    public arcList: Arc[]= []
-    public relationList: Relation[]= []
+    public arcList: Arc[] = []
+    public relationList: Relation[] = []
     public promise: Promise<void>
-    
+
     private textBox: Text
     private clickable = false
     private dragging = false
@@ -48,7 +48,12 @@ export abstract class NodeEntity {
         this.addTextBox(textValue)
     }
 
-    addGraphicsObject(x: number, y: number, isInteractive: boolean, tint: number) {
+    addGraphicsObject(
+        x: number,
+        y: number,
+        isInteractive: boolean,
+        tint: number
+    ) {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         this.sprite = new Sprite(this.defaultTexture)
         this.sprite.tint = tint
@@ -133,13 +138,13 @@ export abstract class NodeEntity {
         Global.viewport.plugins.resume('drag')
         Global.viewport.plugins.resume('pinch')
         Global.viewport.plugins.resume('wheel')
-        
+
         event.currentTarget.alpha = 1
         this.dragging = false
         this.data = event.data
 
         // save new position in XML document
-        if(this.savePositionOnDrag)
+        if (this.savePositionOnDrag)
             this.xmlService.updateNodePosition(
                 this.id,
                 event.currentTarget.x,
@@ -170,7 +175,7 @@ export abstract class NodeEntity {
         }
     }
 
-    public changeName(newName: string){
+    public changeName(newName: string) {
         this.textBox.text = newName
         this.xmlService.updateNodeName(this.id, newName)
     }
