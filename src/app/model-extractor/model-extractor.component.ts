@@ -7,12 +7,9 @@ import {
 } from '@angular/core'
 import * as PIXI from 'pixi.js'
 import { Global } from './../globals'
-import { ChangeDetectorRef } from '@angular/core'
 import { XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { Relation } from '../entities/relation'
-import { PlaceEntity } from '../entities/placeEntity'
-import { TransitionEntity } from '../entities/transitionEntity'
 import { ClassEntity } from '../entities/classEntity'
 import { getUUID } from '../services/helper.service'
 
@@ -24,6 +21,7 @@ import { getUUID } from '../services/helper.service'
 export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private classReferenceList: NodeEntity[] = []
+    private relationReferenceList: Relation[] = []
 
     constructor(
         private ngZone: NgZone,
@@ -61,6 +59,8 @@ export class ModelExtractorComponent implements AfterViewInit {
 
 
     generateCardinalities() {
+        console.log('=== Creating relation from arc relations ===')
+
         Array.from(this.xmlService.getAllTransitions()).forEach(element => {
             const id = element.getAttribute('id')
             const predecessor = this.xmlService.getAllArcsWithTarget(id)[0]
@@ -82,6 +82,38 @@ export class ModelExtractorComponent implements AfterViewInit {
                 }
             }
         });
+
+        console.log('=== Creating relation from transition role assignments ===')
+
+        Array.from(this.xmlService.getTransitionOwners()).forEach(element => {
+            /*  
+                TODO: Continue here
+                Make sure to keep track of the list of created relations with their source and target classes
+                Always check if the relation from source to target class already exists.
+                We just have to check if the relation exists, not which cardinality it implements, because the cardinality is alwazs 1-N in Rule 2.2
+            */
+            this.xmlService.getAllArcsWithSource(element.getAttribute('id')).forEach(arc => {
+                const sourceName = String(element.getElementsByTagName('owner')[0].getElementsByTagName('text')[0].textContent)
+                const targetName = String(this.xmlService.getNodeMarkingDataObjectName(String(arc.getAttribute('target'))))
+
+                const sourceRef = this.relationReferenceList.find((el) => el.startNode.textValue == sourceName)
+                const targetRef = this.relationReferenceList.find((el) => el.targetNode.textValue == targetName)
+
+                // continue creation only if a duplicate relation does not already exist
+                if(!(sourceRef && targetRef)) {
+                    const relation = this.addRelation(
+                        sourceName,
+                        targetName,
+                        '1',
+                        '*'
+                    )
+
+                    if (relation) this.relationReferenceList.push(relation)
+                } else {
+                    console.log('Skipping because of duplicate Relation from ' + sourceName+ ' to '+ targetName)
+                }
+            })
+        })
     }
 
     generateClassesFromMarkings() {
@@ -119,8 +151,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                         )
                     )
 
-                    xPosition += 150
-                    yPosition += 100
+                    xPosition += 75
+                    yPosition += 50
                 }
 
                
@@ -161,6 +193,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         textValueC1: string,
         textValueC2: string,
     ) {
+        // checks if the source and target nodes that will be connected actually exist
         const sourceRef = this.classReferenceList.find((el) => el.textValue == sourceName)
         const targetRef = this.classReferenceList.find((el) => el.textValue == targetName)
 
@@ -169,14 +202,17 @@ export class ModelExtractorComponent implements AfterViewInit {
             tmpRelation = new Relation(
                 sourceRef,
                 targetRef,
+                sourceRef.sprite,
                 textValueC1,
                 textValueC2,
-                sourceRef.sprite
             )
             
             sourceRef.relationList.push(tmpRelation)
             targetRef.relationList.push(tmpRelation)
+
+            console.log('created relation from ' + sourceName + ' to '+ targetName)
         }
+        return tmpRelation
     }
 
 }

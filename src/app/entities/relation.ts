@@ -4,7 +4,6 @@ import { NodeEntity } from './nodeEntity'
 
 export class Relation {
     public triangleTexture: Texture = Texture.from('assets/triangle.png')
-    private parent: Sprite
 
     private line: Graphics
     private textBoxC1: Text
@@ -13,13 +12,12 @@ export class Relation {
     constructor(
         public startNode: NodeEntity,
         public targetNode: NodeEntity,
+        private parent: Sprite,
         textValueC1: string,
         textValueC2: string,
-        parent: Sprite,
     ) {
         this.startNode = startNode
         this.targetNode = targetNode
-        this.parent = parent
 
         this.addArc()
         this.addTextBox(textValueC1, textValueC2)
