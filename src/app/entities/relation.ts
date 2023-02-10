@@ -28,7 +28,7 @@ export class Relation {
         this.line = this.parent.addChild(new Graphics())
        
         // add it to the stage
-        Global.app.stage.addChild(this.line)
+        Global.viewport.addChild(this.line)
     }
 
     addTextBox(c1: string, c2: string) {
@@ -42,7 +42,7 @@ export class Relation {
         this.textBoxC1.resolution = 4
         this.textBoxC1.anchor.set(-3,0)
 
-        Global.app.stage.addChild(this.textBoxC1)
+        Global.viewport.addChild(this.textBoxC1)
 
         // add second cardinality
         this.textBoxC2 = new Text(c2, {
@@ -54,7 +54,7 @@ export class Relation {
         this.textBoxC2.resolution = 4
         this.textBoxC2.anchor.set(3,0)
 
-        Global.app.stage.addChild(this.textBoxC2)
+        Global.viewport.addChild(this.textBoxC2)
     }
 
     redraw() {

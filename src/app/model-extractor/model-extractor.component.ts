@@ -5,13 +5,12 @@ import {
     NgZone,
     ViewChild,
 } from '@angular/core'
-import * as PIXI from 'pixi.js'
 import { Global } from './../globals'
 import { XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { Relation } from '../entities/relation'
 import { ClassEntity } from '../entities/classEntity'
-import { getUUID } from '../services/helper.service'
+import { getUUID, initializePixiApplication } from '../services/helper.service'
 
 @Component({
     selector: 'app-model-extractor',
@@ -30,10 +29,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.ngZone.runOutsideAngular(() => {
-            // init application
-            Global.app = new PIXI.Application({
-                backgroundColor: 0x0d6efd,
-            })
+            initializePixiApplication()
 
             this.div.nativeElement.innerHTML = ''
             this.div.nativeElement.appendChild(Global.app.view)

@@ -47,7 +47,7 @@ export class ArcReference {
         this.triangleSrite.anchor.set(0.75, 0.5)
 
         // add it to the stage
-        Global.app.stage.addChild(this.line)
+        Global.viewport.addChild(this.line)
     }
 
     addTextBox(text: string) {
@@ -66,7 +66,7 @@ export class ArcReference {
         // setup events for mouse + touch using
         this.textBox.on('pointerdown', this.onClick.bind(this))
 
-        Global.app.stage.addChild(this.textBox)
+        Global.viewport.addChild(this.textBox)
     }
 
     redraw() {

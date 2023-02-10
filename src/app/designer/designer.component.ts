@@ -4,16 +4,15 @@ import {
     ElementRef,
     ViewChild,
 } from '@angular/core'
-import * as PIXI from 'pixi.js'
 import { PlaceEntity } from '../entities/placeEntity'
-import { getUUID } from '../services/helper.service'
+import { getUUID, initializePixiApplication } from '../services/helper.service'
 import { Global } from './../globals'
 import { ArcReference } from '../entities/arcReference'
 import { NodeType, XMLService } from '../services/xml.service'
 import { NodeEntity } from '../entities/nodeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
 import { Clipboard } from '@angular/cdk/clipboard';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-designer',
@@ -26,14 +25,14 @@ export class DesignerComponent implements AfterViewInit {
     public createArcInProgress = false
     public arcSourceNode: NodeEntity
 
-    name = 'not set';
-    owner = 'not set';
-    markingName = 'not set';
-    data: { name: string; type: string }[] = []
+    public name = 'not set';
+    public owner = 'not set';
+    public markingName = 'not set';
+    public data: { name: string; type: string }[] = []
 
-    types = ["xs:integer", "xs:Boolean", "xs:string", "xs:date"];
+    public types = ["xs:integer", "xs:Boolean", "xs:string", "xs:date"];
 
-    column_schema = [
+    public column_schema = [
     {
         key: "name",
         type: "text",
@@ -51,8 +50,7 @@ export class DesignerComponent implements AfterViewInit {
       }
     ]
 
-    displayedColumns: string[] = this.column_schema.map(col => col.key);
-      
+    public displayedColumns: string[] = this.column_schema.map(col => col.key);
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private nodeReferenceList: NodeEntity[] = []
@@ -65,15 +63,12 @@ export class DesignerComponent implements AfterViewInit {
     ) {}
 
     ngAfterViewInit(): void {
-        // init application
-        Global.app = new PIXI.Application({
-            backgroundColor: 0x0d6efd,
-        })
+        initializePixiApplication()
 
         this.div.nativeElement.innerHTML = ''
         this.div.nativeElement.appendChild(Global.app.view)
         this.adjustCanvasSize()
-
+        
         // load XML file
         const designerData = localStorage.getItem('designerData')
         if (designerData) this.loadDataFromLocal(designerData)

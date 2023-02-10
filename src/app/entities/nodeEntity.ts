@@ -85,7 +85,7 @@ export abstract class NodeEntity {
             .on('pointerup', this.onDragEnd.bind(this))
             .on('pointerupoutside', this.onDragEnd.bind(this))
 
-        Global.app.stage.addChild(this.sprite)
+        Global.viewport.addChild(this.sprite)
     }
 
     addTextBox(text: string) {
@@ -103,6 +103,10 @@ export abstract class NodeEntity {
     }
 
     onDragStart(event: InteractionEvent) {
+        Global.viewport.plugins.pause('drag')
+        Global.viewport.plugins.pause('pinch')
+        Global.viewport.plugins.pause('wheel')
+
         event.target.alpha = 0.5
         this.dragging = true
         this.data = event.data
@@ -126,6 +130,10 @@ export abstract class NodeEntity {
     }
 
     onDragEnd(event: InteractionEvent) {
+        Global.viewport.plugins.resume('drag')
+        Global.viewport.plugins.resume('pinch')
+        Global.viewport.plugins.resume('wheel')
+        
         event.currentTarget.alpha = 1
         this.dragging = false
         this.data = event.data

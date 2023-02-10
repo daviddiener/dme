@@ -1,6 +1,6 @@
 {
     "name": "dme",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
@@ -28,7 +28,8 @@
         "@popperjs/core": "^2.10.2",
         "bootstrap": "^5.2.0",
         "component": "^1.1.0",
-        "pixi.js": "^6.5.6",
+        "pixi-viewport": "^4.38.0",
+        "pixi.js": "6.5.9",
         "rxjs": "~7.5.0",
         "tslib": "^2.3.0",
         "uuid": "^9.0.0",
