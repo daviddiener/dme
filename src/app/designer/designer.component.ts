@@ -3,11 +3,15 @@ import { PlaceEntity } from '../entities/placeEntity'
 import { getUUID, initializePixiApplication } from '../services/helper.service'
 import { Global } from './../globals'
 import { ArcReference } from '../entities/arcReference'
-import { NodeType, XMLService } from '../services/xml.service'
-import { NodeEntity } from '../entities/nodeEntity'
+import { XMLService } from '../services/xml.service'
+import { NodeType, NodeEntity } from '../entities/nodeEntity'
 import { TransitionEntity } from '../entities/transitionEntity'
 import { Clipboard } from '@angular/cdk/clipboard'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { XMLNodeService } from '../services/xml.node.service'
+import { XMLPlaceService } from '../services/xml.place.service'
+import { XMLTransitionService } from '../services/xml.transition.service'
+import { XMLArcService } from '../services/xml.arc.service'
 
 @Component({
     selector: 'app-designer',
@@ -54,6 +58,10 @@ export class DesignerComponent implements AfterViewInit {
     constructor(
         private _snackBar: MatSnackBar,
         private xmlService: XMLService,
+        private xmlNodeService: XMLNodeService,
+        private xmlPlaceService: XMLPlaceService,
+        private xmlTransitionService: XMLTransitionService,
+        private xmlArcService: XMLArcService,
         private clipboard: Clipboard
     ) {}
 
@@ -71,70 +79,51 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     loadDataFromLocal(designerData: string) {
-        Global.xmlDoc = new DOMParser().parseFromString(
-            designerData,
-            'text/xml'
-        )
+        Global.xmlDoc = new DOMParser().parseFromString(designerData, 'text/xml')
 
         // GENERATE PLACES
-        Array.from(this.xmlService.getAllPlaces()).forEach((place) => {
+        Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
             this.nodeReferenceList.push(
                 new PlaceEntity(
                     place.getAttribute('id') as string,
                     Number(
-                        place
-                            .getElementsByTagName('graphics')[0]
-                            .getElementsByTagName('position')[0]
-                            .getAttribute('x')
+                        place.getElementsByTagName('graphics')[0].getElementsByTagName('position')[0].getAttribute('x')
                     ),
                     Number(
-                        place
-                            .getElementsByTagName('graphics')[0]
-                            .getElementsByTagName('position')[0]
-                            .getAttribute('y')
+                        place.getElementsByTagName('graphics')[0].getElementsByTagName('position')[0].getAttribute('y')
                     ),
-                    String(
-                        place
-                            .getElementsByTagName('name')[0]
-                            .getElementsByTagName('text')[0].textContent
-                    ),
+                    String(place.getElementsByTagName('name')[0].getElementsByTagName('text')[0].textContent),
                     false,
                     this,
-                    this.xmlService
+                    this.xmlNodeService
                 )
             )
         })
 
         // GENERATE Transitions
-        Array.from(this.xmlService.getAllTransitions()).forEach(
-            (transition) => {
-                this.nodeReferenceList.push(
-                    new TransitionEntity(
-                        transition.getAttribute('id') as string,
-                        Number(
-                            transition
-                                .getElementsByTagName('graphics')[0]
-                                .getElementsByTagName('position')[0]
-                                .getAttribute('x')
-                        ),
-                        Number(
-                            transition
-                                .getElementsByTagName('graphics')[0]
-                                .getElementsByTagName('position')[0]
-                                .getAttribute('y')
-                        ),
-                        String(
-                            transition
-                                .getElementsByTagName('name')[0]
-                                .getElementsByTagName('text')[0].textContent
-                        ),
-                        false,
-                        this,
-                        this.xmlService
-                    )
+        Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {
+            this.nodeReferenceList.push(
+                new TransitionEntity(
+                    transition.getAttribute('id') as string,
+                    Number(
+                        transition
+                            .getElementsByTagName('graphics')[0]
+                            .getElementsByTagName('position')[0]
+                            .getAttribute('x')
+                    ),
+                    Number(
+                        transition
+                            .getElementsByTagName('graphics')[0]
+                            .getElementsByTagName('position')[0]
+                            .getAttribute('y')
+                    ),
+                    String(transition.getElementsByTagName('name')[0].getElementsByTagName('text')[0].textContent),
+                    false,
+                    this,
+                    this.xmlNodeService
                 )
-            }
-        )
+            )
+        })
 
         // Collect promises
         this.nodeReferenceList.forEach((node) => {
@@ -147,19 +136,13 @@ export class DesignerComponent implements AfterViewInit {
         otherwise heigt and width will be 0 and the anchorpoint for the arcs will be wrong 
         */
         Promise.all(this.promiseList).then(() => {
-            Array.from(this.xmlService.getAllArcs()).forEach((arc) => {
+            Array.from(this.xmlArcService.getAllArcs()).forEach((arc) => {
                 this.addArc(
                     String(arc.getAttribute('id')),
                     String(arc.getAttribute('source')),
                     String(arc.getAttribute('target')),
-                    String(
-                        arc
-                            .getElementsByTagName('inscription')[0]
-                            .getElementsByTagName('text')[0].textContent
-                    ),
-                    String(
-                        arc.getElementsByTagName('hlinscription')[0].textContent
-                    ),
+                    String(arc.getElementsByTagName('inscription')[0].getElementsByTagName('text')[0].textContent),
+                    String(arc.getElementsByTagName('hlinscription')[0].textContent),
                     false
                 )
             })
@@ -167,41 +150,14 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     addPlace() {
-        this.nodeReferenceList.push(
-            new PlaceEntity(
-                getUUID(),
-                30,
-                30,
-                'Test',
-                true,
-                this,
-                this.xmlService
-            )
-        )
+        this.nodeReferenceList.push(new PlaceEntity(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
     }
 
     addTransition() {
-        this.nodeReferenceList.push(
-            new TransitionEntity(
-                getUUID(),
-                30,
-                30,
-                'Test',
-                true,
-                this,
-                this.xmlService
-            )
-        )
+        this.nodeReferenceList.push(new TransitionEntity(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
     }
 
-    addArc(
-        id: string,
-        sourceId: string,
-        targetId: string,
-        textValue: string,
-        cardinality: string,
-        saveInXml: boolean
-    ) {
+    addArc(id: string, sourceId: string, targetId: string, textValue: string, cardinality: string, saveInXml: boolean) {
         let tmpArc
         const sourceRef = this.nodeReferenceList.find((el) => el.id == sourceId)
         if (sourceRef) {
@@ -213,7 +169,8 @@ export class DesignerComponent implements AfterViewInit {
                 cardinality,
                 sourceRef.sprite,
                 saveInXml,
-                this.xmlService
+                this.xmlArcService,
+                this.xmlNodeService
             )
             sourceRef.arcList.push(tmpArc)
         }
@@ -226,9 +183,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     deleteLocalStorage() {
-        if (
-            confirm('Are you sure to delete all nodes and start from scratch?')
-        ) {
+        if (confirm('Are you sure to delete all nodes and start from scratch?')) {
             localStorage.clear()
             if (Global.app) Global.app.destroy()
             this.ngAfterViewInit()
@@ -247,21 +202,17 @@ export class DesignerComponent implements AfterViewInit {
         this.arcSourceNode.sprite.tint = 0x71beeb
 
         // get node data
-        this.name = this.xmlService.getNodeNameById(this.arcSourceNode.id)
+        this.name = this.xmlNodeService.getNodeNameById(this.arcSourceNode.id)
 
         if (sourceNode.nodeType == NodeType.transition) {
             this.transitionSelected = true
-            this.owner = this.xmlService.getTransitionOwner(
-                this.arcSourceNode.id
-            )
+            this.owner = this.xmlTransitionService.getTransitionOwner(this.arcSourceNode.id)
         }
 
         if (sourceNode.nodeType == NodeType.place) {
             this.placeSelected = true
-            this.data = this.xmlService.getNodeMarking(this.arcSourceNode.id)
-            this.markingName = this.xmlService.getNodeMarkingDataObjectName(
-                this.arcSourceNode.id
-            )
+            this.data = this.xmlPlaceService.getPlaceTokenSchema(this.arcSourceNode.id)
+            this.markingName = this.xmlPlaceService.getPlaceTokenSchemaName(this.arcSourceNode.id)
         }
     }
 
@@ -277,10 +228,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     adjustCanvasSize() {
-        Global.app.renderer.resize(
-            this.div.nativeElement.offsetWidth,
-            this.div.nativeElement.offsetHeight
-        )
+        Global.app.renderer.resize(this.div.nativeElement.offsetWidth, this.div.nativeElement.offsetHeight)
     }
 
     updateName() {
@@ -288,7 +236,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     updateRole() {
-        this.xmlService.updateTransitionOwner(this.arcSourceNode.id, this.owner)
+        this.xmlTransitionService.updateTransitionOwner(this.arcSourceNode.id, this.owner)
     }
 
     addRow() {
@@ -303,11 +251,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     updatePlaceMarking() {
-        this.xmlService.updatePlaceMarking(
-            this.arcSourceNode.id,
-            this.markingName,
-            this.data
-        )
+        this.xmlPlaceService.updatePlaceTokenSchema(this.arcSourceNode.id, this.markingName, this.data)
     }
 
     removeRow(name: string) {
@@ -316,17 +260,12 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     saveNetToXML() {
-        localStorage.setItem(
-            'designerData',
-            new XMLSerializer().serializeToString(Global.xmlDoc.documentElement)
-        )
+        localStorage.setItem('designerData', new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
         this.openSnackBar('Saved net to XML in local storage')
     }
 
     saveNetToClipboard() {
-        this.clipboard.copy(
-            new XMLSerializer().serializeToString(Global.xmlDoc.documentElement)
-        )
+        this.clipboard.copy(new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
 
         this.openSnackBar('Saved net to clipboard')
     }
@@ -362,9 +301,6 @@ export class DesignerComponent implements AfterViewInit {
     ngOnDestroy(): void {
         if (Global.app) Global.app.destroy()
 
-        localStorage.setItem(
-            'designerData',
-            new XMLSerializer().serializeToString(Global.xmlDoc.documentElement)
-        )
+        localStorage.setItem('designerData', new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
     }
 }

@@ -1,18 +1,23 @@
-import {
-    InteractionData,
-    InteractionEvent,
-    Text,
-    Texture,
-    Sprite,
-    SCALE_MODES,
-} from 'pixi.js'
+import { InteractionData, InteractionEvent, Text, Texture, Sprite, SCALE_MODES } from 'pixi.js'
 import { ArcReference as Arc } from './arcReference'
 import { Global } from '../globals'
 import { DesignerComponent } from '../designer/designer.component'
-import { NodeType, XMLService } from 'src/app/services/xml.service'
 import { Relation } from './relation'
 import { getUUID } from '../services/helper.service'
+import { XMLNodeService } from '../services/xml.node.service'
 
+/**
+ * Enum which describe the specific node instances place, transition and class.
+ */
+export enum NodeType {
+    place = 'place',
+    transition = 'transition',
+    class = 'class',
+}
+
+/**
+ * Abstract parent class for places, transitions and classes.
+ */
 export abstract class NodeEntity {
     public sprite: Sprite
     public arcList: Arc[] = []
@@ -30,7 +35,7 @@ export abstract class NodeEntity {
         public y: number,
         public textValue: string,
         public designerComponent: DesignerComponent | undefined,
-        public xmlService: XMLService,
+        public xmlNodeService: XMLNodeService,
         public defaultTexture: Texture = Texture.EMPTY,
         isInteractive: boolean,
         tint: number,
@@ -40,7 +45,6 @@ export abstract class NodeEntity {
         this.id = id
         this.textValue = textValue
         this.designerComponent = designerComponent
-        this.xmlService = xmlService
         this.savePositionOnDrag = savePositionOnDrag
 
         // add PIXI.js objects
@@ -48,12 +52,7 @@ export abstract class NodeEntity {
         this.addTextBox(textValue)
     }
 
-    addGraphicsObject(
-        x: number,
-        y: number,
-        isInteractive: boolean,
-        tint: number
-    ) {
+    addGraphicsObject(x: number, y: number, isInteractive: boolean, tint: number) {
         this.defaultTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         this.sprite = new Sprite(this.defaultTexture)
         this.sprite.tint = tint
@@ -126,9 +125,7 @@ export abstract class NodeEntity {
 
     onDragMove(event: InteractionEvent) {
         if (this.dragging) {
-            const newPosition = this.data.getLocalPosition(
-                event.currentTarget.parent
-            )
+            const newPosition = this.data.getLocalPosition(event.currentTarget.parent)
             event.currentTarget.x = newPosition.x
             event.currentTarget.y = newPosition.y
         }
@@ -145,11 +142,7 @@ export abstract class NodeEntity {
 
         // save new position in XML document
         if (this.savePositionOnDrag)
-            this.xmlService.updateNodePosition(
-                this.id,
-                event.currentTarget.x,
-                event.currentTarget.y
-            )
+            this.xmlNodeService.updateNodePosition(this.id, event.currentTarget.x, event.currentTarget.y)
 
         this.arcList.forEach((ar) => {
             ar.redraw()
@@ -177,6 +170,6 @@ export abstract class NodeEntity {
 
     public changeName(newName: string) {
         this.textBox.text = newName
-        this.xmlService.updateNodeName(this.id, newName)
+        this.xmlNodeService.updateNodeName(this.id, newName)
     }
 }

@@ -1,7 +1,7 @@
-import { NodeEntity } from './nodeEntity'
+import { NodeEntity, NodeType } from './nodeEntity'
 import { Texture } from 'pixi.js'
 import { DesignerComponent } from '../designer/designer.component'
-import { XMLService, NodeType } from 'src/app/services/xml.service'
+import { XMLNodeService } from '../services/xml.node.service'
 
 export class ClassEntity extends NodeEntity {
     constructor(
@@ -10,7 +10,7 @@ export class ClassEntity extends NodeEntity {
         y: number,
         textValue: string,
         designerComponent: DesignerComponent | undefined,
-        xmlService: XMLService,
+        xmlNodeService: XMLNodeService,
         tint: number
     ) {
         super(
@@ -19,7 +19,7 @@ export class ClassEntity extends NodeEntity {
             y,
             textValue,
             designerComponent,
-            xmlService,
+            xmlNodeService,
             Texture.from('assets/transition.png'),
             true,
             tint,

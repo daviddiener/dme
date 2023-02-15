@@ -3,11 +3,17 @@ import { v4 as uuidv4 } from 'uuid'
 import { Global } from '../globals'
 import * as PIXI from 'pixi.js'
 
+/**
+ * Creates a UUID and makes sure that the first letter is always a small letter, to meet the PNML specification for ID's
+ * @returns A UUID string
+ */
 export function getUUID(): string {
-    // this function makes sure that the first letter of the UUID is a small letter for PNML specification
     return String.fromCharCode(97 + Math.floor(Math.random() * 26)) + uuidv4()
 }
 
+/**
+ * Initializes the PIXI application object and also adds a PIXI Viewport to it
+ */
 export function initializePixiApplication() {
     // init application
     Global.app = new PIXI.Application({

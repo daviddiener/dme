@@ -59,27 +59,16 @@ export class Relation {
 
     redraw() {
         this.line.clear()
-        this.line.position.set(
-            this.startNode.sprite.x + this.parent.width / 2,
-            this.startNode.sprite.y
-        )
+        this.line.position.set(this.startNode.sprite.x + this.parent.width / 2, this.startNode.sprite.y)
         this.line
             .lineStyle(5, 0xffffff)
             .lineTo(
-                this.targetNode.sprite.x -
-                    this.startNode.sprite.x -
-                    this.parent.width,
+                this.targetNode.sprite.x - this.startNode.sprite.x - this.parent.width,
                 this.targetNode.sprite.y - this.startNode.sprite.y
             )
 
-        this.textBoxC1.position.set(
-            this.startNode.sprite.x,
-            this.startNode.sprite.y
-        )
+        this.textBoxC1.position.set(this.startNode.sprite.x, this.startNode.sprite.y)
 
-        this.textBoxC2.position.set(
-            this.targetNode.sprite.x,
-            this.targetNode.sprite.y
-        )
+        this.textBoxC2.position.set(this.targetNode.sprite.x, this.targetNode.sprite.y)
     }
 }

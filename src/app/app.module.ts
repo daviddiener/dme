@@ -23,12 +23,7 @@ import { ModelExtractorComponent } from './model-extractor/model-extractor.compo
 import { HomeComponent } from './home/home.component'
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        DesignerComponent,
-        ModelExtractorComponent,
-        HomeComponent,
-    ],
+    declarations: [AppComponent, DesignerComponent, ModelExtractorComponent, HomeComponent],
     imports: [
         BrowserModule,
         CommonModule,
