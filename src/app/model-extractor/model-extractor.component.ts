@@ -42,7 +42,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
                 this.generateOwners()
 
-                this.generateClassesFromMarkings()
+                this.generateClassesFromTokenSchemas()
 
                 this.generateCardinalitiesAroundTransitions()
 
@@ -109,7 +109,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
     }
 
-    generateClassesFromMarkings() {
+    generateClassesFromTokenSchemas() {
         let xPosition = 100
         let yPosition = 250
 
@@ -119,12 +119,13 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
 
         Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
-            const marking = place.getElementsByTagName('marking')
-            // check if the place has a marking
-            if (marking.length > 0) {
-                // check if a class with the same marking name has already been created
+            const tokenSchema = place.getElementsByTagName('tokenSchema')
+            // check if the place has a token schema
+            if (tokenSchema.length > 0) {
+                // check if a class with the same token schema name has already been created
                 if (
-                    this.classReferenceList.find((el) => el.textValue == marking[0].getAttribute('name')) == undefined
+                    this.classReferenceList.find((el) => el.textValue == tokenSchema[0].getAttribute('name')) ==
+                    undefined
                 ) {
                     // set sprite tint to red if the class is an existing (external) object
                     let color = 0xff0000
@@ -138,7 +139,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                             getUUID(),
                             xPosition,
                             yPosition,
-                            String(marking[0].getAttribute('name')),
+                            String(tokenSchema[0].getAttribute('name')),
                             undefined,
                             this.xmlNodeService,
                             color

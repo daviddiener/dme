@@ -13,17 +13,16 @@ export class XMLPlaceService {
     public getPlaceTokenSchema(id: string): { name: string; type: string }[] {
         const data: { name: string; type: string }[] = []
 
-        const marking = Global.xmlDoc.querySelectorAll('[id="' + id + '"] marking')
+        const tokenSchema = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
 
-        if (marking.length > 0) {
-            Array.from(marking[0].getElementsByTagName('xs:element')).forEach((element) => {
+        if (tokenSchema.length > 0) {
+            Array.from(tokenSchema[0].getElementsByTagName('xs:element')).forEach((element) => {
                 data.push({
                     name: String(element.getAttribute('name')),
                     type: String(element.getAttribute('type')),
                 })
             })
         }
-
         return data
     }
 
@@ -33,9 +32,9 @@ export class XMLPlaceService {
      * @returns A string with the token schema name
      */
     public getPlaceTokenSchemaName(id: string | null): string {
-        const marking = Global.xmlDoc.querySelectorAll('[id="' + id + '"] marking')
-        if (marking.length > 0) {
-            return String(marking[0].getAttribute('name'))
+        const tokenSchema = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
+        if (tokenSchema.length > 0) {
+            return String(tokenSchema[0].getAttribute('name'))
         } else {
             return ''
         }
@@ -50,17 +49,17 @@ export class XMLPlaceService {
     public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string }[]) {
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
 
-        if (node[0].getElementsByTagName('marking').length > 0) {
-            node[0].removeChild(node[0].getElementsByTagName('marking')[0])
+        if (node[0].getElementsByTagName('tokenSchema').length > 0) {
+            node[0].removeChild(node[0].getElementsByTagName('tokenSchema')[0])
         }
 
-        // create marking tag again
-        const marking = node[0].appendChild(Global.xmlDoc.createElement('marking'))
-        marking.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
-        marking.setAttribute('name', dataObjectName)
+        // create token schema tag again
+        const tokenSchema = node[0].appendChild(Global.xmlDoc.createElement('tokenSchema'))
+        tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
+        tokenSchema.setAttribute('name', dataObjectName)
 
         data.forEach((element) => {
-            const tmp = marking.appendChild(Global.xmlDoc.createElement('xs:element'))
+            const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
             tmp.setAttribute('name', element.name)
             tmp.setAttribute('type', element.type)
         })
@@ -72,7 +71,7 @@ export class XMLPlaceService {
      */
     public getDistinctTokenSchemaNames(): string[] {
         const tmp: string[] = []
-        Global.xmlDoc.querySelectorAll('marking').forEach((element) => {
+        Global.xmlDoc.querySelectorAll('tokenSchema').forEach((element) => {
             tmp.push(String(element.getAttribute('name')))
         })
 
