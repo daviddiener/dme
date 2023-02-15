@@ -15,7 +15,6 @@ export class XMLPlaceService {
 
         const tokenSchema = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
 
-        console.log(tokenSchema)
         if (tokenSchema.length > 0) {
             Array.from(tokenSchema[0].getElementsByTagName('xs:element')).forEach((element) => {
                 data.push({
@@ -24,9 +23,6 @@ export class XMLPlaceService {
                 })
             })
         }
-
-        console.log(data)
-
         return data
     }
 

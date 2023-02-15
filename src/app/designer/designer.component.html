@@ -3,20 +3,52 @@
         <div class="col-9">
             <div class="row">
                 <div class="col">
-                    <button mat-raised-button color="primary" mat-button (click)="addPlace()">Create new place</button>
-                    <button mat-raised-button color="primary" mat-button (click)="addTransition()">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="addPlace()"
+                    >
+                        Create new place
+                    </button>
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="addTransition()"
+                    >
                         Create new transition
                     </button>
-                    <button mat-raised-button color="primary" mat-button (click)="saveNetToXML()">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="saveNetToXML()"
+                    >
                         <mat-icon>save</mat-icon>
                     </button>
-                    <button mat-raised-button color="primary" mat-button (click)="saveNetToClipboard()">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="saveNetToClipboard()"
+                    >
                         <mat-icon>content_copy</mat-icon>
                     </button>
-                    <button mat-raised-button color="primary" mat-button (click)="readNetFromClipboard()">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        mat-button
+                        (click)="readNetFromClipboard()"
+                    >
                         <mat-icon>content_paste_go</mat-icon>
                     </button>
-                    <button mat-raised-button color="warn" mat-button (click)="deleteLocalStorage()">
+                    <button
+                        mat-raised-button
+                        color="warn"
+                        mat-button
+                        (click)="deleteLocalStorage()"
+                    >
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
@@ -54,59 +86,73 @@
             </div>
 
             <div
-                class="col-sm-12"
-                (window:resize)="adjustCanvasSize()"
-                id="pixiCanvasContainer"
-                #pixiCanvasContainer
+            class="col-sm-12"
+            (window:resize)="adjustCanvasSize()"
+            id="pixiCanvasContainer"
+            #pixiCanvasContainer
             ></div>
         </div>
         <div class="col-3">
             <mat-form-field appearance="outline" *ngIf="placeSelected || transitionSelected">
-                <mat-label>Name</mat-label>
-                <input matInput [(ngModel)]="name" (change)="updateName()" />
+                    <mat-label>Name</mat-label>
+                    <input 
+                    matInput 
+                    [(ngModel)]='name'
+                    (change)="updateName()"
+                    >
             </mat-form-field>
             <mat-form-field appearance="outline" *ngIf="transitionSelected">
                 <mat-label>Role</mat-label>
-                <input matInput [(ngModel)]="owner" (change)="updateRole()" />
+                <input 
+                matInput 
+                [(ngModel)] = 'owner' 
+                (change)="updateRole()"
+                >
             </mat-form-field>
             <mat-form-field appearance="outline" *ngIf="placeSelected">
-                <mat-label>Token Schema Name</mat-label>
-                <input matInput [(ngModel)]="tokenSchemaName" (change)="updatePlaceTokenSchema()" />
+                <mat-label>Marking Name</mat-label>
+                <input 
+                matInput 
+                [(ngModel)] = 'tokenSchemaName' 
+                (change)="updatePlaceTokenSchema()"
+                >
             </mat-form-field>
             <div *ngIf="placeSelected">
                 <table mat-table [dataSource]="this.data">
                     <ng-container [matColumnDef]="col.key" *ngFor="let col of this.column_schema">
                         <th mat-header-cell *matHeaderCellDef>
-                            {{ col.label }}
+                        {{ col.label }}
                         </th>
-                        <td mat-cell *[matCellDef]="let element">
-                            <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
-                                <div class="btn-edit" *ngSwitchCase="'isEdit'">
-                                    <button mat-button (click)="element.isEdit = !element.isEdit">Edit</button>
-                                    <button mat-button class="button-remove" (click)="removeRow(element.name)">
-                                        Delete
-                                    </button>
-                                </div>
-                                <span *ngSwitchDefault>
-                                    {{ element[col.key] }}
-                                </span>
+                        <td mat-cell *matCellDef="let element">
+                        <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
+                            <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                            <button mat-button (click)="element.isEdit = !element.isEdit">
+                                Edit
+                            </button>
+                            <button mat-button class="button-remove" (click)="removeRow(element.name)">
+                                Delete
+                            </button>
                             </div>
-                            <div [ngSwitch]="col.type" *ngIf="element.isEdit">
-                                <div class="btn-edit" *ngSwitchCase="'isEdit'">
-                                    <button mat-button (click)="addRowDone(element)">Done</button>
-                                </div>
-                                <mat-form-field *ngSwitchCase="'type'" appearance="fill">
-                                    <mat-label>Choose a type</mat-label>
-                                    <mat-select [(ngModel)]="element[col.key]">
-                                        <mat-option *ngFor="let type of types" [value]="type">
-                                            {{ type }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                                <mat-form-field *ngSwitchDefault>
-                                    <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
-                                </mat-form-field>
+                            <span *ngSwitchDefault>
+                            {{ element[col.key] }}
+                            </span>
+                        </div>
+                        <div [ngSwitch]="col.type" *ngIf="element.isEdit">
+                            <div class="btn-edit" *ngSwitchCase="'isEdit'">
+                            <button mat-button (click)="addRowDone(element)">Done</button>
                             </div>
+                            <mat-form-field *ngSwitchCase="'type'" appearance="fill">
+                                <mat-label>Choose a type</mat-label>
+                                <mat-select [(ngModel)]="element[col.key]">
+                                    <mat-option *ngFor="let type of types" [value]="type">
+                                    {{ type }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field *ngSwitchDefault>
+                            <input [type]="col.type" matInput [(ngModel)]="element[col.key]" />
+                            </mat-form-field>
+                        </div>
                         </td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
