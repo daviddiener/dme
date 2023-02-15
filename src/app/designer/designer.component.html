@@ -70,8 +70,8 @@
                 <input matInput [(ngModel)]="owner" (change)="updateRole()" />
             </mat-form-field>
             <mat-form-field appearance="outline" *ngIf="placeSelected">
-                <mat-label>Marking Name</mat-label>
-                <input matInput [(ngModel)]="markingName" (change)="updatePlaceMarking()" />
+                <mat-label>Token Schema Name</mat-label>
+                <input matInput [(ngModel)]="tokenSchemaName" (change)="updatePlaceTokenSchema()" />
             </mat-form-field>
             <div *ngIf="placeSelected">
                 <table mat-table [dataSource]="this.data">

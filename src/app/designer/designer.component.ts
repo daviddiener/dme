@@ -26,12 +26,12 @@ export class DesignerComponent implements AfterViewInit {
 
     public name = 'not set'
     public owner = 'not set'
-    public markingName = 'not set'
+    public tokenSchemaName = 'not set'
     public data: { name: string; type: string }[] = []
 
-    public types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date']
+    types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date']
 
-    public column_schema = [
+    column_schema = [
         {
             key: 'name',
             type: 'text',
@@ -49,7 +49,7 @@ export class DesignerComponent implements AfterViewInit {
         },
     ]
 
-    public displayedColumns: string[] = this.column_schema.map((col) => col.key)
+    displayedColumns: string[] = this.column_schema.map((col) => col.key)
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
     private nodeReferenceList: NodeEntity[] = []
@@ -212,7 +212,7 @@ export class DesignerComponent implements AfterViewInit {
         if (sourceNode.nodeType == NodeType.place) {
             this.placeSelected = true
             this.data = this.xmlPlaceService.getPlaceTokenSchema(this.arcSourceNode.id)
-            this.markingName = this.xmlPlaceService.getPlaceTokenSchemaName(this.arcSourceNode.id)
+            this.tokenSchemaName = this.xmlPlaceService.getPlaceTokenSchemaName(this.arcSourceNode.id)
         }
     }
 
@@ -247,16 +247,16 @@ export class DesignerComponent implements AfterViewInit {
     // eslint-disable-next-line
     addRowDone(element: any) {
         element.isEdit = !element.isEdit
-        this.updatePlaceMarking()
+        this.updatePlaceTokenSchema()
     }
 
-    updatePlaceMarking() {
-        this.xmlPlaceService.updatePlaceTokenSchema(this.arcSourceNode.id, this.markingName, this.data)
+    updatePlaceTokenSchema() {
+        this.xmlPlaceService.updatePlaceTokenSchema(this.arcSourceNode.id, this.tokenSchemaName, this.data)
     }
 
     removeRow(name: string) {
         this.data = this.data.filter((u) => u.name !== name)
-        this.updatePlaceMarking()
+        this.updatePlaceTokenSchema()
     }
 
     saveNetToXML() {
