@@ -24,9 +24,9 @@ export class DesignerComponent implements AfterViewInit {
     public createArcInProgress = false
     public arcSourceNode: NodeEntity
 
-    public name = 'not set'
-    public owner = 'not set'
-    public tokenSchemaName = 'not set'
+    public name = '-'
+    public owner = '-'
+    public tokenSchemaName = '-'
     public data: { name: string; type: string }[] = []
 
     types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date']
@@ -141,8 +141,8 @@ export class DesignerComponent implements AfterViewInit {
                     String(arc.getAttribute('id')),
                     String(arc.getAttribute('source')),
                     String(arc.getAttribute('target')),
-                    String(arc.getElementsByTagName('inscription')[0].getElementsByTagName('text')[0].textContent),
-                    String(arc.getElementsByTagName('hlinscription')[0].textContent),
+                    String(arc.getElementsByTagName('inscription')[0]?.getElementsByTagName('text')[0].textContent),
+                    String(arc.getElementsByTagName('hlinscription')[0]?.textContent),
                     false
                 )
             })
@@ -195,6 +195,10 @@ export class DesignerComponent implements AfterViewInit {
         // reset panel if previously selected
         this.placeSelected = false
         this.transitionSelected = false
+        this.name = '-'
+        this.owner = '-'
+        this.tokenSchemaName = '-'
+        this.data = []
 
         // reset old node tint
         if (this.arcSourceNode) this.arcSourceNode.sprite.tint = 0xffffff
@@ -236,7 +240,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     updateRole() {
-        this.xmlTransitionService.updateTransitionOwner(this.arcSourceNode.id, this.owner)
+        this.xmlTransitionService.updateTransitionRole(this.arcSourceNode.id, this.owner)
     }
 
     addRow() {

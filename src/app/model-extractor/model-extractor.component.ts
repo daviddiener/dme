@@ -88,7 +88,7 @@ export class ModelExtractorComponent implements AfterViewInit {
             */
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
                 const sourceName = String(
-                    element.getElementsByTagName('owner')[0].getElementsByTagName('text')[0].textContent
+                    element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent
                 )
                 const targetName = String(
                     this.xmlPlaceService.getPlaceTokenSchemaName(String(arc.getAttribute('target')))

@@ -20,10 +20,20 @@ export class XMLTransitionService {
     /**
      * Updates the role, assigned to the transition
      * @param id
-     * @param newOwner
+     * @param newRole
      */
-    public updateTransitionOwner(id: string, newOwner: string) {
-        Global.xmlDoc.querySelectorAll('[id="' + id + '"] owner text')[0].textContent = newOwner
+    public updateTransitionRole(id: string, newRole: string) {
+        const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')[0]
+
+         // if the node alredy has a role, update it, otherwise create the necessary elements
+         if (node.getElementsByTagName('owner')[0]) {
+            if(node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0])
+            node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0].textContent = newRole
+        } {
+            const owner = node.appendChild(Global.xmlDoc.createElement('owner'))
+            const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
+            text2.textContent = newRole
+        }
     }
 
     /**
@@ -32,7 +42,7 @@ export class XMLTransitionService {
      * @returns A string value
      */
     public getTransitionOwner(id: string): string {
-        const owner = Global.xmlDoc.querySelectorAll('[id="' + id + '"] owner text')[0].textContent?.toString()
+        const owner = String(Global.xmlDoc.querySelectorAll('[id="' + id + '"] owner text')[0]?.textContent)
 
         return owner !== undefined ? owner : ''
     }
