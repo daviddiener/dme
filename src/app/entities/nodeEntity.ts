@@ -158,7 +158,6 @@ export abstract class NodeEntity {
                     getUUID(),
                     this.designerComponent.arcSourceNode.id,
                     this.id,
-                    'a',
                     '1',
                     true
                 )

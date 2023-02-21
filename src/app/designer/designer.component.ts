@@ -13,6 +13,8 @@ import { XMLPlaceService } from '../services/xml.place.service'
 import { XMLTransitionService } from '../services/xml.transition.service'
 import { XMLArcService } from '../services/xml.arc.service'
 
+const appVersion = require('../../../package.json').version
+
 @Component({
     selector: 'app-designer',
     templateUrl: './designer.component.html',
@@ -74,7 +76,12 @@ export class DesignerComponent implements AfterViewInit {
 
         // load XML file
         const designerData = localStorage.getItem('designerData')
-        if (designerData) this.loadDataFromLocal(designerData)
+        
+        if (designerData) {
+            this.loadDataFromLocal(designerData)
+            const netVersion = localStorage.getItem('netVersion')
+            if(appVersion != netVersion) this._snackBar.open('The saved net was created with version ' + netVersion + '. The net may be incompatible with the current version ' + appVersion + '.', 'Close')
+        }
         else this.xmlService.createNewXMLDocument()
     }
 
@@ -141,7 +148,6 @@ export class DesignerComponent implements AfterViewInit {
                     String(arc.getAttribute('id')),
                     String(arc.getAttribute('source')),
                     String(arc.getAttribute('target')),
-                    String(arc.getElementsByTagName('inscription')[0]?.getElementsByTagName('text')[0].textContent),
                     String(arc.getElementsByTagName('hlinscription')[0]?.textContent),
                     false
                 )
@@ -157,7 +163,7 @@ export class DesignerComponent implements AfterViewInit {
         this.nodeReferenceList.push(new TransitionEntity(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
     }
 
-    addArc(id: string, sourceId: string, targetId: string, textValue: string, cardinality: string, saveInXml: boolean) {
+    addArc(id: string, sourceId: string, targetId: string, cardinality: string, saveInXml: boolean) {
         let tmpArc
         const sourceRef = this.nodeReferenceList.find((el) => el.id == sourceId)
         if (sourceRef) {
@@ -186,7 +192,8 @@ export class DesignerComponent implements AfterViewInit {
             localStorage.clear()
             if (Global.app) Global.app.destroy()
             this.ngAfterViewInit()
-            this.openSnackBar('Deleted all nodes')
+            this._snackBar.open('Deleted all nodes', '', { duration: 2000 }, )
+
         }
     }
 
@@ -264,13 +271,14 @@ export class DesignerComponent implements AfterViewInit {
 
     saveNetToXML() {
         localStorage.setItem('designerData', new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
-        this.openSnackBar('Saved net to XML in local storage')
+        localStorage.setItem('netVersion', appVersion)
+        this._snackBar.open('Saved net to XML in local storage', '', { duration: 2000 }, )
+
     }
 
     saveNetToClipboard() {
         this.clipboard.copy(new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
-
-        this.openSnackBar('Saved net to clipboard')
+        this._snackBar.open('Saved net to clipboard', '', { duration: 2000 }, )
     }
 
     readNetFromClipboard() {
@@ -283,7 +291,7 @@ export class DesignerComponent implements AfterViewInit {
                 this.nodeReferenceList = []
                 if (Global.app) Global.app.destroy()
                 this.ngAfterViewInit()
-                this.openSnackBar('Successfully imported clipboard content')
+                this._snackBar.open('Successfully imported clipboard content', '', { duration: 2000 }, )
             })
             .catch((err) => {
                 if (backup) {
@@ -293,17 +301,12 @@ export class DesignerComponent implements AfterViewInit {
                     this.ngAfterViewInit()
                 }
 
-                this.openSnackBar('Failed to parse clipboard content ' + err)
+                this._snackBar.open('Failed to parse clipboard content ' + err, 'Close')
             })
-    }
-
-    openSnackBar(message: string) {
-        this._snackBar.open(message, '', { duration: 2000 })
     }
 
     ngOnDestroy(): void {
         if (Global.app) Global.app.destroy()
-
-        localStorage.setItem('designerData', new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
+        this.saveNetToXML()
     }
 }
