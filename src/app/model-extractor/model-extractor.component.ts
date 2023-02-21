@@ -16,7 +16,7 @@ import { XMLArcService } from '../services/xml.arc.service'
 })
 export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
-    private classReferenceList: NodeEntity[] = []
+    private classReferenceList: ClassEntity[] = []
     private relationReferenceList: Relation[] = []
 
     constructor(
@@ -47,9 +47,68 @@ export class ModelExtractorComponent implements AfterViewInit {
                 this.generateCardinalitiesAroundTransitions()
 
                 this.generateCardinalitiesFromRoles()
+
+                this.generateAttributesFromSchemas()
+                
             } else alert('No valid xml string found')
         })
     }
+
+    generateOwners() {
+        let xPosition = 100
+        this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
+            this.classReferenceList.push(
+                new ClassEntity(getUUID(), xPosition, 50, element, undefined, this.xmlNodeService, 0xffffff)
+            )
+
+            xPosition += 150
+        })
+    }
+    
+    generateClassesFromTokenSchemas() {
+        let xPosition = 100
+        let yPosition = 250
+
+        const objectsWithIncomingArcs: (string | null)[] = []
+        Array.from(this.xmlArcService.getAllArcs()).forEach((element) => {
+            objectsWithIncomingArcs.push(element.getAttribute('target'))
+        })
+
+        Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
+            const tokenSchema = place.getElementsByTagName('tokenSchema')
+            // check if the place has a token schema
+            if (tokenSchema.length > 0) {
+                // check if a class with the same token schema name has already been created
+                if (
+                    this.classReferenceList.find((el) => el.textValue == tokenSchema[0].getAttribute('name')) ==
+                    undefined
+                ) {
+                    // set sprite tint to red if the class is an existing (external) object
+                    let color = 0xff0000
+                    if (objectsWithIncomingArcs.some((x) => x == String(place.getAttribute('id')))) {
+                        color = 0xffffff
+                    }
+
+                    // create the class
+                    this.classReferenceList.push(
+                        new ClassEntity(
+                            getUUID(),
+                            xPosition,
+                            yPosition,
+                            String(tokenSchema[0].getAttribute('name')),
+                            undefined,
+                            this.xmlNodeService,
+                            color
+                        )
+                    )
+
+                    xPosition += 75
+                    yPosition += 50
+                }
+            }
+        })
+    }
+
 
     generateCardinalitiesAroundTransitions() {
         console.log('=== Creating relation that are connected by a transition ===')
@@ -109,58 +168,14 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
     }
 
-    generateClassesFromTokenSchemas() {
-        let xPosition = 100
-        let yPosition = 250
-
-        const objectsWithIncomingArcs: (string | null)[] = []
-        Array.from(this.xmlArcService.getAllArcs()).forEach((element) => {
-            objectsWithIncomingArcs.push(element.getAttribute('target'))
-        })
-
-        Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
-            const tokenSchema = place.getElementsByTagName('tokenSchema')
-            // check if the place has a token schema
-            if (tokenSchema.length > 0) {
-                // check if a class with the same token schema name has already been created
-                if (
-                    this.classReferenceList.find((el) => el.textValue == tokenSchema[0].getAttribute('name')) ==
-                    undefined
-                ) {
-                    // set sprite tint to red if the class is an existing (external) object
-                    let color = 0xff0000
-                    if (objectsWithIncomingArcs.some((x) => x == String(place.getAttribute('id')))) {
-                        color = 0xffffff
-                    }
-
-                    // create the class
-                    this.classReferenceList.push(
-                        new ClassEntity(
-                            getUUID(),
-                            xPosition,
-                            yPosition,
-                            String(tokenSchema[0].getAttribute('name')),
-                            undefined,
-                            this.xmlNodeService,
-                            color
-                        )
-                    )
-
-                    xPosition += 75
-                    yPosition += 50
-                }
+    generateAttributesFromSchemas() {
+        this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
+            const classElement = this.classReferenceList.find(e => e.textValue === tokenSchemaName)
+            if(classElement){
+                this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName).forEach(tokenSchema => {
+                    classElement.addAttributeGrahpicsObject(String(tokenSchema.name))
+                })
             }
-        })
-    }
-
-    generateOwners() {
-        let xPosition = 100
-        this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
-            this.classReferenceList.push(
-                new ClassEntity(getUUID(), xPosition, 50, element, undefined, this.xmlNodeService, 0xffffff)
-            )
-
-            xPosition += 150
         })
     }
 

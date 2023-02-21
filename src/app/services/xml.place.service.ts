@@ -80,6 +80,30 @@ export class XMLPlaceService {
     }
 
     /**
+     * Returns all distinct token schema elements in the XML document for a given tokenSchemaName. Does not return duplicates, just distinct values.
+     * @returns an array of schema objects
+     */
+    public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string }[] {
+        const data: { name: string; type: string }[] = []
+
+        Array.from(Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')).forEach((schemaElement) => {
+            Array.from(schemaElement.getElementsByTagName('xs:element')).forEach((element) => {
+                // check if the data already includes an attribute with the same name, as we dont want duplicate attributes
+                if(!data.some(e => e.name == element.getAttribute('name'))){
+                    data.push({
+                        name: String(element.getAttribute('name')),
+                        type: String(element.getAttribute('type')),
+                    })
+
+                }
+                
+            })
+        })
+
+        return data
+    }
+
+    /**
      * Returns all places in the XML document
      * @returns a collection of Elements
      */
