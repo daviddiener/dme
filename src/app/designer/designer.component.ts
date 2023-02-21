@@ -80,7 +80,7 @@ export class DesignerComponent implements AfterViewInit {
         if (designerData) {
             this.loadDataFromLocal(designerData)
             const netVersion = localStorage.getItem('netVersion')
-            if(appVersion != netVersion) this._snackBar.open('The saved net was created with version ' + netVersion + '. The net may be incompatible with the current version ' + appVersion + '.', 'Close')
+            if(netVersion && (appVersion != netVersion)) this._snackBar.open('The saved net was created with version ' + netVersion + '. The net may be incompatible with the current version ' + appVersion + '.', 'Close')
         }
         else this.xmlService.createNewXMLDocument()
     }
