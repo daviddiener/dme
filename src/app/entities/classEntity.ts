@@ -30,7 +30,7 @@ export class ClassEntity extends NodeEntity {
 
     lastAttributeTextPositionY = 500
 
-    public addAttributeGrahpicsObject(attributeName: string){
+    public addAttributeGrahpicsObject(attributeName: string) {
         const textBox = this.sprite.addChild(
             new Text(attributeName, {
                 fontFamily: 'Arial',
@@ -46,5 +46,4 @@ export class ClassEntity extends NodeEntity {
         textBox.scale.set(10)
         textBox.anchor.set(0.5)
     }
-
 }

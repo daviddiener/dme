@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core'
 import { Global } from './../globals'
-import { NodeEntity } from '../entities/nodeEntity'
 import { Relation } from '../entities/relation'
 import { ClassEntity } from '../entities/classEntity'
 import { getUUID, initializePixiApplication } from '../services/helper.service'
@@ -49,7 +48,6 @@ export class ModelExtractorComponent implements AfterViewInit {
                 this.generateCardinalitiesFromRoles()
 
                 this.generateAttributesFromSchemas()
-                
             } else alert('No valid xml string found')
         })
     }
@@ -64,7 +62,7 @@ export class ModelExtractorComponent implements AfterViewInit {
             xPosition += 150
         })
     }
-    
+
     generateClassesFromTokenSchemas() {
         let xPosition = 100
         let yPosition = 250
@@ -108,7 +106,6 @@ export class ModelExtractorComponent implements AfterViewInit {
             }
         })
     }
-
 
     generateCardinalitiesAroundTransitions() {
         console.log('=== Creating relation that are connected by a transition ===')
@@ -170,9 +167,9 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateAttributesFromSchemas() {
         this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
-            const classElement = this.classReferenceList.find(e => e.textValue === tokenSchemaName)
-            if(classElement){
-                this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName).forEach(tokenSchema => {
+            const classElement = this.classReferenceList.find((e) => e.textValue === tokenSchemaName)
+            if (classElement) {
+                this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName).forEach((tokenSchema) => {
                     classElement.addAttributeGrahpicsObject(String(tokenSchema.name))
                 })
             }

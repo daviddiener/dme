@@ -86,19 +86,19 @@ export class XMLPlaceService {
     public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string }[] {
         const data: { name: string; type: string }[] = []
 
-        Array.from(Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')).forEach((schemaElement) => {
-            Array.from(schemaElement.getElementsByTagName('xs:element')).forEach((element) => {
-                // check if the data already includes an attribute with the same name, as we dont want duplicate attributes
-                if(!data.some(e => e.name == element.getAttribute('name'))){
-                    data.push({
-                        name: String(element.getAttribute('name')),
-                        type: String(element.getAttribute('type')),
-                    })
-
-                }
-                
-            })
-        })
+        Array.from(Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')).forEach(
+            (schemaElement) => {
+                Array.from(schemaElement.getElementsByTagName('xs:element')).forEach((element) => {
+                    // check if the data already includes an attribute with the same name, as we dont want duplicate attributes
+                    if (!data.some((e) => e.name == element.getAttribute('name'))) {
+                        data.push({
+                            name: String(element.getAttribute('name')),
+                            type: String(element.getAttribute('type')),
+                        })
+                    }
+                })
+            }
+        )
 
         return data
     }

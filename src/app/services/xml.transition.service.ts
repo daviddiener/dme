@@ -25,11 +25,12 @@ export class XMLTransitionService {
     public updateTransitionRole(id: string, newRole: string) {
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')[0]
 
-         // if the node alredy has a role, update it, otherwise create the necessary elements
-         if (node.getElementsByTagName('owner')[0]) {
-            if(node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0])
-            node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0].textContent = newRole
-        } {
+        // if the node alredy has a role, update it, otherwise create the necessary elements
+        if (node.getElementsByTagName('owner')[0]) {
+            if (node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0])
+                node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0].textContent = newRole
+        }
+        {
             const owner = node.appendChild(Global.xmlDoc.createElement('owner'))
             const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
             text2.textContent = newRole
