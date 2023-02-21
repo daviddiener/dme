@@ -10,10 +10,9 @@ export class XMLArcService {
      * @param id a UUID
      * @param startId a UUID that references the source node of this arc
      * @param targetId a UUID that references the rarget node of this arc
-     * @param textValue the inscription text
      * @param cardinality the cardinality between the source and target nodes
      */
-    public createArc(id: string, startId: string, targetId: string, textValue: string, cardinality: string) {
+    public createArc(id: string, startId: string, targetId: string, cardinality: string) {
         const parent = Global.xmlDoc
             .getElementsByTagName('pnml')[0]
             .getElementsByTagName('net')[0]
@@ -24,13 +23,8 @@ export class XMLArcService {
         parent.setAttribute('source', startId)
         parent.setAttribute('target', targetId)
 
-        const text1 = parent
-            .appendChild(Global.xmlDoc.createElement('inscription'))
-            .appendChild(Global.xmlDoc.createElement('text'))
-        text1.textContent = textValue
-
-        const text2 = parent.appendChild(Global.xmlDoc.createElement('hlinscription'))
-        text2.textContent = cardinality
+        const text = parent.appendChild(Global.xmlDoc.createElement('hlinscription'))
+        text.textContent = cardinality
     }
 
     /**

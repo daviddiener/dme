@@ -165,7 +165,6 @@ export class DesignerComponent implements AfterViewInit {
                 id,
                 sourceId,
                 targetId,
-                textValue,
                 cardinality,
                 sourceRef.sprite,
                 saveInXml,

@@ -18,7 +18,6 @@ export class ArcReference {
         id: string,
         startId: string,
         targetId: string,
-        textValue: string,
         cardinality: string,
         parent: Sprite,
         saveInXml: boolean,
@@ -34,7 +33,7 @@ export class ArcReference {
         this.addTextBox(cardinality)
         this.redraw()
 
-        if (saveInXml) this.xmlArcService.createArc(id, startId, targetId, textValue, cardinality)
+        if (saveInXml) this.xmlArcService.createArc(id, startId, targetId, cardinality)
     }
 
     addArc() {
