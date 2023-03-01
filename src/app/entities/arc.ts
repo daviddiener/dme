@@ -3,7 +3,7 @@ import { Global } from '../globals'
 import { XMLArcService } from '../services/xml.arc.service'
 import { XMLNodeService } from '../services/xml.node.service'
 
-export class ArcReference {
+export class Arc {
     public triangleTexture: Texture = Texture.from('assets/triangle.png')
     public id: string
     private startId: string

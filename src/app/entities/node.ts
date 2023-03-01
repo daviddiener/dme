@@ -1,8 +1,7 @@
 import { InteractionData, InteractionEvent, Text, Texture, Sprite, SCALE_MODES } from 'pixi.js'
-import { ArcReference as Arc } from './arcReference'
+import { Arc as Arc } from './arc'
 import { Global } from '../globals'
 import { DesignerComponent } from '../designer/designer.component'
-import { Relation } from './relation'
 import { getUUID } from '../services/helper.service'
 import { XMLNodeService } from '../services/xml.node.service'
 
@@ -18,10 +17,9 @@ export enum NodeType {
 /**
  * Abstract parent class for places, transitions and classes.
  */
-export abstract class NodeEntity {
+export abstract class Node {
     public sprite: Sprite
     public arcList: Arc[] = []
-    public relationList: Relation[] = []
     public promise: Promise<void>
 
     private textBox: Text
@@ -145,9 +143,6 @@ export abstract class NodeEntity {
             this.xmlNodeService.updateNodePosition(this.id, event.currentTarget.x, event.currentTarget.y)
 
         this.arcList.forEach((ar) => {
-            ar.redraw()
-        })
-        this.relationList.forEach((ar) => {
             ar.redraw()
         })
 

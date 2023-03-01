@@ -1,9 +1,9 @@
-import { NodeEntity, NodeType } from './nodeEntity'
+import { Node, NodeType } from './node'
 import { Texture } from 'pixi.js'
 import { DesignerComponent } from '../designer/designer.component'
 import { XMLNodeService } from '../services/xml.node.service'
 
-export class TransitionEntity extends NodeEntity {
+export class Place extends Node {
     constructor(
         id: string,
         x: number,
@@ -20,14 +20,14 @@ export class TransitionEntity extends NodeEntity {
             textValue,
             designerComponent,
             xmlNodeService,
-            Texture.from('assets/transition.png'),
+            Texture.from('assets/place.png'),
             true,
             0xffffff,
             true,
-            NodeType.transition
+            NodeType.place
         )
 
         // save object in global XML
-        if (saveInXml) xmlNodeService.createNode(id, x, y, textValue, NodeType.transition)
+        if (saveInXml) xmlNodeService.createNode(id, x, y, textValue, NodeType.place)
     }
 }

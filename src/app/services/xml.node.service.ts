@@ -1,5 +1,5 @@
 import { Global } from './../globals'
-import { NodeType } from '../entities/nodeEntity'
+import { NodeType } from '../entities/node'
 import { Injectable } from '@angular/core'
 
 @Injectable({

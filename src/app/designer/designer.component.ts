@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core'
-import { PlaceEntity } from '../entities/placeEntity'
+import { Place } from '../entities/place'
 import { getUUID, initializePixiApplication } from '../services/helper.service'
 import { Global } from './../globals'
-import { ArcReference } from '../entities/arcReference'
+import { Arc } from '../entities/arc'
 import { XMLService } from '../services/xml.service'
-import { NodeType, NodeEntity } from '../entities/nodeEntity'
-import { TransitionEntity } from '../entities/transitionEntity'
+import { NodeType, Node } from '../entities/node'
+import { Transition } from '../entities/transition'
 import { Clipboard } from '@angular/cdk/clipboard'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { XMLNodeService } from '../services/xml.node.service'
@@ -24,7 +24,7 @@ export class DesignerComponent implements AfterViewInit {
     public placeSelected = false
     public transitionSelected = false
     public createArcInProgress = false
-    public arcSourceNode: NodeEntity
+    public arcSourceNode: Node
 
     public name = '-'
     public owner = '-'
@@ -54,7 +54,7 @@ export class DesignerComponent implements AfterViewInit {
     displayedColumns: string[] = this.column_schema.map((col) => col.key)
 
     @ViewChild('pixiCanvasContainer') private div: ElementRef
-    private nodeReferenceList: NodeEntity[] = []
+    private nodeReferenceList: Node[] = []
     private promiseList: Promise<void>[] = []
 
     constructor(
@@ -98,7 +98,7 @@ export class DesignerComponent implements AfterViewInit {
         // GENERATE PLACES
         Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
             this.nodeReferenceList.push(
-                new PlaceEntity(
+                new Place(
                     place.getAttribute('id') as string,
                     Number(
                         place.getElementsByTagName('graphics')[0].getElementsByTagName('position')[0].getAttribute('x')
@@ -117,7 +117,7 @@ export class DesignerComponent implements AfterViewInit {
         // GENERATE Transitions
         Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {
             this.nodeReferenceList.push(
-                new TransitionEntity(
+                new Transition(
                     transition.getAttribute('id') as string,
                     Number(
                         transition
@@ -163,18 +163,18 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     addPlace() {
-        this.nodeReferenceList.push(new PlaceEntity(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
+        this.nodeReferenceList.push(new Place(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
     }
 
     addTransition() {
-        this.nodeReferenceList.push(new TransitionEntity(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
+        this.nodeReferenceList.push(new Transition(getUUID(), 30, 30, 'Test', true, this, this.xmlNodeService))
     }
 
     addArc(id: string, sourceId: string, targetId: string, cardinality: string, saveInXml: boolean) {
         let tmpArc
         const sourceRef = this.nodeReferenceList.find((el) => el.id == sourceId)
         if (sourceRef) {
-            tmpArc = new ArcReference(
+            tmpArc = new Arc(
                 id,
                 sourceId,
                 targetId,
@@ -203,7 +203,7 @@ export class DesignerComponent implements AfterViewInit {
         }
     }
 
-    public activatePropertiesPanel(sourceNode: NodeEntity) {
+    public activatePropertiesPanel(sourceNode: Node) {
         // reset panel if previously selected
         this.placeSelected = false
         this.transitionSelected = false
