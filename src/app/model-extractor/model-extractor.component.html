@@ -1,3 +1,10 @@
 <div class="container">
-    <div class="col-sm-12" (window:resize)="adjustCanvasSize()" id="pixiCanvasContainer" #pixiCanvasContainer></div>
+    <div class="row-auto">
+        <button mat-raised-button color="primary" mat-button (click)="savePlantUMLToClipboard()">
+            <mat-icon>content_copy</mat-icon>
+        </button>
+    </div>
+    <div class="row-auto">
+        <img id="plantumlDiagram" />
+    </div>
 </div>

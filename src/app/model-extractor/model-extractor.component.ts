@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core'
 import { Global } from './../globals'
-import { Relation } from '../entities/relation'
-import { ClassEntity } from '../entities/classEntity'
-import { getUUID, initializePixiApplication } from '../services/helper.service'
-import { XMLNodeService } from '../services/xml.node.service'
 import { XMLPlaceService } from '../services/xml.place.service'
 import { XMLTransitionService } from '../services/xml.transition.service'
 import { XMLArcService } from '../services/xml.arc.service'
+import { Clipboard } from '@angular/cdk/clipboard'
+import { MatSnackBar } from '@angular/material/snack-bar'
+
+var plantumlEncoder = require('plantuml-encoder')
 
 @Component({
     selector: 'app-model-extractor',
@@ -15,31 +15,38 @@ import { XMLArcService } from '../services/xml.arc.service'
 })
 export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
-    private classReferenceList: ClassEntity[] = []
-    private relationReferenceList: Relation[] = []
+
+    public relationList: {
+        sourceName: string,
+        sourceCardinality: string,
+        targetName: string,
+        targetCardinality: string
+    }[] = []
+
+    private regex = /[^a-zA-Z]|\s/g
+
+    private plantUMLString = 
+    '@startuml \n'+
+    '!theme materia-outline \n'+
+    'title DME Example - Class Diagram \n'
 
     constructor(
-        private ngZone: NgZone,
-        private xmlNodeService: XMLNodeService,
+        private _snackBar: MatSnackBar,
         private xmlPlaceService: XMLPlaceService,
         private xmlTransitionService: XMLTransitionService,
-        private xmlArcService: XMLArcService
+        private xmlArcService: XMLArcService,
+        private clipboard: Clipboard
     ) {}
 
     ngAfterViewInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            initializePixiApplication()
 
-            this.div.nativeElement.innerHTML = ''
-            this.div.nativeElement.appendChild(Global.app.view)
-            this.adjustCanvasSize()
-
+           
             // load XML file
             const designerData = localStorage.getItem('designerData')
             if (designerData) {
                 Global.xmlDoc = new DOMParser().parseFromString(designerData, 'text/xml')
-
-                this.generateOwners()
+                
+                this.generateClassesFromRoles()
 
                 this.generateClassesFromTokenSchemas()
 
@@ -47,64 +54,35 @@ export class ModelExtractorComponent implements AfterViewInit {
 
                 this.generateCardinalitiesFromRoles()
 
-                this.generateAttributesFromSchemas()
+                // finish PlantUML string and display it as img
+                this.plantUMLString += '@enduml \n'
+                const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
+                plantUMLImage.src = 'http://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
+
             } else alert('No valid xml string found')
-        })
     }
 
-    generateOwners() {
-        let xPosition = 100
+    generateClassesFromRoles() {
         this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
-            this.classReferenceList.push(
-                new ClassEntity(getUUID(), xPosition, 50, element, undefined, this.xmlNodeService, 0xffffff)
-            )
-
-            xPosition += 150
+            this.addClass(element, [])
         })
     }
 
     generateClassesFromTokenSchemas() {
-        let xPosition = 100
-        let yPosition = 250
-
         const objectsWithIncomingArcs: (string | null)[] = []
         Array.from(this.xmlArcService.getAllArcs()).forEach((element) => {
             objectsWithIncomingArcs.push(element.getAttribute('target'))
         })
 
-        Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
-            const tokenSchema = place.getElementsByTagName('tokenSchema')
-            // check if the place has a token schema
-            if (tokenSchema.length > 0) {
-                // check if a class with the same token schema name has already been created
-                if (
-                    this.classReferenceList.find((el) => el.textValue == tokenSchema[0].getAttribute('name')) ==
-                    undefined
-                ) {
-                    // set sprite tint to red if the class is an existing (external) object
-                    let color = 0xff0000
-                    if (objectsWithIncomingArcs.some((x) => x == String(place.getAttribute('id')))) {
-                        color = 0xffffff
-                    }
-
-                    // create the class
-                    this.classReferenceList.push(
-                        new ClassEntity(
-                            getUUID(),
-                            xPosition,
-                            yPosition,
-                            String(tokenSchema[0].getAttribute('name')),
-                            undefined,
-                            this.xmlNodeService,
-                            color
-                        )
-                    )
-
-                    xPosition += 75
-                    yPosition += 50
-                }
-            }
-        })
+        this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
+            // TODO: Update logic for internal external classes
+            // set sprite tint to red if the class is an existing (external) object
+            //   let color = 0xff0000
+            //   if (objectsWithIncomingArcs.some((x) => x == String(place.getAttribute('id')))) {
+            //       color = 0xffffff
+            //   }
+            this.addClass(tokenSchemaName, this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName))
+            })
     }
 
     generateCardinalitiesAroundTransitions() {
@@ -122,12 +100,12 @@ export class ModelExtractorComponent implements AfterViewInit {
 
                 // if the names of the classes are the same we dont want to generate a relation
                 if (predecessorName != successorName) {
-                    this.addRelation(
-                        predecessorName,
-                        successorName,
+                    this.addComposition(
+                        predecessorName, 
                         String(predecessor.getElementsByTagName('hlinscription')[0].textContent),
+                        successorName,
                         String(successor.getElementsByTagName('hlinscription')[0].textContent)
-                    )
+                        )
                 }
             }
         })
@@ -137,63 +115,59 @@ export class ModelExtractorComponent implements AfterViewInit {
         console.log('=== Creating relation from transition role assignments ===')
 
         Array.from(this.xmlTransitionService.getTransitionOwners()).forEach((element) => {
-            /*  
-                Make sure to keep track of the list of created relations with their source and target classes
-                Always check if the relation from source to target class already exists.
-                We just have to check if the relation exists, not which cardinality it implements, because the cardinality is alwazs 1-N in Rule 2.2
-            */
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
-                const sourceName = String(
-                    element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent
-                )
-                const targetName = String(
-                    this.xmlPlaceService.getPlaceTokenSchemaName(String(arc.getAttribute('target')))
-                )
-
-                const sourceRef = this.relationReferenceList.find((el) => el.startNode.textValue == sourceName)
-                const targetRef = this.relationReferenceList.find((el) => el.targetNode.textValue == targetName)
-
-                // continue creation only if a duplicate relation does not already exist
-                if (!(sourceRef && targetRef)) {
-                    const relation = this.addRelation(sourceName, targetName, '1', '*')
-
-                    if (relation) this.relationReferenceList.push(relation)
-                } else {
-                    console.log('Skipping because of duplicate Relation from ' + sourceName + ' to ' + targetName)
-                }
+                this.addComposition(
+                    String(element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent), 
+                    '1',
+                    String(this.xmlPlaceService.getPlaceTokenSchemaName(String(arc.getAttribute('target')))),
+                    '*'
+                )                
             })
         })
     }
 
-    generateAttributesFromSchemas() {
-        this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
-            const classElement = this.classReferenceList.find((e) => e.textValue === tokenSchemaName)
-            if (classElement) {
-                this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName).forEach((tokenSchema) => {
-                    classElement.addAttributeGrahpicsObject(String(tokenSchema.name))
-                })
-            }
-        })
+    savePlantUMLToClipboard() {
+        this.clipboard.copy(this.plantUMLString)
+        this._snackBar.open('Saved PlantUML string to clipboard', '', { duration: 2000 }, )
     }
 
-    adjustCanvasSize() {
-        Global.app.renderer.resize(this.div.nativeElement.offsetWidth, this.div.nativeElement.offsetHeight)
-    }
+    addClass(name: string, attributes: { name: string; type: string }[]){
 
-    addRelation(sourceName: string, targetName: string, textValueC1: string, textValueC2: string) {
-        // checks if the source and target nodes that will be connected actually exist
-        const sourceRef = this.classReferenceList.find((el) => el.textValue == sourceName)
-        const targetRef = this.classReferenceList.find((el) => el.textValue == targetName)
 
-        let tmpRelation
-        if (sourceRef && targetRef) {
-            tmpRelation = new Relation(sourceRef, targetRef, sourceRef.sprite, textValueC1, textValueC2)
+        this.plantUMLString += 'class ' + name.replace(this.regex, "") + ' \n'
 
-            sourceRef.relationList.push(tmpRelation)
-            targetRef.relationList.push(tmpRelation)
-
-            console.log('created relation from ' + sourceName + ' to ' + targetName)
+        if (attributes.length > 0 ){
+            this.plantUMLString += '{ \n'
+            attributes.forEach(element => {
+                this.plantUMLString += '+'+ element.type + ' ' + element.name.replace(this.regex, "")  + ' \n'
+            });
+            this.plantUMLString += '} \n'
         }
-        return tmpRelation
+    }
+
+    addComposition(
+        sourceName: string, 
+        sourceCardinality: string, 
+        targetName: string, 
+        targetCardinality: string, 
+        direction:string = ''
+        ){
+            if(this.relationList.some((el) => 
+            el.sourceName == sourceName && 
+            el.sourceCardinality == sourceCardinality && 
+            el.targetName == targetName && 
+            el.targetCardinality == targetCardinality
+            )){
+                console.log('found duplicate relation')
+            } else {
+                this.relationList.push({sourceName, sourceCardinality, targetName, targetCardinality})
+
+                this.plantUMLString += 
+                sourceName.replace(this.regex, "") + ' "' + sourceCardinality + '" '
+                + '*-' + direction + '- '
+                + '"' + targetCardinality + '" ' + targetName.replace(this.regex, "") + ' \n'
+
+            }
+          
     }
 }
