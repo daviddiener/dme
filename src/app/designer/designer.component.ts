@@ -31,7 +31,7 @@ export class DesignerComponent implements AfterViewInit {
     public tokenSchemaName = '-'
     public data: { name: string; type: string }[] = []
 
-    types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date']
+    types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date', 'base64Binary']
 
     column_schema = [
         {
