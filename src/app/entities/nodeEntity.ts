@@ -154,13 +154,7 @@ export abstract class NodeEntity {
         // handle node click if still clickable
         if (this.clickable && this.designerComponent) {
             if (this.designerComponent.createArcInProgress) {
-                this.designerComponent.addArc(
-                    getUUID(),
-                    this.designerComponent.arcSourceNode.id,
-                    this.id,
-                    '1',
-                    true
-                )
+                this.designerComponent.addArc(getUUID(), this.designerComponent.arcSourceNode.id, this.id, '1', true)
             } else {
                 this.designerComponent.activatePropertiesPanel(this)
             }

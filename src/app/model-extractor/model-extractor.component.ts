@@ -6,7 +6,7 @@ import { XMLArcService } from '../services/xml.arc.service'
 import { Clipboard } from '@angular/cdk/clipboard'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-var plantumlEncoder = require('plantuml-encoder')
+const plantumlEncoder = require('plantuml-encoder')
 
 @Component({
     selector: 'app-model-extractor',
@@ -17,18 +17,15 @@ export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
 
     public relationList: {
-        sourceName: string,
-        sourceCardinality: string,
-        targetName: string,
+        sourceName: string
+        sourceCardinality: string
+        targetName: string
         targetCardinality: string
     }[] = []
 
     private regex = /[^a-zA-Z]|\s/g
 
-    private plantUMLString = 
-    '@startuml \n'+
-    '!theme materia-outline \n'+
-    'title DME Example - Class Diagram \n'
+    private plantUMLString = '@startuml \n' + '!theme materia-outline \n' + 'title DME Example - Class Diagram \n'
 
     constructor(
         private _snackBar: MatSnackBar,
@@ -39,27 +36,24 @@ export class ModelExtractorComponent implements AfterViewInit {
     ) {}
 
     ngAfterViewInit(): void {
+        // load XML file
+        const designerData = localStorage.getItem('designerData')
+        if (designerData) {
+            Global.xmlDoc = new DOMParser().parseFromString(designerData, 'text/xml')
 
-           
-            // load XML file
-            const designerData = localStorage.getItem('designerData')
-            if (designerData) {
-                Global.xmlDoc = new DOMParser().parseFromString(designerData, 'text/xml')
-                
-                this.generateClassesFromRoles()
+            this.generateClassesFromRoles()
 
-                this.generateClassesFromTokenSchemas()
+            this.generateClassesFromTokenSchemas()
 
-                this.generateCardinalitiesAroundTransitions()
+            this.generateCardinalitiesAroundTransitions()
 
-                this.generateCardinalitiesFromRoles()
+            this.generateCardinalitiesFromRoles()
 
-                // finish PlantUML string and display it as img
-                this.plantUMLString += '@enduml \n'
-                const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
-                plantUMLImage.src = 'http://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
-
-            } else alert('No valid xml string found')
+            // finish PlantUML string and display it as img
+            this.plantUMLString += '@enduml \n'
+            const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
+            plantUMLImage.src = 'http://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
+        } else alert('No valid xml string found')
     }
 
     generateClassesFromRoles() {
@@ -82,7 +76,7 @@ export class ModelExtractorComponent implements AfterViewInit {
             //       color = 0xffffff
             //   }
             this.addClass(tokenSchemaName, this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName))
-            })
+        })
     }
 
     generateCardinalitiesAroundTransitions() {
@@ -101,11 +95,11 @@ export class ModelExtractorComponent implements AfterViewInit {
                 // if the names of the classes are the same we dont want to generate a relation
                 if (predecessorName != successorName) {
                     this.addComposition(
-                        predecessorName, 
+                        predecessorName,
                         String(predecessor.getElementsByTagName('hlinscription')[0].textContent),
                         successorName,
                         String(successor.getElementsByTagName('hlinscription')[0].textContent)
-                        )
+                    )
                 }
             }
         })
@@ -117,57 +111,65 @@ export class ModelExtractorComponent implements AfterViewInit {
         Array.from(this.xmlTransitionService.getTransitionOwners()).forEach((element) => {
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
                 this.addComposition(
-                    String(element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent), 
+                    String(element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent),
                     '1',
                     String(this.xmlPlaceService.getPlaceTokenSchemaName(String(arc.getAttribute('target')))),
                     '*'
-                )                
+                )
             })
         })
     }
 
     savePlantUMLToClipboard() {
         this.clipboard.copy(this.plantUMLString)
-        this._snackBar.open('Saved PlantUML string to clipboard', '', { duration: 2000 }, )
+        this._snackBar.open('Saved PlantUML string to clipboard', '', { duration: 2000 })
     }
 
-    addClass(name: string, attributes: { name: string; type: string }[]){
+    addClass(name: string, attributes: { name: string; type: string }[]) {
+        this.plantUMLString += 'class ' + name.replace(this.regex, '') + ' \n'
 
-
-        this.plantUMLString += 'class ' + name.replace(this.regex, "") + ' \n'
-
-        if (attributes.length > 0 ){
+        if (attributes.length > 0) {
             this.plantUMLString += '{ \n'
-            attributes.forEach(element => {
-                this.plantUMLString += '+'+ element.type + ' ' + element.name.replace(this.regex, "")  + ' \n'
-            });
+            attributes.forEach((element) => {
+                this.plantUMLString += '+' + element.type + ' ' + element.name.replace(this.regex, '') + ' \n'
+            })
             this.plantUMLString += '} \n'
         }
     }
 
     addComposition(
-        sourceName: string, 
-        sourceCardinality: string, 
-        targetName: string, 
-        targetCardinality: string, 
-        direction:string = ''
-        ){
-            if(this.relationList.some((el) => 
-            el.sourceName == sourceName && 
-            el.sourceCardinality == sourceCardinality && 
-            el.targetName == targetName && 
-            el.targetCardinality == targetCardinality
-            )){
-                console.log('found duplicate relation')
-            } else {
-                this.relationList.push({sourceName, sourceCardinality, targetName, targetCardinality})
+        sourceName: string,
+        sourceCardinality: string,
+        targetName: string,
+        targetCardinality: string,
+        direction = ''
+    ) {
+        if (
+            this.relationList.some(
+                (el) =>
+                    el.sourceName == sourceName &&
+                    el.sourceCardinality == sourceCardinality &&
+                    el.targetName == targetName &&
+                    el.targetCardinality == targetCardinality
+            )
+        ) {
+            console.log('found duplicate relation')
+        } else {
+            this.relationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
 
-                this.plantUMLString += 
-                sourceName.replace(this.regex, "") + ' "' + sourceCardinality + '" '
-                + '*-' + direction + '- '
-                + '"' + targetCardinality + '" ' + targetName.replace(this.regex, "") + ' \n'
-
-            }
-          
+            this.plantUMLString +=
+                sourceName.replace(this.regex, '') +
+                ' "' +
+                sourceCardinality +
+                '" ' +
+                '*-' +
+                direction +
+                '- ' +
+                '"' +
+                targetCardinality +
+                '" ' +
+                targetName.replace(this.regex, '') +
+                ' \n'
+        }
     }
 }

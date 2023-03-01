@@ -76,13 +76,20 @@ export class DesignerComponent implements AfterViewInit {
 
         // load XML file
         const designerData = localStorage.getItem('designerData')
-        
+
         if (designerData) {
             this.loadDataFromLocal(designerData)
             const netVersion = localStorage.getItem('netVersion')
-            if(netVersion && (appVersion != netVersion)) this._snackBar.open('The saved net was created with version ' + netVersion + '. The net may be incompatible with the current version ' + appVersion + '.', 'Close')
-        }
-        else this.xmlService.createNewXMLDocument()
+            if (netVersion && appVersion != netVersion)
+                this._snackBar.open(
+                    'The saved net was created with version ' +
+                        netVersion +
+                        '. The net may be incompatible with the current version ' +
+                        appVersion +
+                        '.',
+                    'Close'
+                )
+        } else this.xmlService.createNewXMLDocument()
     }
 
     loadDataFromLocal(designerData: string) {
@@ -192,8 +199,7 @@ export class DesignerComponent implements AfterViewInit {
             localStorage.clear()
             if (Global.app) Global.app.destroy()
             this.ngAfterViewInit()
-            this._snackBar.open('Deleted all nodes', '', { duration: 2000 }, )
-
+            this._snackBar.open('Deleted all nodes', '', { duration: 2000 })
         }
     }
 
@@ -272,13 +278,12 @@ export class DesignerComponent implements AfterViewInit {
     saveNetToXML() {
         localStorage.setItem('designerData', new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
         localStorage.setItem('netVersion', appVersion)
-        this._snackBar.open('Saved net to XML in local storage', '', { duration: 2000 }, )
-
+        this._snackBar.open('Saved net to XML in local storage', '', { duration: 2000 })
     }
 
     saveNetToClipboard() {
         this.clipboard.copy(new XMLSerializer().serializeToString(Global.xmlDoc.documentElement))
-        this._snackBar.open('Saved net to clipboard', '', { duration: 2000 }, )
+        this._snackBar.open('Saved net to clipboard', '', { duration: 2000 })
     }
 
     readNetFromClipboard() {
@@ -291,7 +296,7 @@ export class DesignerComponent implements AfterViewInit {
                 this.nodeReferenceList = []
                 if (Global.app) Global.app.destroy()
                 this.ngAfterViewInit()
-                this._snackBar.open('Successfully imported clipboard content', '', { duration: 2000 }, )
+                this._snackBar.open('Successfully imported clipboard content', '', { duration: 2000 })
             })
             .catch((err) => {
                 if (backup) {
