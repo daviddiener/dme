@@ -25,7 +25,11 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     private regex = /[^a-zA-Z]|\s/g
 
-    private plantUMLString = '@startuml \n' + '!theme materia-outline \n' + 'title DME Example - Class Diagram \n'
+    private plantUMLString = 
+        '@startuml \n' + 
+        '!theme materia-outline \n' + 
+        '!define primary_key(x) <b>★x</b> \n' + 
+        'title DME Example - Class Diagram \n'
 
     constructor(
         private _snackBar: MatSnackBar,
@@ -125,13 +129,16 @@ export class ModelExtractorComponent implements AfterViewInit {
         this._snackBar.open('Saved PlantUML string to clipboard', '', { duration: 2000 })
     }
 
-    addClass(name: string, attributes: { name: string; type: string }[]) {
+    addClass(name: string, attributes: { name: string; type: string; isPrimaryKey: boolean }[]) {
         this.plantUMLString += 'class ' + name.replace(this.regex, '') + ' \n'
 
         if (attributes.length > 0) {
             this.plantUMLString += '{ \n'
             attributes.forEach((element) => {
-                this.plantUMLString += '+' + element.type + ' ' + element.name.replace(this.regex, '') + ' \n'
+                let elementName = element.name.replace(this.regex, '')
+                if(element.isPrimaryKey) elementName = 'primary_key(' + elementName + ')'
+                
+                this.plantUMLString += '+' + elementName + ' ' + element.type + ' \n'
             })
             this.plantUMLString += '} \n'
         }

@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms'
 import { MatTableModule } from '@angular/material/table'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 // Components
 import { AppRoutingModule } from './app-routing.module'
@@ -38,6 +39,7 @@ import { HomeComponent } from './home/home.component'
         MatTableModule,
         MatSelectModule,
         MatSnackBarModule,
+        MatCheckboxModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

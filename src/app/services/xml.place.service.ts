@@ -10,8 +10,8 @@ export class XMLPlaceService {
      * @param id
      * @returns An array of tuples including the name and type of all entries of the token schema
      */
-    public getPlaceTokenSchema(id: string): { name: string; type: string }[] {
-        const data: { name: string; type: string }[] = []
+    public getPlaceTokenSchema(id: string): { name: string; type: string, isPrimaryKey: boolean }[] {
+        const data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
         const tokenSchema = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
 
@@ -20,6 +20,7 @@ export class XMLPlaceService {
                 data.push({
                     name: String(element.getAttribute('name')),
                     type: String(element.getAttribute('type')),
+                    isPrimaryKey: Boolean(JSON.parse(String(element.getAttribute('isPrimaryKey')))),
                 })
             })
         }
@@ -46,7 +47,7 @@ export class XMLPlaceService {
      * @param dataObjectName
      * @param data
      */
-    public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string }[]) {
+    public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[]) {
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
 
         if (node[0].getElementsByTagName('tokenSchema').length > 0) {
@@ -62,6 +63,7 @@ export class XMLPlaceService {
             const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
             tmp.setAttribute('name', element.name)
             tmp.setAttribute('type', element.type)
+            tmp.setAttribute('isPrimaryKey', String(element.isPrimaryKey))
         })
     }
 
@@ -83,8 +85,8 @@ export class XMLPlaceService {
      * Returns all distinct token schema elements in the XML document for a given tokenSchemaName. Does not return duplicates, just distinct values.
      * @returns an array of schema objects
      */
-    public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string }[] {
-        const data: { name: string; type: string }[] = []
+    public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string, isPrimaryKey: boolean }[] {
+        const data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
         Array.from(Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')).forEach(
             (schemaElement) => {
@@ -94,6 +96,7 @@ export class XMLPlaceService {
                         data.push({
                             name: String(element.getAttribute('name')),
                             type: String(element.getAttribute('type')),
+                            isPrimaryKey: Boolean(JSON.parse(String(element.getAttribute('isPrimaryKey')))),
                         })
                     }
                 })

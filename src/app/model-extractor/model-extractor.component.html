@@ -1,8 +1,11 @@
 <div class="container">
     <div class="row-auto">
-        <button mat-raised-button color="primary" mat-button (click)="savePlantUMLToClipboard()">
+        <button mat-raised-button color="primary" (click)="savePlantUMLToClipboard()">
             <mat-icon>content_copy</mat-icon>
         </button>
+        <a href="https://www.planttext.com/" mat-raised-button color="primary" target="_blank">
+            Go to PlantText <mat-icon>web</mat-icon>
+        </a>
     </div>
     <div class="row-auto">
         <img id="plantumlDiagram" />

@@ -29,7 +29,7 @@ export class DesignerComponent implements AfterViewInit {
     public name = '-'
     public owner = '-'
     public tokenSchemaName = '-'
-    public data: { name: string; type: string }[] = []
+    public data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
     types = ['xs:integer', 'xs:Boolean', 'xs:string', 'xs:date', 'base64Binary']
 
@@ -43,6 +43,11 @@ export class DesignerComponent implements AfterViewInit {
             key: 'type',
             type: 'type',
             label: 'Type',
+        },
+        {
+            key: 'isPrimaryKey',
+            type: 'boolean',
+            label: 'Primary Key',
         },
         {
             key: 'isEdit',
@@ -256,7 +261,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     addRow() {
-        const newRow = { name: '', type: '', isEdit: true }
+        const newRow = { name: '', type: '', isPrimaryKey: false, isEdit: true }
         this.data = [...this.data, newRow]
     }
 
