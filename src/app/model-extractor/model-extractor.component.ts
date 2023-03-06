@@ -28,7 +28,8 @@ export class ModelExtractorComponent implements AfterViewInit {
     private plantUMLString = 
         '@startuml \n' + 
         '!theme materia-outline \n' + 
-        '!define primary_key(x) <b>★x</b> \n' + 
+        '!define primary_key(x) <b>🔑x</b> \n' + 
+        '!define foreign_key(x) <b>↩️x</b> \n' + 
         'title DME Example - Class Diagram \n'
 
     constructor(
@@ -84,8 +85,6 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     generateCardinalitiesAroundTransitions() {
-        console.log('=== Creating relation that are connected by a transition ===')
-
         Array.from(this.xmlTransitionService.getAllTransitions()).forEach((element) => {
             const id = element.getAttribute('id')
             const predecessor = this.xmlArcService.getAllArcsWithTarget(id)[0]
@@ -110,8 +109,6 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     generateCardinalitiesFromRoles() {
-        console.log('=== Creating relation from transition role assignments ===')
-
         Array.from(this.xmlTransitionService.getTransitionOwners()).forEach((element) => {
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
                 this.addComposition(
@@ -130,18 +127,20 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     addClass(name: string, attributes: { name: string; type: string; isPrimaryKey: boolean }[]) {
-        this.plantUMLString += 'class ' + name.replace(this.regex, '') + ' \n'
+        this.plantUMLString += 'class ' + name.replace(this.regex, '') + '\n{\n'
 
         if (attributes.length > 0) {
-            this.plantUMLString += '{ \n'
+            // this.plantUMLString += '{ \n'
             attributes.forEach((element) => {
-                let elementName = element.name.replace(this.regex, '')
+                let elementName = element.name
                 if(element.isPrimaryKey) elementName = 'primary_key(' + elementName + ')'
                 
                 this.plantUMLString += '+' + elementName + ' ' + element.type + ' \n'
             })
-            this.plantUMLString += '} \n'
+            // this.plantUMLString += '} \n'
         }
+        this.plantUMLString += '}\n'
+
     }
 
     addComposition(
@@ -151,8 +150,9 @@ export class ModelExtractorComponent implements AfterViewInit {
         targetCardinality: string,
         direction = ''
     ) {
+        // If we cant find a duplicate relation in the relationList --> then we create the relation
         if (
-            this.relationList.some(
+            !this.relationList.some(
                 (el) =>
                     el.sourceName == sourceName &&
                     el.sourceCardinality == sourceCardinality &&
@@ -160,12 +160,26 @@ export class ModelExtractorComponent implements AfterViewInit {
                     el.targetCardinality == targetCardinality
             )
         ) {
-            console.log('found duplicate relation')
-        } else {
             this.relationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
+
+            // Returns the first primary key from tokenSchema for the source name
+            const primaryKey = this.xmlPlaceService.getDistinctTokenSchemaByName(sourceName).find(x => x.isPrimaryKey)
+
+            let primary_key_name = 'generic_' + sourceName.replace(this.regex, '') + '_ID'
+            let primary_key_type = 'string'
+            if(primaryKey){
+                primary_key_name = primaryKey.name
+                primary_key_type = primaryKey.type
+            }
+
+            this.plantUMLString = this.plantUMLString.replace(
+                targetName.replace(this.regex, '') + '\n{\n', 
+                targetName.replace(this.regex, '') + '\n{\n' + '+foreign_key(' + primary_key_name + ') ' + primary_key_type + '\n')
 
             this.plantUMLString +=
                 sourceName.replace(this.regex, '') +
+                '::' +
+                primary_key_name +
                 ' "' +
                 sourceCardinality +
                 '" ' +
@@ -176,6 +190,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                 targetCardinality +
                 '" ' +
                 targetName.replace(this.regex, '') +
+                '::' +
+                primary_key_name + 
                 ' \n'
         }
     }
