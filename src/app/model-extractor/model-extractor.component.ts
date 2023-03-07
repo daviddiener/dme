@@ -63,7 +63,18 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateClassesFromRoles() {
         this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
-            this.addClass(element, [])
+            this.addClass(element, [
+                {
+                    name: element + '_id',
+                    type: 'string',
+                    isPrimaryKey: true
+                },
+                {
+                    name: 'name',
+                    type: 'string',
+                    isPrimaryKey: false
+                }
+            ])
         })
     }
 
@@ -165,7 +176,7 @@ export class ModelExtractorComponent implements AfterViewInit {
             // Returns the first primary key from tokenSchema for the source name
             const primaryKey = this.xmlPlaceService.getDistinctTokenSchemaByName(sourceName).find(x => x.isPrimaryKey)
 
-            let primary_key_name = 'generic_' + sourceName.replace(this.regex, '') + '_ID'
+            let primary_key_name = sourceName.replace(this.regex, '') + '_id'
             let primary_key_type = 'string'
             if(primaryKey){
                 primary_key_name = primaryKey.name
