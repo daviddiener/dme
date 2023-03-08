@@ -113,12 +113,9 @@ export class XMLPlaceService {
      * Returns all places in the XML document
      * @returns a collection of Elements
      */
-    public getAllPlaces(): HTMLCollectionOf<Element> {
-        return Global.xmlDoc
-            .getElementsByTagName('pnml')[0]
-            .getElementsByTagName('net')[0]
-            .getElementsByTagName('page')[0]
-            .getElementsByTagName('place')
+    public getAllPlaces(): NodeListOf<Element> {
+        const pageTag = Global.xmlDoc.querySelector("page")
+        return pageTag ? pageTag.querySelectorAll("place") : Global.xmlDoc.querySelectorAll("place")
     }
 
      /**

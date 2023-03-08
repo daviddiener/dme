@@ -9,12 +9,9 @@ export class XMLTransitionService {
      * Returns all transitions in the XML document.
      * @returns A collection of elements.
      */
-    public getAllTransitions(): HTMLCollectionOf<Element> {
-        return Global.xmlDoc
-            .getElementsByTagName('pnml')[0]
-            .getElementsByTagName('net')[0]
-            .getElementsByTagName('page')[0]
-            .getElementsByTagName('transition')
+    public getAllTransitions(): NodeListOf<Element> {
+        const pageTag = Global.xmlDoc.querySelector("page")
+        return pageTag ? pageTag.querySelectorAll("transition") : Global.xmlDoc.querySelectorAll("transition")
     }
 
     /**
@@ -43,8 +40,7 @@ export class XMLTransitionService {
      * @returns A string value
      */
     public getTransitionOwner(id: string): string {
-        const owner = String(Global.xmlDoc.querySelectorAll('[id="' + id + '"] owner text')[0]?.textContent)
-
+        const owner = String(Global.xmlDoc.querySelectorAll('[id="' + id + '"] owner text')[0]?.textContent ?? '')
         return owner !== undefined ? owner : ''
     }
 
@@ -55,7 +51,7 @@ export class XMLTransitionService {
     public getTransitionOwnersDistinct(): string[] {
         const tmp: string[] = []
         Global.xmlDoc.querySelectorAll('owner text').forEach((element) => {
-            tmp.push(String(element.textContent))
+            tmp.push(String(element.textContent ?? ''))
         })
 
         const uniqueItems = [...new Set(tmp)]

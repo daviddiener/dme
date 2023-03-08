@@ -5,6 +5,7 @@ import { XMLTransitionService } from '../services/xml.transition.service'
 import { XMLArcService } from '../services/xml.arc.service'
 import { Clipboard } from '@angular/cdk/clipboard'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { elementAt } from 'rxjs'
 
 const plantumlEncoder = require('plantuml-encoder')
 
@@ -16,7 +17,7 @@ const plantumlEncoder = require('plantuml-encoder')
 export class ModelExtractorComponent implements AfterViewInit {
     @ViewChild('pixiCanvasContainer') private div: ElementRef
 
-    public relationList: {
+    public associationList: {
         sourceName: string
         sourceCardinality: string
         targetName: string
@@ -73,22 +74,23 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateClassesFromRoles() {
         this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
-            this.classes.push({
-                'name': element, 
-                'superClasses': [], 
-                'attributes': [
-                    {
-                        name: element + '_id',
-                        type: 'string',
-                        isPrimaryKey: true
-                    },
-                    {
-                        name: 'name',
-                        type: 'string',
-                        isPrimaryKey: false
-                    }
-                ]
-            })
+            if(element)
+                this.classes.push({
+                    'name': element, 
+                    'superClasses': [], 
+                    'attributes': [
+                        {
+                            name: element + '_id',
+                            type: 'string',
+                            isPrimaryKey: true
+                        },
+                        {
+                            name: 'name',
+                            type: 'string',
+                            isPrimaryKey: false
+                        }
+                    ]
+                })
         })
     }
 
@@ -99,12 +101,6 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
 
         this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
-            // TODO: Update logic for internal external classes
-            // set sprite tint to red if the class is an existing (external) object
-            //   let color = 0xff0000
-            //   if (objectsWithIncomingArcs.some((x) => x == String(place.getAttribute('id')))) {
-            //       color = 0xffffff
-            //   }
             this.classes.push({
                 'name': tokenSchemaName, 
                 'superClasses': this.xmlPlaceService.getDistinctSuperClassNameByName(tokenSchemaName), 
@@ -128,9 +124,9 @@ export class ModelExtractorComponent implements AfterViewInit {
                 if (predecessorName != successorName) {
                     this.addComposition(
                         predecessorName,
-                        String(predecessor.getElementsByTagName('hlinscription')[0].textContent),
+                        String(predecessor.getElementsByTagName('hlinscription')[0]?.textContent ?? '*'),
                         successorName,
-                        String(successor.getElementsByTagName('hlinscription')[0].textContent),
+                        String(successor.getElementsByTagName('hlinscription')[0]?.textContent ?? '*'),
                         'down'
                     )
                 }
@@ -142,7 +138,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         Array.from(this.xmlTransitionService.getTransitionOwners()).forEach((element) => {
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
                 this.addComposition(
-                    String(element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent),
+                    element.querySelector("owner > text")?.textContent ?? '',
                     '1',
                     String(this.xmlPlaceService.getPlaceTokenSchemaName(String(arc.getAttribute('target')))),
                     '*',
@@ -165,21 +161,21 @@ export class ModelExtractorComponent implements AfterViewInit {
     ) {
         // If we cant find a duplicate relation in the relationList --> then we create the relation
         if (
-            !this.relationList.some(
+            !this.associationList.some(
                 (el) =>
                     el.sourceName == sourceName &&
                     el.sourceCardinality == sourceCardinality &&
                     el.targetName == targetName &&
                     el.targetCardinality == targetCardinality
-            )
+            ) 
+            && targetName 
+            && sourceName
         ) {
-            this.relationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
+            let primary_key_name = sourceName.replace(this.regex, '') + '_id'
+            let primary_key_type = 'string'
 
             // Returns the first primary key from tokenSchema for the source name
             const primaryKey = this.xmlPlaceService.getDistinctTokenSchemaByName(sourceName).find(x => x.isPrimaryKey)
- 
-            let primary_key_name = sourceName.replace(this.regex, '') + '_id'
-            let primary_key_type = 'string'
             if(primaryKey){
                 primary_key_name = primaryKey.name
                 primary_key_type = primaryKey.type
@@ -192,6 +188,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                 isPrimaryKey: false
             })
 
+            this.associationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
             this.associations.push(
                 sourceName.replace(this.regex, '') +
                 '::' +
@@ -227,18 +224,25 @@ export class ModelExtractorComponent implements AfterViewInit {
                 inheritanceString=inheritanceString.slice(0, -1);
             }
     
+            // generate the class heading
             this.plantUMLString += 'class ' + classElement.name.replace(this.regex, '') + inheritanceString + '\n{\n'
-    
-            if (classElement.attributes.length > 0) {
-                // this.plantUMLString += '{ \n'
-                classElement.attributes.forEach((element) => {
-                    let elementName = element.name
-                    if(element.isPrimaryKey) elementName = 'primary_key(' + elementName + ')'
-                    
-                    this.plantUMLString += '+' + elementName + ' ' + element.type + ' \n'
-                })
-                // this.plantUMLString += '} \n'
+
+            // generate a primary key if there is none specified
+            if(!classElement.attributes.some(x => x.isPrimaryKey)) {
+                this.plantUMLString += '+ primary_key(' + classElement.name.replace(this.regex, '') + '_id) string \n'
             }
+                    
+            // generate the list of attributes
+            if (classElement.attributes.length > 0) {
+                classElement.attributes.forEach((attribute) => {
+                    let elementName = attribute.name
+                    if(attribute.isPrimaryKey) elementName = 'primary_key(' + elementName + ')'
+                    
+                    this.plantUMLString += '+' + elementName + ' ' + attribute.type + ' \n'
+                })
+            }
+
+            // close the class definition
             this.plantUMLString += '}\n'
         })
 

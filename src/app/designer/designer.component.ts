@@ -26,10 +26,10 @@ export class DesignerComponent implements AfterViewInit {
     public createArcInProgress = false
     public arcSourceNode: Node
 
-    public name = '-'
+    public name = ''
     public superClassSelected = ''
-    public owner = '-'
-    public tokenSchemaName = '-'
+    public owner = ''
+    public tokenSchemaName = ''
     public data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
     types = ['anyURI','base64Binary','boolean','date','dateTime','decimal','double','duration','float','hexBinary','gDay','gMonth','gMonthDay','gYear','gYearMonth','NOTATION','QName','string','time']
@@ -110,10 +110,10 @@ export class DesignerComponent implements AfterViewInit {
                 new Place(
                     place_id,
                     Number(
-                        place.getElementsByTagName('graphics')[0].getElementsByTagName('position')[0].getAttribute('x')
+                        place.querySelector("graphics > position")?.getAttribute('x')
                     ),
                     Number(
-                        place.getElementsByTagName('graphics')[0].getElementsByTagName('position')[0].getAttribute('y')
+                        place.querySelector("graphics > position")?.getAttribute('y')
                     ),
                     String(place.getElementsByTagName('name')[0].getElementsByTagName('text')[0].textContent),
                     false,
@@ -127,21 +127,15 @@ export class DesignerComponent implements AfterViewInit {
         })
 
         // GENERATE Transitions
-        Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {
+        Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {            
             this.nodeReferenceList.push(
                 new Transition(
                     transition.getAttribute('id') as string,
                     Number(
-                        transition
-                            .getElementsByTagName('graphics')[0]
-                            .getElementsByTagName('position')[0]
-                            .getAttribute('x')
+                        transition.querySelector("graphics > position")?.getAttribute('x')
                     ),
                     Number(
-                        transition
-                            .getElementsByTagName('graphics')[0]
-                            .getElementsByTagName('position')[0]
-                            .getAttribute('y')
+                        transition.querySelector("graphics > position")?.getAttribute('y')
                     ),
                     String(transition.getElementsByTagName('name')[0].getElementsByTagName('text')[0].textContent),
                     false,
@@ -167,7 +161,7 @@ export class DesignerComponent implements AfterViewInit {
                     String(arc.getAttribute('id')),
                     String(arc.getAttribute('source')),
                     String(arc.getAttribute('target')),
-                    String(arc.getElementsByTagName('hlinscription')[0]?.textContent),
+                    String(arc.getElementsByTagName('hlinscription')[0]?.textContent ?? '*'),
                     false
                 )
             })
@@ -219,10 +213,10 @@ export class DesignerComponent implements AfterViewInit {
         // reset panel if previously selected
         this.placeSelected = false
         this.transitionSelected = false
-        this.name = '-'
-        this.owner = '-'
-        this.tokenSchemaName = '-'
-        this.superClassSelected = '-'
+        this.name = ''
+        this.owner = ''
+        this.tokenSchemaName = ''
+        this.superClassSelected = ''
         this.data = []
 
         // reset old node tint

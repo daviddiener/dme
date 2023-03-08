@@ -40,12 +40,9 @@ export class XMLArcService {
      * Returns all arcs defined in the XML document.
      * @returns A collection of the xml elements
      */
-    public getAllArcs(): HTMLCollectionOf<Element> {
-        return Global.xmlDoc
-            .getElementsByTagName('pnml')[0]
-            .getElementsByTagName('net')[0]
-            .getElementsByTagName('page')[0]
-            .getElementsByTagName('arc')
+    public getAllArcs(): NodeListOf<Element> {
+        const pageTag = Global.xmlDoc.querySelector("page")
+        return pageTag ? pageTag.querySelectorAll("arc") : Global.xmlDoc.querySelectorAll("arc")
     }
 
     /**

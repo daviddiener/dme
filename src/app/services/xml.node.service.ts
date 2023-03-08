@@ -15,11 +15,11 @@ export class XMLNodeService {
      * @param nodeType the node type can be a transition or place
      */
     public createNode(id: string, x: number, y: number, textValue: string, nodeType: NodeType) {
-        const parent = Global.xmlDoc
-            .getElementsByTagName('pnml')[0]
-            .getElementsByTagName('net')[0]
-            .getElementsByTagName('page')[0]
-            .appendChild(Global.xmlDoc.createElement(nodeType))
+
+        const pageTag = Global.xmlDoc.querySelector("page")
+        const netTag = Global.xmlDoc.querySelector("net")
+        const parent = pageTag ? pageTag.appendChild(Global.xmlDoc.createElement(nodeType)) : 
+                       netTag ? netTag.appendChild(Global.xmlDoc.createElement(nodeType)) : Global.xmlDoc.createElement(nodeType)
 
         parent.setAttribute('id', id)
 
@@ -37,7 +37,7 @@ export class XMLNodeService {
         if (nodeType == NodeType.transition) {
             const owner = parent.appendChild(Global.xmlDoc.createElement('owner'))
             const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
-            text2.textContent = '-'
+            text2.textContent = ''
         }
     }
 
