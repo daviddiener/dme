@@ -27,12 +27,13 @@ export class DesignerComponent implements AfterViewInit {
     public arcSourceNode: Node
 
     public name = '-'
+    public superClassSelected = ''
     public owner = '-'
     public tokenSchemaName = '-'
     public data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
     types = ['anyURI','base64Binary','boolean','date','dateTime','decimal','double','duration','float','hexBinary','gDay','gMonth','gMonthDay','gYear','gYearMonth','NOTATION','QName','string','time']
-    
+    superClasses: string[] = []
 
     column_schema = [
         {
@@ -79,7 +80,7 @@ export class DesignerComponent implements AfterViewInit {
         this.div.nativeElement.innerHTML = ''
         this.div.nativeElement.appendChild(Global.app.view)
         this.adjustCanvasSize()
-
+        
         // load XML file
         const designerData = localStorage.getItem('designerData')
 
@@ -103,9 +104,11 @@ export class DesignerComponent implements AfterViewInit {
 
         // GENERATE PLACES
         Array.from(this.xmlPlaceService.getAllPlaces()).forEach((place) => {
+            const place_id = place.getAttribute('id') as string
+
             this.nodeReferenceList.push(
                 new Place(
-                    place.getAttribute('id') as string,
+                    place_id,
                     Number(
                         place.getElementsByTagName('graphics')[0].getElementsByTagName('position')[0].getAttribute('x')
                     ),
@@ -115,7 +118,10 @@ export class DesignerComponent implements AfterViewInit {
                     String(place.getElementsByTagName('name')[0].getElementsByTagName('text')[0].textContent),
                     false,
                     this,
-                    this.xmlNodeService
+                    this.xmlNodeService,
+                    this.xmlPlaceService.getPlaceTokenSchemaName(place_id),
+                    this.xmlPlaceService.getPlaceTokenSchema(place_id),
+                    this.xmlPlaceService.getPlaceSuperClassName(place_id)
                 )
             )
         })
@@ -216,6 +222,7 @@ export class DesignerComponent implements AfterViewInit {
         this.name = '-'
         this.owner = '-'
         this.tokenSchemaName = '-'
+        this.superClassSelected = '-'
         this.data = []
 
         // reset old node tint
@@ -235,6 +242,11 @@ export class DesignerComponent implements AfterViewInit {
             this.placeSelected = true
             this.data = this.xmlPlaceService.getPlaceTokenSchema(this.arcSourceNode.id)
             this.tokenSchemaName = this.xmlPlaceService.getPlaceTokenSchemaName(this.arcSourceNode.id)
+            this.superClassSelected = this.xmlPlaceService.getPlaceSuperClassName(this.arcSourceNode.id)
+
+            // Get the list of available superclasses for inheritance selection
+            this.superClasses = this.xmlPlaceService.getDistinctTokenSchemaNames()
+            this.superClasses = this.superClasses.filter(e => e !== (sourceNode as Place).tokenSchemaName);
         }
     }
 
@@ -273,7 +285,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     updatePlaceTokenSchema() {
-        this.xmlPlaceService.updatePlaceTokenSchema(this.arcSourceNode.id, this.tokenSchemaName, this.data)
+        (this.arcSourceNode as Place).updatePlaceTokenSchema(this.tokenSchemaName, this.data, this.superClassSelected, this.xmlPlaceService)
     }
 
     removeRow(name: string) {

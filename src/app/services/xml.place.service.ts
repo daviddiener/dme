@@ -46,8 +46,9 @@ export class XMLPlaceService {
      * @param id
      * @param dataObjectName
      * @param data
+     * @param superClassName
      */
-    public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[]) {
+    public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassName: string) {
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
 
         if (node[0].getElementsByTagName('tokenSchema').length > 0) {
@@ -58,6 +59,8 @@ export class XMLPlaceService {
         const tokenSchema = node[0].appendChild(Global.xmlDoc.createElement('tokenSchema'))
         tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
         tokenSchema.setAttribute('name', dataObjectName)
+        tokenSchema.setAttribute('superClass', superClassName)
+
 
         data.forEach((element) => {
             const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
@@ -116,5 +119,38 @@ export class XMLPlaceService {
             .getElementsByTagName('net')[0]
             .getElementsByTagName('page')[0]
             .getElementsByTagName('place')
+    }
+
+     /**
+     * Returns the assigned superClass name of a place from the XML document.
+     * @param id
+     * @returns A string with the superClass name
+     */
+     public getPlaceSuperClassName(id: string | null): string {
+        const superClass = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
+        if (superClass.length > 0) {
+            return String(superClass[0].getAttribute('superClass'))
+        } else {
+            return ''
+        }
+    }
+
+    /**
+     * Returns the first distinct superClass Names in the XML document for a given tokenSchemaName. Does not return duplicates, just distinct values.
+     * @returns a string containing the superClass name
+     */
+    public getDistinctSuperClassNameByName(tokenSchemaName: string): string[] {
+        let data: string[] = []
+        const tokenSchemas = Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')
+
+        tokenSchemas.forEach(element => {
+            data.push(String(element.getAttribute('superClass')))
+        });
+
+        // remove all superCVlasses that are empty ''
+        data = data.filter(e => e !== '');
+
+        // return just unique values
+        return [...new Set(data)]
     }
 }

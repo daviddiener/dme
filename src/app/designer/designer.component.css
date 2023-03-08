@@ -69,3 +69,7 @@ h2 {
 .form-input {
     padding-right: 5px;
 }
+
+mat-form-field {
+    width: 100%;
+  }

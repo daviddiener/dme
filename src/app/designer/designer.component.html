@@ -73,7 +73,18 @@
                 <mat-label>Marking Name</mat-label>
                 <input matInput [(ngModel)]="tokenSchemaName" (change)="updatePlaceTokenSchema()" />
             </mat-form-field>
-            <div *ngIf="placeSelected">
+            <mat-form-field appearance="outline" *ngIf="placeSelected && tokenSchemaName">
+                <mat-label>Choose a super class</mat-label>
+                <mat-select [(ngModel)]="superClassSelected" (selectionChange)="updatePlaceTokenSchema()">
+                    <mat-option value=''>
+                        -
+                    </mat-option>
+                    <mat-option *ngFor="let name of superClasses" [value]="name">
+                        {{ name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div *ngIf="placeSelected && tokenSchemaName">
                 <table mat-table [dataSource]="this.data">
                     <ng-container [matColumnDef]="col.key" *ngFor="let col of this.column_schema">
                         <th mat-header-cell *matHeaderCellDef>

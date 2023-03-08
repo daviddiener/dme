@@ -23,10 +23,18 @@ export class ModelExtractorComponent implements AfterViewInit {
         targetCardinality: string
     }[] = []
 
+    private classes: {
+        name: string, 
+        superClasses: string[], 
+        attributes: { name: string; type: string; isPrimaryKey: boolean }[]
+    }[] = []
+    private associations: string[] = []
+
     private regex = /[^a-zA-Z]|\s/g
 
     private plantUMLString = 
         '@startuml \n' + 
+        // 'skinparam linetype polyline \n' +
         '!theme materia-outline \n' + 
         '!define primary_key(x) <b>🔑x</b> \n' + 
         '!define foreign_key(x) <b>↩️x</b> \n' + 
@@ -54,6 +62,8 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             this.generateCardinalitiesFromRoles()
 
+            this.flushToPlantUML()
+
             // finish PlantUML string and display it as img
             this.plantUMLString += '@enduml \n'
             const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
@@ -63,18 +73,22 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateClassesFromRoles() {
         this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
-            this.addClass(element, [
-                {
-                    name: element + '_id',
-                    type: 'string',
-                    isPrimaryKey: true
-                },
-                {
-                    name: 'name',
-                    type: 'string',
-                    isPrimaryKey: false
-                }
-            ])
+            this.classes.push({
+                'name': element, 
+                'superClasses': [], 
+                'attributes': [
+                    {
+                        name: element + '_id',
+                        type: 'string',
+                        isPrimaryKey: true
+                    },
+                    {
+                        name: 'name',
+                        type: 'string',
+                        isPrimaryKey: false
+                    }
+                ]
+            })
         })
     }
 
@@ -91,7 +105,11 @@ export class ModelExtractorComponent implements AfterViewInit {
             //   if (objectsWithIncomingArcs.some((x) => x == String(place.getAttribute('id')))) {
             //       color = 0xffffff
             //   }
-            this.addClass(tokenSchemaName, this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName))
+            this.classes.push({
+                'name': tokenSchemaName, 
+                'superClasses': this.xmlPlaceService.getDistinctSuperClassNameByName(tokenSchemaName), 
+                'attributes': this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName)
+            })
         })
     }
 
@@ -112,7 +130,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                         predecessorName,
                         String(predecessor.getElementsByTagName('hlinscription')[0].textContent),
                         successorName,
-                        String(successor.getElementsByTagName('hlinscription')[0].textContent)
+                        String(successor.getElementsByTagName('hlinscription')[0].textContent),
+                        'down'
                     )
                 }
             }
@@ -126,7 +145,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                     String(element.getElementsByTagName('owner')[0]?.getElementsByTagName('text')[0].textContent),
                     '1',
                     String(this.xmlPlaceService.getPlaceTokenSchemaName(String(arc.getAttribute('target')))),
-                    '*'
+                    '*',
                 )
             })
         })
@@ -135,23 +154,6 @@ export class ModelExtractorComponent implements AfterViewInit {
     savePlantUMLToClipboard() {
         this.clipboard.copy(this.plantUMLString)
         this._snackBar.open('Saved PlantUML string to clipboard', '', { duration: 2000 })
-    }
-
-    addClass(name: string, attributes: { name: string; type: string; isPrimaryKey: boolean }[]) {
-        this.plantUMLString += 'class ' + name.replace(this.regex, '') + '\n{\n'
-
-        if (attributes.length > 0) {
-            // this.plantUMLString += '{ \n'
-            attributes.forEach((element) => {
-                let elementName = element.name
-                if(element.isPrimaryKey) elementName = 'primary_key(' + elementName + ')'
-                
-                this.plantUMLString += '+' + elementName + ' ' + element.type + ' \n'
-            })
-            // this.plantUMLString += '} \n'
-        }
-        this.plantUMLString += '}\n'
-
     }
 
     addComposition(
@@ -175,7 +177,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             // Returns the first primary key from tokenSchema for the source name
             const primaryKey = this.xmlPlaceService.getDistinctTokenSchemaByName(sourceName).find(x => x.isPrimaryKey)
-
+ 
             let primary_key_name = sourceName.replace(this.regex, '') + '_id'
             let primary_key_type = 'string'
             if(primaryKey){
@@ -183,11 +185,14 @@ export class ModelExtractorComponent implements AfterViewInit {
                 primary_key_type = primaryKey.type
             }
 
-            this.plantUMLString = this.plantUMLString.replace(
-                targetName.replace(this.regex, '') + '\n{\n', 
-                targetName.replace(this.regex, '') + '\n{\n' + '+foreign_key(' + primary_key_name + ') ' + primary_key_type + '\n')
+            // add the foreign key to the target class of this relation
+            this.classes[this.classes.findIndex(x => x.name == targetName)].attributes.push({
+                name: 'foreign_key(' + primary_key_name + ')',
+                type: primary_key_type,
+                isPrimaryKey: false
+            })
 
-            this.plantUMLString +=
+            this.associations.push(
                 sourceName.replace(this.regex, '') +
                 '::' +
                 primary_key_name +
@@ -204,6 +209,42 @@ export class ModelExtractorComponent implements AfterViewInit {
                 '::' +
                 primary_key_name + 
                 ' \n'
+            )
         }
+    }
+
+    flushToPlantUML(){
+        this.classes.forEach(classElement =>{
+            let inheritanceString = ''
+            // extend the superclass if it exists
+            if(classElement.superClasses.length > 0) {
+                inheritanceString = ' extends ' 
+                // iterate through all superClasses if we have mutiple defined
+                classElement.superClasses.forEach(element => {
+                    inheritanceString += element+','
+                });
+                // remove last comma so syntax of PlantUML doesnt break
+                inheritanceString=inheritanceString.slice(0, -1);
+            }
+    
+            this.plantUMLString += 'class ' + classElement.name.replace(this.regex, '') + inheritanceString + '\n{\n'
+    
+            if (classElement.attributes.length > 0) {
+                // this.plantUMLString += '{ \n'
+                classElement.attributes.forEach((element) => {
+                    let elementName = element.name
+                    if(element.isPrimaryKey) elementName = 'primary_key(' + elementName + ')'
+                    
+                    this.plantUMLString += '+' + elementName + ' ' + element.type + ' \n'
+                })
+                // this.plantUMLString += '} \n'
+            }
+            this.plantUMLString += '}\n'
+        })
+
+        this.associations.forEach(associationElement =>{
+            this.plantUMLString += associationElement
+        })
+       
     }
 }
