@@ -124,12 +124,15 @@ export class XMLPlaceService {
      * @returns A string with the superClass name
      */
      public getPlaceSuperClassName(id: string | null): string {
-        const superClass = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
-        if (superClass.length > 0) {
-            return String(superClass[0].getAttribute('superClass'))
-        } else {
-            return ''
-        }
+
+        return Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')[0]?.getAttribute('superClass') ?? ''
+
+        // const superClass = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
+        // if (superClass.length > 0) {
+        //     return String(superClass[0].getAttribute('superClass') ?? '')
+        // } else {
+        //     return ''
+        // }
     }
 
     /**
@@ -141,10 +144,10 @@ export class XMLPlaceService {
         const tokenSchemas = Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')
 
         tokenSchemas.forEach(element => {
-            data.push(String(element.getAttribute('superClass')))
+            data.push(String(element.getAttribute('superClass') ?? ''))
         });
 
-        // remove all superCVlasses that are empty ''
+        // remove all superClasses that are empty ''
         data = data.filter(e => e !== '');
 
         // return just unique values
