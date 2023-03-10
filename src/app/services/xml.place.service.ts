@@ -49,25 +49,26 @@ export class XMLPlaceService {
      * @param superClassName
      */
     public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassName: string) {
+        // delete existing tokenSchema
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
-
         if (node[0].getElementsByTagName('tokenSchema').length > 0) {
             node[0].removeChild(node[0].getElementsByTagName('tokenSchema')[0])
         }
 
-        // create token schema tag again
-        const tokenSchema = node[0].appendChild(Global.xmlDoc.createElement('tokenSchema'))
-        tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
-        tokenSchema.setAttribute('name', dataObjectName)
-        tokenSchema.setAttribute('superClass', superClassName)
+        // create token schema tag again if a name is provided
+        if(dataObjectName!=''){
+            const tokenSchema = node[0].appendChild(Global.xmlDoc.createElement('tokenSchema'))
+            tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
+            tokenSchema.setAttribute('name', dataObjectName)
+            tokenSchema.setAttribute('superClass', superClassName)
 
-
-        data.forEach((element) => {
-            const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
-            tmp.setAttribute('name', element.name)
-            tmp.setAttribute('type', element.type)
-            tmp.setAttribute('isPrimaryKey', String(element.isPrimaryKey))
-        })
+            data.forEach((element) => {
+                const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
+                tmp.setAttribute('name', element.name)
+                tmp.setAttribute('type', element.type)
+                tmp.setAttribute('isPrimaryKey', String(element.isPrimaryKey))
+            })
+        }
     }
 
     /**
@@ -105,7 +106,6 @@ export class XMLPlaceService {
                 })
             }
         )
-
         return data
     }
 
@@ -124,15 +124,7 @@ export class XMLPlaceService {
      * @returns A string with the superClass name
      */
      public getPlaceSuperClassName(id: string | null): string {
-
         return Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')[0]?.getAttribute('superClass') ?? ''
-
-        // const superClass = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
-        // if (superClass.length > 0) {
-        //     return String(superClass[0].getAttribute('superClass') ?? '')
-        // } else {
-        //     return ''
-        // }
     }
 
     /**

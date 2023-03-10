@@ -95,17 +95,17 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     generateClassesFromTokenSchemas() {
-        const objectsWithIncomingArcs: (string | null)[] = []
-        Array.from(this.xmlArcService.getAllArcs()).forEach((element) => {
-            objectsWithIncomingArcs.push(element.getAttribute('target'))
-        })
-
         this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
             this.classes.push({
                 'name': tokenSchemaName, 
                 'superClasses': this.xmlPlaceService.getDistinctSuperClassNameByName(tokenSchemaName), 
                 'attributes': this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName)
             })
+        })
+
+        this.xmlPlaceService.getAllPlaces().forEach((place) => {
+            
+            console.log(place.querySelector('tokenSchema'))
         })
     }
 

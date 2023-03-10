@@ -280,6 +280,12 @@ export class DesignerComponent implements AfterViewInit {
 
     updatePlaceTokenSchema() {
         (this.arcSourceNode as Place).updatePlaceTokenSchema(this.tokenSchemaName, this.data, this.superClassSelected, this.xmlPlaceService)
+
+        // delete the current superClass and Attributes, when the user deletes the markingname
+        if(!Boolean(this.tokenSchemaName)) {
+            this.superClassSelected = ''
+            this.data = []
+        }
     }
 
     removeRow(name: string) {
