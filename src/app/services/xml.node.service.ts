@@ -83,8 +83,8 @@ export class XMLNodeService {
      * @returns A string containing the name of the node.
      */
     public getNodeNameById(id: string | null): string {
-        const name = Global.xmlDoc.querySelectorAll('[id="' + id + '"] name text')[0].textContent?.toString()
-
-        return name !== undefined ? name : ''
+        const name = Global.xmlDoc.querySelector('[id="' + id + '"] name text')
+        if(name && name.textContent) return name.textContent
+        else return ''
     }
 }

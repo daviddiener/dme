@@ -3,9 +3,9 @@ import { Global } from './../globals'
 import { XMLPlaceService } from '../services/xml.place.service'
 import { XMLTransitionService } from '../services/xml.transition.service'
 import { XMLArcService } from '../services/xml.arc.service'
+import { XMLNodeService } from '../services/xml.node.service'
 import { Clipboard } from '@angular/cdk/clipboard'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { elementAt } from 'rxjs'
 
 const plantumlEncoder = require('plantuml-encoder')
 
@@ -46,6 +46,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         private xmlPlaceService: XMLPlaceService,
         private xmlTransitionService: XMLTransitionService,
         private xmlArcService: XMLArcService,
+        private xmlNodeService: XMLNodeService,
         private clipboard: Clipboard
     ) {}
 
@@ -104,8 +105,20 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
 
         this.xmlPlaceService.getAllPlaces().forEach((place) => {
-            
-            console.log(place.querySelector('tokenSchema'))
+            // if no name is set we give the name 'undefined class' to the class
+            let name = this.xmlNodeService.getNodeNameById(place.getAttribute('id'))
+            if(!name) name = 'undefined class'
+
+            // if the class does not exist already, create it
+            if (!this.classes.some((el) => el.name == name) ) {
+                if(!place.querySelector('tokenSchema')) {
+                    this.classes.push({
+                        'name': name, 
+                        'superClasses': [], 
+                        'attributes': []
+                    })
+                }
+            }
         })
     }
 
