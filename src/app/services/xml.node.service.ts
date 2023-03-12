@@ -87,4 +87,14 @@ export class XMLNodeService {
         if(name && name.textContent) return name.textContent
         else return ''
     }
+
+    /**
+     * Return the text, assigned to the node with the given id
+     * @param id
+     * @returns A string value
+     */
+    public getNodeTextById(id: string): string {
+        const text = String(Global.xmlDoc.querySelectorAll('[id="' + id + '"] name text')[0]?.textContent ?? '')
+        return text !== undefined ? text : ''
+    }
 }

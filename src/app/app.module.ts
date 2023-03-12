@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatStepperModule } from '@angular/material/stepper';
+import { HttpClientModule } from '@angular/common/http';
 
 // Components
 import { AppRoutingModule } from './app-routing.module'
@@ -41,7 +42,8 @@ import { HomeComponent } from './home/home.component'
         MatSelectModule,
         MatSnackBarModule,
         MatCheckboxModule,
-        MatStepperModule
+        MatStepperModule,
+        HttpClientModule
     ],
     providers: [],
     bootstrap: [AppComponent],

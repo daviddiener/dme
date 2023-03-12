@@ -21,7 +21,8 @@ export class ModelExtractorComponent implements AfterViewInit {
         sourceName: string
         sourceCardinality: string
         targetName: string
-        targetCardinality: string
+        targetCardinality: string,
+        associationText: string
     }[] = []
 
     private classes: {
@@ -122,9 +123,9 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateCardinalitiesAroundTransitions() {
         // iterate through all transitions, and for each transition thorugh each combination of source and target arcs
-        Array.from(this.xmlTransitionService.getAllTransitions()).forEach((element) => {
-            this.xmlArcService.getAllArcsWithTarget(element.getAttribute('id')).forEach(predecessorArc => {
-                this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach(successorArc => {
+        Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {
+            this.xmlArcService.getAllArcsWithTarget(transition.getAttribute('id')).forEach(predecessorArc => {
+                this.xmlArcService.getAllArcsWithSource(transition.getAttribute('id')).forEach(successorArc => {
                     // check for null before extracting the names of the 2 classes we want to connect with a relation
                     if (successorArc && predecessorArc) {
                         let predecessorName = this.xmlPlaceService.getPlaceTokenSchemaName(predecessorArc.getAttribute('source'))
@@ -156,6 +157,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                                 predecessorCardinality,
                                 successorName,
                                 successorCardinality,
+                                this.xmlNodeService.getNodeTextById(String(transition.getAttribute('id'))),
                                 'down'
                             )
                         }
@@ -182,6 +184,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                     '1',
                     name,
                     '*',
+                    'instantiated by'
                 )
             })
         })
@@ -197,6 +200,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         sourceCardinality: string,
         targetName: string,
         targetCardinality: string,
+        associationText: string,
         direction = ''
     ) {
         // If we cant find a duplicate relation in the relationList --> then we create the relation
@@ -206,7 +210,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                     el.sourceName == sourceName &&
                     el.sourceCardinality == sourceCardinality &&
                     el.targetName == targetName &&
-                    el.targetCardinality == targetCardinality
+                    el.targetCardinality == targetCardinality &&
+                    el.associationText == associationText
             ) 
             && targetName 
             && sourceName
@@ -228,7 +233,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                 isPrimaryKey: false
             })
 
-            this.associationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
+            this.associationList.push({ sourceName, sourceCardinality, targetName, targetCardinality, associationText })
             
             this.associations.push(
                 '"' +
@@ -246,6 +251,8 @@ export class ModelExtractorComponent implements AfterViewInit {
                 targetName +
                 '::' +
                 primary_key_name + 
+                '" : "' +
+                associationText +
                 '" \n'
             )
         }
