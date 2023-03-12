@@ -37,7 +37,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         '!theme materia-outline \n' + 
         '!define primary_key(x) <b>🔑x</b> \n' + 
         '!define foreign_key(x) <b>↩️x</b> \n' + 
-        'title DME Example - Class Diagram \n'
+        'title Generated Class Diagram \n'
 
     constructor(
         private _snackBar: MatSnackBar,
