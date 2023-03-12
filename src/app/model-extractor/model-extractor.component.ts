@@ -143,13 +143,19 @@ export class ModelExtractorComponent implements AfterViewInit {
                             if(!successorName) successorName = 'undefinedClass'
                         }
 
+                        // get the carindalities, it there is none, or they are invalid, default to *
+                        let predecessorCardinality = predecessorArc.getElementsByTagName('hlinscription')[0]?.textContent?.trim()
+                        if(!predecessorCardinality) predecessorCardinality = "*"
+                        let successorCardinality = successorArc.getElementsByTagName('hlinscription')[0]?.textContent?.trim()
+                        if(!successorCardinality) successorCardinality = "*"
+
                         // if the names of the classes are the same we dont want to generate a relation
                         if (predecessorName != successorName) {
                             this.addComposition(
                                 predecessorName,
-                                String(predecessorArc.getElementsByTagName('hlinscription')[0]?.textContent ?? '*'),
+                                predecessorCardinality,
                                 successorName,
-                                String(successorArc.getElementsByTagName('hlinscription')[0]?.textContent ?? '*'),
+                                successorCardinality,
                                 'down'
                             )
                         }
@@ -223,6 +229,7 @@ export class ModelExtractorComponent implements AfterViewInit {
             })
 
             this.associationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
+            
             this.associations.push(
                 '"' +
                 sourceName +
@@ -263,7 +270,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             // generate a primary key if there is none specified
             if(!classElement.attributes.some(x => x.isPrimaryKey)) {
-                this.plantUMLString += '+ primary_key(' + classElement.name + '_id) string \n'
+                this.plantUMLString += '+primary_key(' + classElement.name + '_id) string \n'
             }
                     
             // generate the list of attributes
