@@ -14,6 +14,7 @@ import { MatTableModule } from '@angular/material/table'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatStepperModule } from '@angular/material/stepper';
 
 // Components
 import { AppRoutingModule } from './app-routing.module'
@@ -40,6 +41,7 @@ import { HomeComponent } from './home/home.component'
         MatSelectModule,
         MatSnackBarModule,
         MatCheckboxModule,
+        MatStepperModule
     ],
     providers: [],
     bootstrap: [AppComponent],

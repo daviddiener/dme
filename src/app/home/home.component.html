@@ -1,1 +1,40 @@
-<p>home works!</p>
+<mat-stepper orientation="horizontal">
+     <!-- change default 'edit' icon -->
+    <ng-template matStepperIcon="edit">
+        <mat-icon>info</mat-icon>
+    </ng-template>
+    <mat-step>
+      <ng-template matStepLabel>Design or Import a Petri Net</ng-template>
+      <ng-template matStepContent>
+            <p>The first step is to design or import a Petri net diagram using the <a [routerLink]="['/designer']">Designer</a> tool provided in this application or by importing an example Petri net from a list of resources available on the internet. To design a Petri net, go to the <a [routerLink]="['/designer']">Designer</a> and use the tools provided to add places, transitions, and arcs. To import a Petri net, select the &quot;Import&quot; button and paste the Petri net diagram from the clipboard.</p>
+            <p>Example base Petri Nets in PNML Syntax</p>
+            <ul>
+            <li><a href="https://github.com/irgangla/pntools/blob/master/example.pnml">Project_PetriNet_Syntehsis</a></li>
+            <li><a href="https://git.ucr.ac.cr/JEISSON.HIDALGO/concurrente21a-jeisson_hidalgo/-/blob/bec510453b1d040ccc7eedde4f40e51862ae03f2/taskc/signaling/signaling.pnml">Signaling</a></li>
+            <li><a href="https://git.ucr.ac.cr/JEISSON.HIDALGO/concurrente21b-jeisson_hidalgo-03/-/blob/02e300ebbd7a457a3789e7388700fe8d6ba67119/taskc/execution_paths/execution_paths.pnml">execution_paths</a></li>
+            <li><a href="https://www.pnml.org/version-2009/examples/SharedMemory-Hlpn.pnml">High-level Petri net [shared memory] model</a></li>
+            </ul>
+        <button mat-button matStepperNext>Next</button>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Define Token Schemas for Places</ng-template>
+      <ng-template matStepContent>
+        <p>In this step, define token schemas for each place in the Petri net. Token schemas include the name, superclasses, and attributes of the token. To define a token schema, select the place and enter a token schema name. The field for the superclass and attribute definitions will appear, allowing you to enter the token schema information. If you do not define a token schema, the place name will be used for the data model generation in Step 4.</p>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Define Roles for Transitions</ng-template>
+      <p>In this step, define roles for each transition. A role represents a person, organization, or entity responsible for the occurrence of the transition. To define a role, select the transition and enter the name of the role in the role field. The roles will be converted into classes in the data model, and each class will be assigned the attributes "id" and "name."</p>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>Execute Data Model Extraction</ng-template>
+            <p>After completing Steps 1-3, you can extract a data model by going to the <a [routerLink]="['/extractor']"> data model extraction</a> page. The application will automatically generate a UML class model for you based on the Petri net model and token schemas and roles defined in Steps 2 and 3. The resulting data model can be used for the early phases of software development.</p>
+            <p>Congratulations! You have successfully modeled a Petri net diagram and extracted a data model from it.</p>
+        <button mat-button matStepperPrevious>Back</button>
+      </mat-step>
+  </mat-stepper>
