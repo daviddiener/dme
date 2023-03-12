@@ -224,22 +224,22 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             this.associationList.push({ sourceName, sourceCardinality, targetName, targetCardinality })
             this.associations.push(
+                '"' +
                 sourceName +
                 '::' +
                 primary_key_name +
-                ' "' +
+                '" "' +
                 sourceCardinality +
                 '" ' +
                 '*-' +
                 direction +
-                '- ' +
-                '"' +
+                '- "' +
                 targetCardinality +
-                '" ' +
+                '" "' +
                 targetName +
                 '::' +
                 primary_key_name + 
-                ' \n'
+                '" \n'
             )
         }
     }
