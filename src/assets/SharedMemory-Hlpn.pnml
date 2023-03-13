@@ -39,7 +39,7 @@
 		<page id="page1">
 			<place id="pOwn">
 				<graphics>
-					<position x="35" y="35"/>
+					<position x="434" y="68"/>
 				</graphics>
 				<name>
 					<text>OwnMemAcc</text>
@@ -52,7 +52,7 @@
 			</place>			
 			<place id="pActive">
 				<graphics>
-					<position x="35" y="70"/>
+					<position x="143" y="246"/>
 				</graphics>
 				<name>
 					<text>Active</text>
@@ -212,7 +212,7 @@
 			<place id="pQue">
 				<graphics>				
 					<dimension x="18" y="18"/>
-					<position x="70" y="70"/>
+					<position x="476" y="399"/>
 				</graphics>
 				<name>
 					<text>Queue</text>
@@ -225,7 +225,7 @@
 			</place>
 			<place id="pExt">
 				<graphics>				
-					<position x="100" y="80"/>
+					<position x="498" y="292"/>
 				</graphics>
 				<name>
 					<text>Ext_Bus</text>
@@ -252,7 +252,7 @@
 			</place>
 			<place id="pExtMem">
 				<graphics>				
-					<position x="100" y="70"/>
+					<position x="297" y="-29"/>
 				</graphics>
 				<name>
 					<text>Ext_Mem_Acc</text>
@@ -265,7 +265,7 @@
 			</place>
 			<place id="pMem">
 				<graphics>				
-					<position x="100" y="40"/>
+					<position x="713" y="224"/>
 				</graphics>
 				<name>
 					<text>Memory</text>
@@ -424,7 +424,7 @@
 			</place>	
 			<transition id="tBO">
 				<graphics>
-					<position x="30" y="50"/>
+					<position x="240" y="74"/>
 				</graphics>
 				<name>
 					<text>Begin_Own_Acc</text>
@@ -432,7 +432,7 @@
 			</transition>
 			<transition id="tEO">
 				<graphics>
-					<position x="30" y="50"/>
+					<position x="637" y="71"/>
 				</graphics>
 				<name>
 					<text>End_Own_Acc</text>
@@ -452,7 +452,7 @@
 			</transition>
 			<transition id="tReq">
 				<graphics>
-					<position x="52" y="70"/>
+					<position x="302" y="372"/>
 				</graphics>
 				<name>
 					<text>Req_Ext_Acc</text>
@@ -460,7 +460,7 @@
 			</transition>
 			<transition id="tBE">
 				<graphics>
-					<position x="85" y="70"/>
+					<position x="682" y="377"/>
 				</graphics>
 				<name>
 					<text>Begin_Ext_Acc</text>
@@ -484,7 +484,7 @@
 			<transition id="tEE">
 				<graphics>
 					<dimension x="20" y="6"/>
-					<position x="120" y="70"/>
+					<position x="496" y="174"/>
 				</graphics>
 				<name>
 					<text>End_Ext_Acc</text>
@@ -508,7 +508,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			</arc>
+			<hlinscription xmlns=""><text>1</text></hlinscription></arc>
 			<arc id="a2" source="pOwn" target="tEO">
 				<hlinscription>
 					<structure>
@@ -540,7 +540,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			</arc>
+			<hlinscription xmlns=""><text>1</text></hlinscription></arc>
 			<arc id="a4" source="pActive" target="tBO">
 				<hlinscription>
 					<structure>
@@ -556,7 +556,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			</arc>
+			<hlinscription xmlns=""><text>1</text></hlinscription><hlinscription xmlns=""><text>1</text></hlinscription></arc>
 			<arc id="a5" source="tEO" target="pMem">
 				<hlinscription>
 					<structure>
@@ -698,7 +698,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			</arc>
+			<hlinscription xmlns=""><text>1</text></hlinscription></arc>
 			<arc id="a13" source="tEE" target="pMem">
 				<hlinscription>
 					<structure>

@@ -157,11 +157,14 @@ export class DesignerComponent implements AfterViewInit {
         */
         Promise.all(this.promiseList).then(() => {
             Array.from(this.xmlArcService.getAllArcs()).forEach((arc) => {
+                let cardinality = String(arc.getElementsByTagName('hlinscription')[0]?.textContent?.trim() ?? '*')
+                if(!Boolean(cardinality.trim())) cardinality = '*'
+                
                 this.addArc(
                     String(arc.getAttribute('id')),
                     String(arc.getAttribute('source')),
                     String(arc.getAttribute('target')),
-                    String(arc.getElementsByTagName('hlinscription')[0]?.textContent ?? '*'),
+                    cardinality,
                     false
                 )
             })
