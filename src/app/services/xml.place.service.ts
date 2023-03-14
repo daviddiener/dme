@@ -46,9 +46,9 @@ export class XMLPlaceService {
      * @param id
      * @param dataObjectName
      * @param data
-     * @param superClassName
+     * @param superClassNames
      */
-    public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassName: string) {
+    public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassNames: string[]) {
         // delete existing tokenSchema
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
         if (node[0].getElementsByTagName('tokenSchema').length > 0) {
@@ -60,7 +60,7 @@ export class XMLPlaceService {
             const tokenSchema = node[0].appendChild(Global.xmlDoc.createElement('tokenSchema'))
             tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
             tokenSchema.setAttribute('name', dataObjectName)
-            tokenSchema.setAttribute('superClass', superClassName)
+            tokenSchema.setAttribute('superClass', superClassNames.join(','))
 
             data.forEach((element) => {
                 const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
@@ -72,25 +72,48 @@ export class XMLPlaceService {
     }
 
     /**
-     * Returns all token schema names in the XML document. Does not return duplicates, just distinct values.
+     * Returns all token schema names in the XML document. Does not return duplicates, just distinct values. 
+     * The function takes into account the cascading order of superclasses, so that first the classes with 
+     * the least amount of superclasses are resolved.
      * @returns an array of strings
      */
     public getDistinctTokenSchemaNames(): string[] {
-        const tmp: string[] = []
+        const schemaMap = new Map<string, Element>()
         Global.xmlDoc.querySelectorAll('tokenSchema').forEach((element) => {
-            tmp.push(String(element.getAttribute('name')))
+          schemaMap.set(String(element.getAttribute('name')), element)
         })
-
-        const uniqueItems = [...new Set(tmp)]
-        return uniqueItems
-    }
+      
+        const sortedSchemas: Element[] = []
+        const seenSchemas = new Set<string>()
+        
+        const visitSchema = (schemaName: string) => {
+          if (!seenSchemas.has(schemaName)) {
+            seenSchemas.add(schemaName)
+            const schema = schemaMap.get(schemaName)
+            if (schema) {
+              const superClassList = schema.getAttribute('superClass')
+              if (superClassList != null) {
+                const superClasses = superClassList.split(',')
+                for (const superClass of superClasses) {
+                  visitSchema(superClass.trim())
+                }
+              }
+              sortedSchemas.push(schema)
+            }
+          }
+        }
+      
+        schemaMap.forEach((element, schemaName) => visitSchema(schemaName))
+        return sortedSchemas.map((element) => String(element.getAttribute('name')))
+      }
+      
 
     /**
      * Returns all distinct token schema elements in the XML document for a given tokenSchemaName. Does not return duplicates, just distinct values.
      * @returns an array of schema objects
      */
-    public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string, isPrimaryKey: boolean }[] {
-        const data: { name: string; type: string, isPrimaryKey: boolean }[] = []
+    public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string, isPrimaryKey: boolean, isPrimaryKeyCombi: boolean }[] {
+        const data: { name: string; type: string, isPrimaryKey: boolean, isPrimaryKeyCombi: boolean }[] = []
 
         Array.from(Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')).forEach(
             (schemaElement) => {
@@ -101,6 +124,7 @@ export class XMLPlaceService {
                             name: String(element.getAttribute('name')),
                             type: String(element.getAttribute('type')),
                             isPrimaryKey: Boolean(JSON.parse(String(element.getAttribute('isPrimaryKey')))),
+                            isPrimaryKeyCombi: false
                         })
                     }
                 })
@@ -123,8 +147,8 @@ export class XMLPlaceService {
      * @param id
      * @returns A string with the superClass name
      */
-     public getPlaceSuperClassName(id: string | null): string {
-        return Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')[0]?.getAttribute('superClass') ?? ''
+     public getPlaceSuperClassNameById(id: string | null): string[] {
+        return Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')[0]?.getAttribute('superClass')?.split(',') ?? []
     }
 
     /**
@@ -136,7 +160,7 @@ export class XMLPlaceService {
         const tokenSchemas = Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')
 
         tokenSchemas.forEach(element => {
-            data.push(String(element.getAttribute('superClass') ?? ''))
+            data = data.concat(element.getAttribute('superClass')?.split(',') ?? [])
         });
 
         // remove all superClasses that are empty ''

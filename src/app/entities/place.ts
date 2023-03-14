@@ -15,7 +15,7 @@ export class Place extends Node {
         xmlNodeService: XMLNodeService,
         public tokenSchemaName: string | undefined = undefined,
         public tokenSchema: { name: string; type: string, isPrimaryKey: boolean }[] | undefined = undefined,
-        public superClassName: string | undefined = undefined,
+        public superClassName: string[] | undefined = undefined,
     ) {
         super(
             id,
@@ -35,7 +35,7 @@ export class Place extends Node {
         if (saveInXml) xmlNodeService.createNode(id, x, y, textValue, NodeType.place)
     }
 
-    public updatePlaceTokenSchema(dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassName: string, xmlPlaceService: XMLPlaceService){
+    public updatePlaceTokenSchema(dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassName: string[], xmlPlaceService: XMLPlaceService){
         this.tokenSchemaName = dataObjectName
         this.tokenSchema = data
         this.superClassName = superClassName

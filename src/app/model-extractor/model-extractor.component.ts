@@ -28,7 +28,7 @@ export class ModelExtractorComponent implements AfterViewInit {
     private classes: {
         name: string, 
         superClasses: string[], 
-        attributes: { name: string; type: string; isPrimaryKey: boolean }[]
+        attributes: { name: string; type: string; isPrimaryKey: boolean, isPrimaryKeyCombi: boolean }[]
     }[] = []
     private associations: string[] = []
 
@@ -82,12 +82,14 @@ export class ModelExtractorComponent implements AfterViewInit {
                         {
                             name: element + '_id',
                             type: 'string',
-                            isPrimaryKey: true
+                            isPrimaryKey: true,
+                            isPrimaryKeyCombi: true
                         },
                         {
                             name: 'name',
                             type: 'string',
-                            isPrimaryKey: false
+                            isPrimaryKey: false,
+                            isPrimaryKeyCombi: false
                         }
                     ]
                 })
@@ -95,18 +97,35 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     generateClassesFromTokenSchemas() {
+        // In this section we add all classes that are derived from tokenSchemas
         this.xmlPlaceService.getDistinctTokenSchemaNames().forEach((tokenSchemaName) => {
+            const primary_key = this.getPKCombination(tokenSchemaName)            
+            const attributes = this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName)
+            
+            // add the PK here if it is not included by default. This is the case with inherited or combined PKs. 
+            // We override the PK rather than leaving the old one, because the isPrimaryKeyCombi may be different
+            // if(!attributes.some(x => x.name == primary_key.name)) {
+            //     attributes.push(primary_key)
+            // }
+            const existingIndex = attributes.findIndex((x) => x.name === primary_key.name);
+            if (existingIndex !== -1) {
+                attributes[existingIndex] = primary_key;
+            } else {
+                attributes.push(primary_key);
+            }
+
             this.classes.push({
                 'name': tokenSchemaName, 
                 'superClasses': this.xmlPlaceService.getDistinctSuperClassNameByName(tokenSchemaName), 
-                'attributes': this.xmlPlaceService.getDistinctTokenSchemaByName(tokenSchemaName)
+                'attributes': attributes
             })
         })
 
+        // In this section we add the remaining classes that don't include tokenSchemas via place names
         this.xmlPlaceService.getAllPlaces().forEach((place) => {
-            // if no name is set we give the name 'undefined class' to the class
+            // if not even a name is set we give the name 'undefined class' to the class
             let name = this.xmlNodeService.getNodeNameById(place.getAttribute('id'))
-            if(!name) name = 'undefinedClass'
+            if(!name) name = 'undefinedClass'            
 
             // if the class does not exist already, create it
             if (!this.classes.some((el) => el.name == name) ) {
@@ -114,7 +133,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                     this.classes.push({
                         'name': name, 
                         'superClasses': [], 
-                        'attributes': []
+                        'attributes': [this.getPKCombination(name)]
                     })
                 }
             }
@@ -216,30 +235,26 @@ export class ModelExtractorComponent implements AfterViewInit {
             && targetName 
             && sourceName
         ) {
-            let primary_key_name = sourceName + '_id'
-            let primary_key_type = 'string'
+            const primary_key = this.getPKCombination(sourceName)
 
-            // Returns the first primary key from tokenSchema for the source name
-            const primaryKey = this.xmlPlaceService.getDistinctTokenSchemaByName(sourceName).find(x => x.isPrimaryKey)
-            if(primaryKey){
-                primary_key_name = primaryKey.name
-                primary_key_type = primaryKey.type
+            // add the foreign key to the target class of this relation if it does not exist already
+            const target = this.classes[this.classes.findIndex(x => x.name == targetName)]
+            if(!target.attributes.some(x => x.name === 'foreign_key(' + primary_key.name + ')')) {
+                target.attributes.push({
+                    name: 'foreign_key(' + primary_key.name + ')',
+                    type: primary_key.type,
+                    isPrimaryKey: false,
+                    isPrimaryKeyCombi: false
+                })
             }
-
-            // add the foreign key to the target class of this relation
-            this.classes[this.classes.findIndex(x => x.name == targetName)].attributes.push({
-                name: 'foreign_key(' + primary_key_name + ')',
-                type: primary_key_type,
-                isPrimaryKey: false
-            })
-
+            
             this.associationList.push({ sourceName, sourceCardinality, targetName, targetCardinality, associationText })
             
             this.associations.push(
                 '"' +
                 sourceName +
                 '::' +
-                primary_key_name +
+                primary_key.name +
                 '" "' +
                 sourceCardinality +
                 '" ' +
@@ -250,12 +265,54 @@ export class ModelExtractorComponent implements AfterViewInit {
                 '" "' +
                 targetName +
                 '::' +
-                primary_key_name + 
+                primary_key.name + 
                 '" : "' +
                 associationText +
                 '" \n'
             )
         }
+    }
+
+    /**
+     * Calculates the primary key. If there is a superclass, or multiple PK defined in this class we build the combination of all PKs available for this class.
+     * @param sourceName 
+     * @returns A unique (combined) primary key for the given class
+     */
+    getPKCombination(sourceName: string) {
+        // Returns the first primary key from tokenSchema for the source name
+        let primaryKeys = this.xmlPlaceService.getDistinctTokenSchemaByName(sourceName).filter(x => x.isPrimaryKey)
+        const superclassesOfSource = this.xmlPlaceService.getDistinctSuperClassNameByName(sourceName)
+
+        // if base class has superclass we take the PK combination from there and concat it to the PK of the base blass
+        superclassesOfSource.forEach(superC =>{
+            primaryKeys = primaryKeys.concat(this.classes.find(x => x.name === superC)?.attributes.filter(x => x.isPrimaryKey && x.isPrimaryKeyCombi) ?? [])
+        })
+
+        // delete duplicate entries from the PK array. This is necessary if we have recorsuive superclass definitions. 
+        // Duplicate PK combinations would be added here in this case and we dont want that.
+        primaryKeys = primaryKeys.filter(
+            (elem, index, self) => index === self.findIndex((e) => e.name === elem.name)
+        )
+
+        let primary_key_name = ''
+        let primary_key_type = 'string'
+
+        // if we found some PKs we add them combined
+        if(primaryKeys.length != 0) {
+            if(primaryKeys.length == 1) primary_key_type = primaryKeys[0].type
+        
+            primaryKeys.forEach(pk => {
+                primary_key_name += pk.name + '|'
+            })
+            
+            // remove the last '|'
+            primary_key_name = primary_key_name.slice(0, -1)
+        // otherwise we use a generic PK
+        } else{
+            primary_key_name = sourceName + '_id'
+        }
+
+        return {name: primary_key_name, type: primary_key_type, isPrimaryKey: true, isPrimaryKeyCombi: true}
     }
 
     flushToPlantUML(){
@@ -275,11 +332,20 @@ export class ModelExtractorComponent implements AfterViewInit {
             // generate the class heading
             this.plantUMLString += 'class "' + classElement.name + '"' + inheritanceString + '\n{\n'
 
-            // generate a primary key if there is none specified
-            if(!classElement.attributes.some(x => x.isPrimaryKey)) {
-                this.plantUMLString += '+primary_key(' + classElement.name + '_id) string \n'
-            }
-                    
+
+            // sort the attributes
+            classElement.attributes.sort((a, b) => {
+                if (a.isPrimaryKeyCombi === b.isPrimaryKeyCombi) {
+                  if (a.isPrimaryKey === b.isPrimaryKey) {
+                    return 0; // Do not swap elements
+                  } else {
+                    return a.isPrimaryKey ? -1 : 1; // Primary key first
+                  }
+                } else {
+                  return b.isPrimaryKeyCombi ? 1 : -1; // Primary key combination first
+                }
+              });
+
             // generate the list of attributes
             if (classElement.attributes.length > 0) {
                 classElement.attributes.forEach((attribute) => {

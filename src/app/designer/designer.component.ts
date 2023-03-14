@@ -27,7 +27,7 @@ export class DesignerComponent implements AfterViewInit {
     public arcSourceNode: Node
 
     public name = ''
-    public superClassSelected = ''
+    public superClassSelected: string[]
     public owner = ''
     public tokenSchemaName = ''
     public data: { name: string; type: string, isPrimaryKey: boolean }[] = []
@@ -121,7 +121,7 @@ export class DesignerComponent implements AfterViewInit {
                     this.xmlNodeService,
                     this.xmlPlaceService.getPlaceTokenSchemaName(place_id),
                     this.xmlPlaceService.getPlaceTokenSchema(place_id),
-                    this.xmlPlaceService.getPlaceSuperClassName(place_id)
+                    this.xmlPlaceService.getPlaceSuperClassNameById(place_id)
                 )
             )
         })
@@ -219,7 +219,7 @@ export class DesignerComponent implements AfterViewInit {
         this.name = ''
         this.owner = ''
         this.tokenSchemaName = ''
-        this.superClassSelected = ''
+        this.superClassSelected = []
         this.data = []
 
         // reset old node tint
@@ -239,7 +239,7 @@ export class DesignerComponent implements AfterViewInit {
             this.placeSelected = true
             this.data = this.xmlPlaceService.getPlaceTokenSchema(this.arcSourceNode.id)
             this.tokenSchemaName = this.xmlPlaceService.getPlaceTokenSchemaName(this.arcSourceNode.id)
-            this.superClassSelected = this.xmlPlaceService.getPlaceSuperClassName(this.arcSourceNode.id)
+            this.superClassSelected = this.xmlPlaceService.getPlaceSuperClassNameById(this.arcSourceNode.id)
 
             // Get the list of available superclasses for inheritance selection
             this.superClasses = this.xmlPlaceService.getDistinctTokenSchemaNames()
@@ -286,7 +286,7 @@ export class DesignerComponent implements AfterViewInit {
 
         // delete the current superClass and Attributes, when the user deletes the markingname
         if(!Boolean(this.tokenSchemaName)) {
-            this.superClassSelected = ''
+            this.superClassSelected = []
             this.data = []
         }
     }

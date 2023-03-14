@@ -75,10 +75,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline" *ngIf="placeSelected && tokenSchemaName">
                 <mat-label>Choose a super class</mat-label>
-                <mat-select [(ngModel)]="superClassSelected" (selectionChange)="updatePlaceTokenSchema()">
-                    <mat-option value=''>
-                        -
-                    </mat-option>
+                <mat-select [(ngModel)]="superClassSelected" (selectionChange)="updatePlaceTokenSchema()" multiple>
                     <mat-option *ngFor="let name of superClasses" [value]="name">
                         {{ name }}
                     </mat-option>
