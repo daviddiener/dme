@@ -1,7 +1,7 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
 	<net id="mff79f693-8a77-4df4-a1ee-e7d25d434345" type="http://www.pnml.org/version-2009/grammar/highlevelnet">
 		<name>
-			<text>Example Net for Data Model Extraction</text>
+			<text>Launch Routing</text>
 		</name>
 		<page id="mff7sdf393-8a77-4df4-a1ee-e7d25d434345">
 			<place id="mff79f693-8a77-4df4-a1ee-e9d25d434312">

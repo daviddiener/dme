@@ -31,15 +31,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         attributes: { name: string; type: string; isPrimaryKey: boolean, isPrimaryKeyCombi: boolean }[]
     }[] = []
     private associations: string[] = []
-
-    private plantUMLString = 
-        '@startuml \n' + 
-        // 'skinparam linetype polyline \n' +
-        '!theme materia-outline \n' + 
-        '!define primary_key(x) <b>🔑x</b> \n' + 
-        '!define foreign_key(x) <b>↩️x</b> \n' + 
-        'title Generated Class Diagram \n'
-
+    private plantUMLString: string
     constructor(
         private _snackBar: MatSnackBar,
         private xmlPlaceService: XMLPlaceService,
@@ -64,11 +56,6 @@ export class ModelExtractorComponent implements AfterViewInit {
             this.generateCardinalitiesFromRoles()
 
             this.flushToPlantUML()
-
-            // finish PlantUML string and display it as img
-            this.plantUMLString += '@enduml \n'
-            const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
-            plantUMLImage.src = 'http://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
         } else alert('No valid xml string found')
     }
 
@@ -316,6 +303,14 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     flushToPlantUML(){
+        this.plantUMLString = 
+            '@startuml \n' + 
+            // 'skinparam linetype polyline \n' +
+            '!theme materia-outline \n' + 
+            '!define primary_key(x) <b>🔑x</b> \n' + 
+            '!define foreign_key(x) <b>↩️x</b> \n' + 
+            'title ' + (Global.xmlDoc.querySelector('pnml > net > name > text')?.textContent ?? 'Generated Class Diagram') + ' \n'
+
         this.classes.forEach(classElement =>{
             let inheritanceString = ''
             // extend the superclass if it exists
@@ -363,6 +358,9 @@ export class ModelExtractorComponent implements AfterViewInit {
         this.associations.forEach(associationElement =>{
             this.plantUMLString += associationElement
         })
-       
+
+        this.plantUMLString += '@enduml \n'
+        const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
+        plantUMLImage.src = 'http://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
     }
 }
