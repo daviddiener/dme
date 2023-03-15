@@ -1,6 +1,7 @@
 import { Global } from './../globals'
 import { NodeType } from '../entities/node'
 import { Injectable } from '@angular/core'
+const appVersion = require('../../../package.json').version
 
 @Injectable({
     providedIn: 'root',
@@ -33,10 +34,13 @@ export class XMLNodeService {
         const text = name.appendChild(Global.xmlDoc.createElement('text'))
         text.textContent = textValue
 
-        // if the node is a transition, create a ownership tag
+        // if the node is a transition, create a role tag
         if (nodeType == NodeType.transition) {
-            const owner = parent.appendChild(Global.xmlDoc.createElement('owner'))
-            const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
+            const toolspecific = parent.appendChild(Global.xmlDoc.createElement('toolspecific'))
+            toolspecific.setAttribute('tool', 'dme')
+            toolspecific.setAttribute('version', appVersion)
+            const role = toolspecific.appendChild(Global.xmlDoc.createElement('role'))
+            const text2 = role.appendChild(Global.xmlDoc.createElement('text'))
             text2.textContent = ''
         }
     }

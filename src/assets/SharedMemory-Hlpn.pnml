@@ -508,7 +508,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			<hlinscription xmlns=""><text>1</text></hlinscription></arc>
+			</arc>
 			<arc id="a2" source="pOwn" target="tEO">
 				<hlinscription>
 					<structure>
@@ -540,7 +540,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			<hlinscription xmlns=""><text>1</text></hlinscription></arc>
+			</arc>
 			<arc id="a4" source="pActive" target="tBO">
 				<hlinscription>
 					<structure>
@@ -556,7 +556,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			<hlinscription xmlns=""><text>1</text></hlinscription><hlinscription xmlns=""><text>1</text></hlinscription></arc>
+			</arc>
 			<arc id="a5" source="tEO" target="pMem">
 				<hlinscription>
 					<structure>
@@ -698,7 +698,7 @@
 						</numberof>
 					</structure>
 				</hlinscription>
-			<hlinscription xmlns=""><text>1</text></hlinscription></arc>
+			</arc>
 			<arc id="a13" source="tEE" target="pMem">
 				<hlinscription>
 					<structure>

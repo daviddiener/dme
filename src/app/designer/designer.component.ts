@@ -28,7 +28,7 @@ export class DesignerComponent implements AfterViewInit {
 
     public name = ''
     public superClassSelected: string[]
-    public owner = ''
+    public role = ''
     public tokenSchemaName = ''
     public data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
@@ -217,7 +217,7 @@ export class DesignerComponent implements AfterViewInit {
         this.placeSelected = false
         this.transitionSelected = false
         this.name = ''
-        this.owner = ''
+        this.role = ''
         this.tokenSchemaName = ''
         this.superClassSelected = []
         this.data = []
@@ -232,7 +232,7 @@ export class DesignerComponent implements AfterViewInit {
 
         if (sourceNode.nodeType == NodeType.transition) {
             this.transitionSelected = true
-            this.owner = this.xmlTransitionService.getTransitionOwner(this.arcSourceNode.id)
+            this.role = this.xmlTransitionService.getTransitionRole(this.arcSourceNode.id)
         }
 
         if (sourceNode.nodeType == NodeType.place) {
@@ -267,7 +267,7 @@ export class DesignerComponent implements AfterViewInit {
     }
 
     updateRole() {
-        this.xmlTransitionService.updateTransitionRole(this.arcSourceNode.id, this.owner)
+        this.xmlTransitionService.updateTransitionRole(this.arcSourceNode.id, this.role)
     }
 
     addRow() {

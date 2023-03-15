@@ -1,5 +1,6 @@
 import { Global } from './../globals'
 import { Injectable } from '@angular/core'
+const appVersion = require('../../../package.json').version
 
 @Injectable({
     providedIn: 'root',
@@ -13,7 +14,7 @@ export class XMLPlaceService {
     public getPlaceTokenSchema(id: string): { name: string; type: string, isPrimaryKey: boolean }[] {
         const data: { name: string; type: string, isPrimaryKey: boolean }[] = []
 
-        const tokenSchema = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
+        const tokenSchema = Global.xmlDoc.querySelectorAll('place#' + id + ' > toolspecific[tool="dme"] > tokenSchema')
 
         if (tokenSchema.length > 0) {
             Array.from(tokenSchema[0].getElementsByTagName('xs:element')).forEach((element) => {
@@ -33,7 +34,7 @@ export class XMLPlaceService {
      * @returns A string with the token schema name
      */
     public getPlaceTokenSchemaName(id: string | null): string {
-        const tokenSchema = Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')
+        const tokenSchema = Global.xmlDoc.querySelectorAll('place#' + id + ' > toolspecific[tool="dme"] > tokenSchema')
         if (tokenSchema.length > 0) {
             return String(tokenSchema[0].getAttribute('name'))
         } else {
@@ -49,25 +50,30 @@ export class XMLPlaceService {
      * @param superClassNames
      */
     public updatePlaceTokenSchema(id: string, dataObjectName: string, data: { name: string; type: string, isPrimaryKey: boolean }[], superClassNames: string[]) {
-        // delete existing tokenSchema
-        const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')
-        if (node[0].getElementsByTagName('tokenSchema').length > 0) {
-            node[0].removeChild(node[0].getElementsByTagName('tokenSchema')[0])
-        }
-
-        // create token schema tag again if a name is provided
-        if(dataObjectName!=''){
-            const tokenSchema = node[0].appendChild(Global.xmlDoc.createElement('tokenSchema'))
-            tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
-            tokenSchema.setAttribute('name', dataObjectName)
-            tokenSchema.setAttribute('superClass', superClassNames.join(','))
-
-            data.forEach((element) => {
-                const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
-                tmp.setAttribute('name', element.name)
-                tmp.setAttribute('type', element.type)
-                tmp.setAttribute('isPrimaryKey', String(element.isPrimaryKey))
-            })
+        const node = Global.xmlDoc.querySelector('place#' + id)
+        if(node){
+            // delete existing tokenSchema
+            if (node.querySelectorAll('toolspecific[tool="dme"]').length > 0) {
+                Array.from(node.querySelectorAll('toolspecific[tool="dme"]')).forEach(element => node.removeChild(element))
+            }
+            
+            // create token schema tag again if a name is provided
+            if(dataObjectName!=''){
+                const toolspecific = node.appendChild(Global.xmlDoc.createElementNS('toolspecific', ''))
+                toolspecific.setAttribute('tool', 'dme')
+                toolspecific.setAttribute('version', appVersion)
+                const tokenSchema = toolspecific.appendChild(Global.xmlDoc.createElement('tokenSchema'))
+                tokenSchema.setAttribute('xmlns:xs', 'http://www.w3.org/2001/XMLSchema')
+                tokenSchema.setAttribute('name', dataObjectName)
+                tokenSchema.setAttribute('superClass', superClassNames.join(','))
+    
+                data.forEach((element) => {
+                    const tmp = tokenSchema.appendChild(Global.xmlDoc.createElement('xs:element'))
+                    tmp.setAttribute('name', element.name)
+                    tmp.setAttribute('type', element.type)
+                    tmp.setAttribute('isPrimaryKey', String(element.isPrimaryKey))
+                })
+            }
         }
     }
 
@@ -79,7 +85,7 @@ export class XMLPlaceService {
      */
     public getDistinctTokenSchemaNames(): string[] {
         const schemaMap = new Map<string, Element>()
-        Global.xmlDoc.querySelectorAll('tokenSchema').forEach((element) => {
+        Global.xmlDoc.querySelectorAll('toolspecific[tool="dme"] > tokenSchema').forEach((element) => {
           schemaMap.set(String(element.getAttribute('name')), element)
         })
       
@@ -115,7 +121,7 @@ export class XMLPlaceService {
     public getDistinctTokenSchemaByName(tokenSchemaName: string): { name: string; type: string, isPrimaryKey: boolean, isPrimaryKeyCombi: boolean }[] {
         const data: { name: string; type: string, isPrimaryKey: boolean, isPrimaryKeyCombi: boolean }[] = []
 
-        Array.from(Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')).forEach(
+        Array.from(Global.xmlDoc.querySelectorAll('toolspecific[tool="dme"] > tokenSchema[name="' + tokenSchemaName + '"]')).forEach(
             (schemaElement) => {
                 Array.from(schemaElement.getElementsByTagName('xs:element')).forEach((element) => {
                     // check if the data already includes an attribute with the same name, as we dont want duplicate attributes
@@ -148,7 +154,7 @@ export class XMLPlaceService {
      * @returns A string with the superClass name
      */
      public getPlaceSuperClassNameById(id: string | null): string[] {
-        return Global.xmlDoc.querySelectorAll('[id="' + id + '"] tokenSchema')[0]?.getAttribute('superClass')?.split(',') ?? []
+        return Global.xmlDoc.querySelectorAll('place#' + id + ' > toolspecific[tool="dme"] > tokenSchema')[0]?.getAttribute('superClass')?.split(',') ?? []
     }
 
     /**
@@ -157,7 +163,7 @@ export class XMLPlaceService {
      */
     public getDistinctSuperClassNameByName(tokenSchemaName: string): string[] {
         let data: string[] = []
-        const tokenSchemas = Global.xmlDoc.querySelectorAll('tokenSchema[name="' + tokenSchemaName + '"]')
+        const tokenSchemas = Global.xmlDoc.querySelectorAll('toolspecific[tool="dme"] > tokenSchema[name="' + tokenSchemaName + '"]')
 
         tokenSchemas.forEach(element => {
             data = data.concat(element.getAttribute('superClass')?.split(',') ?? [])

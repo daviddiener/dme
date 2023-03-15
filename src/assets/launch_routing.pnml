@@ -11,10 +11,12 @@
 				<name>
 					<text>New Model Release</text>
 				</name>
-				<tokenSchema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Produktionsdaten" superClass="">
-					<xs:element name="prod_id" type="xs:string" isPrimaryKey="true"/>
-					<xs:element name="test" type="xs:date" isPrimaryKey="false"/>
-				</tokenSchema>
+                <toolspecific tool="dme" version="1.3.0">
+                    <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Produktionsdaten" superClass="">
+                        <xs:element name="prod_id" type="xs:string" isPrimaryKey="true"/>
+                        <xs:element name="test" type="xs:date" isPrimaryKey="false"/>
+                    </tokenSchema>
+                </toolspecific>
 			</place>
 			<place xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="a5a61ace0-d4c5-424a-93a0-f0312be96b5f">
 				<graphics>
@@ -23,10 +25,12 @@
 				<name>
 					<text>Schadteil</text>
 				</name>
-				<tokenSchema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Schadteil" superClass="Produktionsdaten">
-					<xs:element name="referenznummer" type="xs:integer" isPrimaryKey="true"/>
-					<xs:element name="Hauptverantw." type="xs:string" isPrimaryKey="false"/>
-				</tokenSchema>
+                <toolspecific tool="dme" version="1.3.0">
+                    <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Schadteil" superClass="Produktionsdaten">
+                        <xs:element name="referenznummer" type="xs:integer" isPrimaryKey="true"/>
+                        <xs:element name="Hauptverantw." type="xs:string" isPrimaryKey="false"/>
+                    </tokenSchema>
+                </toolspecific>
 			</place>
 			<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="ra502d455-dbf3-40a3-b168-15e00dd7a900">
 				<graphics>
@@ -35,9 +39,11 @@
 				<name>
 					<text>Contract Assignment</text>
 				</name>
-				<owner>
-					<text>OTS</text>
-				</owner>
+                <toolspecific tool="dme" version="1.3.0">
+                    <role>
+                        <text>OTS</text>
+                    </role>
+                </toolspecific>
 			</transition>
 			<transition id="ta5f22876-7a71-4519-8d75-e03097fd6120">
 				<graphics>
@@ -46,9 +52,11 @@
 				<name>
 					<text>Call API</text>
 				</name>
-				<owner>
-					<text>TEA-NG</text>
-				</owner>
+                <toolspecific tool="dme" version="1.3.0">
+                    <role>
+                        <text>TEA-NG</text>
+                    </role>
+                </toolspecific>
 			</transition>
 			<place xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="fc4f8a11f-0d30-42d0-9b91-0d40691c4817">
 				<graphics>
@@ -57,8 +65,15 @@
 				<name>
 					<text>Routing Entry</text>
 				</name>
-					
-				<tokenSchema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="Produktionsdaten"><xs:element name="Schadteil" type="xs:string" isPrimaryKey="false"/><xs:element name="BoolParam" type="xs:string" isPrimaryKey="false"/><xs:element name="RE_ID" type="xs:string" isPrimaryKey="true"/><xs:element name="object" type="base64Binary" isPrimaryKey="false"/></tokenSchema></place>
+                <toolspecific tool="dme" version="1.3.0">					
+				    <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="Produktionsdaten">
+                        <xs:element name="Schadteil" type="xs:string" isPrimaryKey="false"/>
+                        <xs:element name="BoolParam" type="xs:string" isPrimaryKey="false"/>
+                        <xs:element name="RE_ID" type="xs:string" isPrimaryKey="true"/>
+                        <xs:element name="object" type="base64Binary" isPrimaryKey="false"/>
+                    </tokenSchema>
+                </toolspecific>
+                </place>
 				<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="wa8ac73bb-741d-414d-aecb-77143c318d6b">
 					<graphics>
 						<position x="487" y="241"/>
@@ -66,9 +81,11 @@
 					<name>
 						<text>German Contract</text>
 					</name>
-					<owner>
-						<text>OTS</text>
-					</owner>
+                    <toolspecific tool="dme" version="1.3.0">
+                        <role>
+                            <text>OTS</text>
+                        </role>
+                    </toolspecific>
 				</transition>
 				<transition id="fa6246d65-4e78-4afc-8ec3-783501c9da2d">
 					<graphics>
@@ -77,9 +94,11 @@
 					<name>
 						<text>US Contract</text>
 					</name>
-					<owner>
-						<text>OTS</text>
-					</owner>
+                    <toolspecific tool="dme" version="1.3.0">
+                        <role>
+                            <text>OTS</text>
+                        </role>
+                    </toolspecific>
 				</transition>
 				<place id="e860b0b97-fc96-421b-af26-cf394491e150">
 					<graphics>
@@ -88,8 +107,12 @@
 					<name>
 						<text>Specified Routing Entry</text>
 					</name>
-					
-				<tokenSchema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="Schadteil"><xs:element name="Schadteil" type="xs:string" isPrimaryKey="false"/></tokenSchema></place>
+					<toolspecific tool="dme" version="1.3.0">
+				        <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="Schadteil">
+                            <xs:element name="Schadteil" type="xs:string" isPrimaryKey="false"/>
+                        </tokenSchema>
+                    </toolspecific>
+                </place>
 				<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="gd23e3f77-82e2-40d9-80db-0e255576064c">
 					<graphics>
 						<position x="693" y="357"/>
@@ -97,9 +120,11 @@
 					<name>
 						<text>Documenting</text>
 					</name>
-					<owner>
-						<text>TEA-NG</text>
-					</owner>
+                    <toolspecific tool="dme" version="1.3.0">
+                        <role>
+                            <text>TEA-NG</text>
+                        </role>
+                    </toolspecific>
 				</transition>
 				<place id="v3ad55bf0-9132-4596-b077-d2a21c17afcb">
 					<graphics>
@@ -108,8 +133,12 @@
 					<name>
 						<text>Routing Request</text>
 					</name>
-					
-				<tokenSchema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Routing Request" superClass=""><xs:element name="RR_ID" type="xs:string" isPrimaryKey="true"/></tokenSchema></place>
+                    <toolspecific tool="dme" version="1.3.0">
+                        <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Routing Request" superClass="">
+                            <xs:element name="RR_ID" type="xs:string" isPrimaryKey="true"/>
+                        </tokenSchema>
+                    </toolspecific>
+                </place>
 				<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="q2dd9948a-4d74-4e68-87fc-bf9bf904c3ba">
 					<graphics>
 						<position x="949" y="348"/>
@@ -117,9 +146,11 @@
 					<name>
 						<text>VEGA API</text>
 					</name>
-					<owner>
-						<text>TEA-NG</text>
-					</owner>
+                    <toolspecific tool="dme" version="1.3.0">
+                        <role>
+                            <text>TEA-NG</text>
+                        </role>
+                    </toolspecific>
 				</transition>
 				<arc id="y925f6ae1-1cd9-40e0-a4fc-547cf8121d5d" source="a5a61ace0-d4c5-424a-93a0-f0312be96b5f" target="ta5f22876-7a71-4519-8d75-e03097fd6120">
 					<hlinscription>*</hlinscription>

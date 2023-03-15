@@ -1,5 +1,6 @@
 import { Global } from './../globals'
 import { Injectable } from '@angular/core'
+const appVersion = require('../../../package.json').version
 
 @Injectable({
     providedIn: 'root',
@@ -23,13 +24,16 @@ export class XMLTransitionService {
         const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')[0]
 
         // if the node alredy has a role, update it, otherwise create the necessary elements
-        if (node.getElementsByTagName('owner')[0]) {
-            if (node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0]) {
-                node.getElementsByTagName('owner')[0].getElementsByTagName('text')[0].textContent = newRole
+        if (node.querySelector('toolspecific[tool="dme"] > role')) {
+            if (node.getElementsByTagName('role')[0].getElementsByTagName('text')[0]) {
+                node.getElementsByTagName('role')[0].getElementsByTagName('text')[0].textContent = newRole
             }
         } else {
-            const owner = node.appendChild(Global.xmlDoc.createElement('owner'))
-            const text2 = owner.appendChild(Global.xmlDoc.createElement('text'))
+            const toolspecific = node.appendChild(Global.xmlDoc.createElement('toolspecific'))
+            toolspecific.setAttribute('tool', 'dme')
+            toolspecific.setAttribute('version', appVersion)
+            const role = toolspecific.appendChild(Global.xmlDoc.createElement('role'))
+            const text2 = role.appendChild(Global.xmlDoc.createElement('text'))
             text2.textContent = newRole
         }
     }
@@ -39,18 +43,18 @@ export class XMLTransitionService {
      * @param id
      * @returns A string value
      */
-    public getTransitionOwner(id: string): string {
-        const owner = String(Global.xmlDoc.querySelectorAll('[id="' + id + '"] owner text')[0]?.textContent ?? '')
-        return owner !== undefined ? owner : ''
+    public getTransitionRole(id: string): string {
+        const role = String(Global.xmlDoc.querySelectorAll('transition#' + id + ' > toolspecific[tool="dme"] > role > text')[0]?.textContent ?? '')
+        return role !== undefined ? role : ''
     }
 
     /**
      * Returns all transition roles in the XML document. Does not return duplicate values, just distinct values.
      * @returns an array of strings
      */
-    public getTransitionOwnersDistinct(): string[] {
+    public getTransitionRolesDistinct(): string[] {
         const tmp: string[] = []
-        Global.xmlDoc.querySelectorAll('owner text').forEach((element) => {
+        Global.xmlDoc.querySelectorAll('toolspecific[tool="dme"] > role > text').forEach((element) => {
             tmp.push(String(element.textContent ?? ''))
         })
 
@@ -62,7 +66,7 @@ export class XMLTransitionService {
      * Returns all transition roles in the XML document.
      * @returns an array of elements
      */
-    public getTransitionOwners(): Element[] {
+    public getTransitionRoles(): Element[] {
         const tmp: Element[] = []
         Global.xmlDoc.querySelectorAll('transition').forEach((element) => {
             tmp.push(element)

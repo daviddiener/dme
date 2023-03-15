@@ -60,7 +60,7 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     generateClassesFromRoles() {
-        this.xmlTransitionService.getTransitionOwnersDistinct().forEach((element) => {
+        this.xmlTransitionService.getTransitionRolesDistinct().forEach((element) => {
             if(element)
                 this.classes.push({
                     'name': element, 
@@ -116,7 +116,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             // if the class does not exist already, create it
             if (!this.classes.some((el) => el.name == name) ) {
-                if(!place.querySelector('tokenSchema')) {
+                if(!place.querySelector('toolspecific[tool="dme"] > tokenSchema')) {
                     this.classes.push({
                         'name': name, 
                         'superClasses': [], 
@@ -174,7 +174,7 @@ export class ModelExtractorComponent implements AfterViewInit {
     }
 
     generateCardinalitiesFromRoles() {
-        Array.from(this.xmlTransitionService.getTransitionOwners()).forEach((element) => {
+        Array.from(this.xmlTransitionService.getTransitionRoles()).forEach((element) => {
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
                 let name = String(this.xmlPlaceService.getPlaceTokenSchemaName(arc.getAttribute('target')))
 
@@ -186,7 +186,7 @@ export class ModelExtractorComponent implements AfterViewInit {
                 }
                 
                 this.addComposition(
-                    element.querySelector("owner > text")?.textContent ?? '',
+                    element.querySelector('toolspecific[tool="dme"] > role > text')?.textContent ?? '',
                     '1',
                     name,
                     '*',

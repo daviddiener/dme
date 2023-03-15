@@ -33,15 +33,17 @@ export class XMLArcService {
      * @param newCardinality
      */
     public updateArcCardinality(id: string, newCardinality: string) {
-        // delete existing tokenSchema
-        const node = Global.xmlDoc.querySelectorAll('[id="' + id + '"]')[0]
-        if (node.getElementsByTagName('hlinscription').length > 0) {
-            node.removeChild(node.getElementsByTagName('hlinscription')[0])
-        }
+        const node = Global.xmlDoc.querySelector('arc#' + id)
+        if(node){
+            // delete existing hlinscription
+            if (node.querySelectorAll('hlinscription').length > 0) {
+                Array.from(node.querySelectorAll('hlinscription')).forEach(element => node.removeChild(element))
+            }
 
-        const hlinscription = node.appendChild(Global.xmlDoc.createElement('hlinscription'))
-        const text = hlinscription.appendChild(Global.xmlDoc.createElement('text'))
-        text.textContent = newCardinality
+            const hlinscription = node.appendChild(Global.xmlDoc.createElement('hlinscription'))
+            const text = hlinscription.appendChild(Global.xmlDoc.createElement('text'))
+            text.textContent = newCardinality
+        }
     }
 
     /**
