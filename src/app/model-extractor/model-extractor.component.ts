@@ -361,6 +361,6 @@ export class ModelExtractorComponent implements AfterViewInit {
 
         this.plantUMLString += '@enduml \n'
         const plantUMLImage = document.getElementById('plantumlDiagram') as HTMLImageElement
-        plantUMLImage.src = 'http://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
+        plantUMLImage.src = 'https://www.plantuml.com/plantuml/img/' + plantumlEncoder.encode(this.plantUMLString)
     }
 }
