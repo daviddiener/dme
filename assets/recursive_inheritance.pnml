@@ -12,12 +12,14 @@
 				<name>
 					<text>Init</text>
 				</name>
-				<tokenSchema
-					xmlns:xs="http://www.w3.org/2001/XMLSchema" name="StartObject" superClass="">
-					<xs:element name="start_id" type="string" isPrimaryKey="true"/>
-					<xs:element name="randomParam1" type="boolean" isPrimaryKey="false"/>
-					<xs:element name="randomParam2" type="decimal" isPrimaryKey="false"/>
-				</tokenSchema>
+				<toolspecific tool="dme" version="1.3.0">
+					<tokenSchema
+						xmlns:xs="http://www.w3.org/2001/XMLSchema" name="StartObject" superClass="">
+						<xs:element name="start_id" type="string" isPrimaryKey="true"/>
+						<xs:element name="randomParam1" type="boolean" isPrimaryKey="false"/>
+						<xs:element name="randomParam2" type="anyURI" isPrimaryKey="false"/>
+					</tokenSchema>
+				</toolspecific>
 			</place>
 			<transition id="led71dfe3-426a-4817-a71d-bc3dd16f54be">
 				<graphics>
@@ -26,9 +28,11 @@
 				<name>
 					<text>TestRolle1Action</text>
 				</name>
-				<owner>
-					<text>TestRolle1</text>
-				</owner>
+				<toolspecific tool="dme" version="1.3.0">
+					<role>
+						<text>asd</text>
+					</role>
+				</toolspecific>
 			</transition>
 			<place id="f9dc02094-3456-4898-9b77-d1db2a324dc2">
 				<graphics>
@@ -37,79 +41,86 @@
 				<name>
 					<text>2</text>
 				</name>
-				<tokenSchema
-					xmlns=""
-					xmlns:xs="http://www.w3.org/2001/XMLSchema" name="ZweierObject" superClass="DreierObject"/>
-				</place>
-				<place id="xa092fc3e-c65e-42fc-847b-f13ab74bf8a7">
-					<graphics>
-						<position x="469" y="75"/>
-					</graphics>
-					<name>
-						<text>1</text>
-					</name>
+				<toolspecific tool="dme" version="1.3.0">
 					<tokenSchema
-						xmlns=""
+						xmlns:xs="http://www.w3.org/2001/XMLSchema" name="ZweierObject" superClass="DreierObject"/>
+				</toolspecific>
+			</place>
+			<place id="xa092fc3e-c65e-42fc-847b-f13ab74bf8a7">
+				<graphics>
+					<position x="469" y="75"/>
+				</graphics>
+				<name>
+					<text>1</text>
+				</name>
+				<toolspecific tool="dme" version="1.3.0">
+					<tokenSchema
 						xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EinserObject" superClass="StartObject,ZweierObject"/>
-					</place>
-					<place id="b3ca7ff5a-a8d2-495b-bf29-21f8cc13f9ae">
-						<graphics>
-							<position x="470" y="401"/>
-						</graphics>
-						<name>
-							<text>3</text>
-						</name>
-						<tokenSchema
-							xmlns=""
-							xmlns:xs="http://www.w3.org/2001/XMLSchema" name="DreierObject" superClass="EinserObject"/>
-						</place>
-						<transition id="k5840c316-76ec-4858-8b63-c71a50ccd305">
-							<graphics>
-								<position x="617" y="217"/>
-							</graphics>
-							<name>
-								<text>TestRolle2Action</text>
-							</name>
-							<owner>
-								<text>TestRolle2</text>
-							</owner>
-						</transition>
-						<arc id="y4c9a13b9-8696-44e0-abc5-bbec59fdfcfe" source="nc42cfae5-15c0-469a-902b-cca78540c22e" target="led71dfe3-426a-4817-a71d-bc3dd16f54be">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<arc id="t1b732c10-7523-4040-8d64-a7ff7d9f7bba" source="led71dfe3-426a-4817-a71d-bc3dd16f54be" target="xa092fc3e-c65e-42fc-847b-f13ab74bf8a7">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<arc id="v9cc5c12f-d9e3-464e-b166-1e8147ec0fd9" source="led71dfe3-426a-4817-a71d-bc3dd16f54be" target="f9dc02094-3456-4898-9b77-d1db2a324dc2">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<arc id="m5d229740-ef08-4a10-94b4-c10af0246fc9" source="led71dfe3-426a-4817-a71d-bc3dd16f54be" target="b3ca7ff5a-a8d2-495b-bf29-21f8cc13f9ae">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<arc id="y1b01ba90-17f4-41bd-b993-541060f9a766" source="xa092fc3e-c65e-42fc-847b-f13ab74bf8a7" target="k5840c316-76ec-4858-8b63-c71a50ccd305">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<arc id="r258d6885-3fac-44fe-9043-da6914c124f7" source="f9dc02094-3456-4898-9b77-d1db2a324dc2" target="k5840c316-76ec-4858-8b63-c71a50ccd305">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<arc id="xc0e10f2a-ff0a-4060-9079-0ed10940eeb4" source="b3ca7ff5a-a8d2-495b-bf29-21f8cc13f9ae" target="k5840c316-76ec-4858-8b63-c71a50ccd305">
-							<hlinscription>1</hlinscription>
-						</arc>
-						<place id="s6832e54d-12ad-4f1d-bd4b-9a42822f394e">
-							<graphics>
-								<position x="738" y="226"/>
-							</graphics>
-							<name>
-								<text>End</text>
-							</name>
-							<tokenSchema
-								xmlns:xs="http://www.w3.org/2001/XMLSchema" name="StartObject" superClass="">
-								<xs:element name="ende_id_zwei" type="base64Binary" isPrimaryKey="true"/>
-							</tokenSchema>
-						</place>
-						<arc id="f086bbaeb-4a2c-4d55-be38-8aa6f56c48d5" source="k5840c316-76ec-4858-8b63-c71a50ccd305" target="s6832e54d-12ad-4f1d-bd4b-9a42822f394e">
-							<hlinscription>1</hlinscription>
-						</arc>
-					</page>
-				</net>
-			</pnml>
+				</toolspecific>
+			</place>
+			<place id="b3ca7ff5a-a8d2-495b-bf29-21f8cc13f9ae">
+				<graphics>
+					<position x="470" y="401"/>
+				</graphics>
+				<name>
+					<text>3</text>
+				</name>
+				<toolspecific tool="dme" version="1.3.0">
+					<tokenSchema
+						xmlns:xs="http://www.w3.org/2001/XMLSchema" name="DreierObject" superClass="EinserObject"/>
+				</toolspecific>
+			</place>
+			<transition id="k5840c316-76ec-4858-8b63-c71a50ccd305">
+				<graphics>
+					<position x="617" y="217"/>
+				</graphics>
+				<name>
+					<text>TestRolle2Action</text>
+				</name>
+				<toolspecific tool="dme" version="1.3.0">
+					<role>
+						<text>TestRolle2</text>
+					</role>
+				</toolspecific>
+			</transition>
+			<arc id="y4c9a13b9-8696-44e0-abc5-bbec59fdfcfe" source="nc42cfae5-15c0-469a-902b-cca78540c22e" target="led71dfe3-426a-4817-a71d-bc3dd16f54be">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<arc id="t1b732c10-7523-4040-8d64-a7ff7d9f7bba" source="led71dfe3-426a-4817-a71d-bc3dd16f54be" target="xa092fc3e-c65e-42fc-847b-f13ab74bf8a7">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<arc id="v9cc5c12f-d9e3-464e-b166-1e8147ec0fd9" source="led71dfe3-426a-4817-a71d-bc3dd16f54be" target="f9dc02094-3456-4898-9b77-d1db2a324dc2">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<arc id="m5d229740-ef08-4a10-94b4-c10af0246fc9" source="led71dfe3-426a-4817-a71d-bc3dd16f54be" target="b3ca7ff5a-a8d2-495b-bf29-21f8cc13f9ae">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<arc id="y1b01ba90-17f4-41bd-b993-541060f9a766" source="xa092fc3e-c65e-42fc-847b-f13ab74bf8a7" target="k5840c316-76ec-4858-8b63-c71a50ccd305">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<arc id="r258d6885-3fac-44fe-9043-da6914c124f7" source="f9dc02094-3456-4898-9b77-d1db2a324dc2" target="k5840c316-76ec-4858-8b63-c71a50ccd305">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<arc id="xc0e10f2a-ff0a-4060-9079-0ed10940eeb4" source="b3ca7ff5a-a8d2-495b-bf29-21f8cc13f9ae" target="k5840c316-76ec-4858-8b63-c71a50ccd305">
+				<hlinscription>1</hlinscription>
+			</arc>
+			<place id="s6832e54d-12ad-4f1d-bd4b-9a42822f394e">
+				<graphics>
+					<position x="738" y="226"/>
+				</graphics>
+				<name>
+					<text>End</text>
+				</name>
+				<toolspecific tool="dme" version="1.3.0">
+					<tokenSchema
+						xmlns:xs="http://www.w3.org/2001/XMLSchema" name="StartObject" superClass="">
+						<xs:element name="ende_id_zwei" type="base64Binary" isPrimaryKey="true"/>
+					</tokenSchema>
+				</toolspecific>
+			</place>
+			<arc id="f086bbaeb-4a2c-4d55-be38-8aa6f56c48d5" source="k5840c316-76ec-4858-8b63-c71a50ccd305" target="s6832e54d-12ad-4f1d-bd4b-9a42822f394e">
+				<hlinscription>1</hlinscription>
+			</arc>
+		</page>
+	</net>
+</pnml>
