@@ -175,4 +175,13 @@ export class XMLPlaceService {
         // return just unique values
         return [...new Set(data)]
     }
+
+    /**
+     * Returns the place with the given id from the XML document.
+     * @param id
+     * @returns A NodeListOf<Element> representing the place
+     */
+    public getPlaceById(id: string | null): Element | null {
+        return Global.xmlDoc.querySelector('place#' + id)
+    }
 }

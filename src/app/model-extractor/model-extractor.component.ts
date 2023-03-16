@@ -132,40 +132,45 @@ export class ModelExtractorComponent implements AfterViewInit {
         Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {
             this.xmlArcService.getAllArcsWithTarget(transition.getAttribute('id')).forEach(predecessorArc => {
                 this.xmlArcService.getAllArcsWithSource(transition.getAttribute('id')).forEach(successorArc => {
-                    // check for null before extracting the names of the 2 classes we want to connect with a relation
+                    // check valid arcs for null before extracting the names of the 2 classes we want to connect with a relation
                     if (successorArc && predecessorArc) {
-                        let predecessorName = this.xmlPlaceService.getPlaceTokenSchemaName(predecessorArc.getAttribute('source'))
-                        let successorName = this.xmlPlaceService.getPlaceTokenSchemaName(successorArc.getAttribute('target'))
-
-                        // if there is no tokenSchma defined we fall back to the place name
-                        if(!predecessorName) {
-                            // if no name is set we give the name 'undefinedClass' to the class
-                            predecessorName = this.xmlNodeService.getNodeNameById(predecessorArc.getAttribute('source'))
-                            if(!predecessorName) predecessorName = 'undefinedClass'
-                        }
-                        // if there is no tokenSchma defined we fall back to the place name
-                        if(!successorName) {
-                            // if no name is set we give the name 'undefinedClass' to the class
-                            successorName = this.xmlNodeService.getNodeNameById(successorArc.getAttribute('target'))
-                            if(!successorName) successorName = 'undefinedClass'
-                        }
-
-                        // get the carindalities, it there is none, or they are invalid, default to *
-                        let predecessorCardinality = predecessorArc.getElementsByTagName('hlinscription')[0]?.textContent?.trim()
-                        if(!predecessorCardinality) predecessorCardinality = "*"
-                        let successorCardinality = successorArc.getElementsByTagName('hlinscription')[0]?.textContent?.trim()
-                        if(!successorCardinality) successorCardinality = "*"
-
-                        // if the names of the classes are the same we dont want to generate a relation
-                        if (predecessorName != successorName) {
-                            this.addComposition(
-                                predecessorName,
-                                predecessorCardinality,
-                                successorName,
-                                successorCardinality,
-                                this.xmlNodeService.getNodeTextById(String(transition.getAttribute('id'))),
-                                'down'
-                            )
+                        let predecessorPlace = this.xmlPlaceService.getPlaceById(predecessorArc.getAttribute('source'))
+                        let successorPlace = this.xmlPlaceService.getPlaceById(successorArc.getAttribute('target'))
+                        // check valid places for null before extracting the names of the 2 classes we want to connect with a relation
+                        if(predecessorPlace && successorPlace){
+                            let predecessorName = this.xmlPlaceService.getPlaceTokenSchemaName(predecessorArc.getAttribute('source'))
+                            let successorName = this.xmlPlaceService.getPlaceTokenSchemaName(successorArc.getAttribute('target'))
+    
+                            // if there is no tokenSchma defined we fall back to the place name
+                            if(!predecessorName) {
+                                // if no name is set we give the name 'undefinedClass' to the class
+                                predecessorName = this.xmlNodeService.getNodeNameById(predecessorArc.getAttribute('source'))
+                                if(!predecessorName) predecessorName = 'undefinedClass'
+                            }
+                            // if there is no tokenSchma defined we fall back to the place name
+                            if(!successorName) {
+                                // if no name is set we give the name 'undefinedClass' to the class
+                                successorName = this.xmlNodeService.getNodeNameById(successorArc.getAttribute('target'))
+                                if(!successorName) successorName = 'undefinedClass'
+                            }
+    
+                            // get the carindalities, it there is none, or they are invalid, default to *
+                            let predecessorCardinality = predecessorArc.getElementsByTagName('hlinscription')[0]?.textContent?.trim()
+                            if(!predecessorCardinality) predecessorCardinality = "*"
+                            let successorCardinality = successorArc.getElementsByTagName('hlinscription')[0]?.textContent?.trim()
+                            if(!successorCardinality) successorCardinality = "*"
+    
+                            // if the names of the classes are the same we dont want to generate a relation
+                            if (predecessorName != successorName) {
+                                this.addComposition(
+                                    predecessorName,
+                                    predecessorCardinality,
+                                    successorName,
+                                    successorCardinality,
+                                    this.xmlNodeService.getNodeTextById(String(transition.getAttribute('id'))),
+                                    'down'
+                                )
+                            }
                         }
                     }
                 })
@@ -176,22 +181,24 @@ export class ModelExtractorComponent implements AfterViewInit {
     generateCardinalitiesFromRoles() {
         Array.from(this.xmlTransitionService.getTransitionRoles()).forEach((element) => {
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
-                let name = String(this.xmlPlaceService.getPlaceTokenSchemaName(arc.getAttribute('target')))
-
-                // if there is no tokenSchma defined we fall back to the place name
-                if(!name) {
-                    // if no name is set we give the name 'undefinedClass' to the class
-                    name = this.xmlNodeService.getNodeNameById(arc.getAttribute('target'))
-                    if(!name) name = 'undefinedClass'
+                // check if the target node is a valid place
+                if(this.xmlPlaceService.getPlaceById(arc.getAttribute('target'))){
+                    let name = String(this.xmlPlaceService.getPlaceTokenSchemaName(arc.getAttribute('target')))
+                    // if there is no tokenSchma defined we fall back to the place name
+                    if(!name) {
+                        // if no name is set we give the name 'undefinedClass' to the class
+                        name = this.xmlNodeService.getNodeNameById(arc.getAttribute('target'))
+                        if(!name) name = 'undefinedClass'
+                    }
+                    
+                    this.addComposition(
+                        element.querySelector('toolspecific[tool="dme"] > role > text')?.textContent ?? '',
+                        '1',
+                        name,
+                        '*',
+                        'instantiated by'
+                    )
                 }
-                
-                this.addComposition(
-                    element.querySelector('toolspecific[tool="dme"] > role > text')?.textContent ?? '',
-                    '1',
-                    name,
-                    '*',
-                    'instantiated by'
-                )
             })
         })
     }
@@ -226,7 +233,7 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             // add the foreign key to the target class of this relation if it does not exist already
             const target = this.classes[this.classes.findIndex(x => x.name == targetName)]
-            if(!target.attributes.some(x => x.name === 'foreign_key(' + primary_key.name + ')')) {
+            if(target && !target.attributes.some(x => x.name === 'foreign_key(' + primary_key.name + ')')) {
                 target.attributes.push({
                     name: 'foreign_key(' + primary_key.name + ')',
                     type: primary_key.type,
