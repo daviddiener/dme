@@ -4,9 +4,45 @@
         <mat-icon>info</mat-icon>
     </ng-template>
     <mat-step>
+        <ng-template matStepLabel>What does this application do?</ng-template>
+        <ng-template matStepContent>
+
+            <p>DME is a tool for business process and data modeling. It implements a protoypcial approach on data model extraction on the basis of business process models.</p>
+            <p>The <a [routerLink]="['/designer']">Designer</a> tool allows for the modeling of such business process models. They process models are based on an advanced type of Petri Nets (Carl Adam Petri in 1962, Kommunikation mit Automaten).</p>
+            <p>On the basis of this Petri Net, the application will <a [routerLink]="['/extractor']"> extract a data model </a>, following a set of rules for the extraction of the respective concepts.</p>
+            <button mat-button matStepperNext>Next</button>
+        </ng-template>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>What are Petri Nets?</ng-template>
+        <ng-template matStepContent>
+            <p>A Petri net consists of two main components: places and transitions. Places are represented by circles and can contain tokens, which are small dots that indicate the presence of a resource or a state. Transitions are represented by rectangles and define the actions or events that can occur in the system. Arcs connect places and transitions and indicate the flow of tokens between them.</p>
+
+            <p>The behavior of a Petri net is determined by its initial marking, which is the distribution of tokens among the places at the start of the system, and the firing rule, which defines when and how transitions can fire. When a transition fires, it consumes tokens from its input places and produces tokens in its output places, which may trigger other transitions to fire.</p>
+
+            <p>Petri nets can be used to model a wide range of systems, including business processes, software systems, and networks. They provide a graphical and intuitive way to represent complex systems, and they can be analyzed using various techniques to verify their correctness, performance, and other properties.</p>
+
+            <p> The image below shows a Petri net model for a barber shop. The net includes a place waiting that models a waiting area where customers wait for the barber to serve them, and two places that model the barber’s status, busy or idle. The transitions model events that can occur: A firing of transition enter corresponds to a customer entering
+                the waiting area of the shop. Transition serve corresponds to a customer moving to the barber’s chair for service. Transition done corresponds to the customer leaving the barber chair after receiving service, with the barber becoming idle.This modelof the barber shop permits any number of customers to enter the waiting
+                room, but models the constraint that only one customer can occupy the barber chair. This net is an unbounded Petri net because the number of tokens in the waiting place can increase indefinitely.
+            </p>
+            <figure>
+                <img src="assets/barber_shop.png">
+                <figcaption>Example of a Petri Net. Dennis, Jack B. (2011): Petri Nets. In: Encyclopedia of Parallel Computing: Springer, Boston, MA, S. 1525–1530. Online verfügbar unter https://link.springer.com/referenceworkentry/10.1007/978-0-387-09766-4_134.</figcaption>
+            </figure>
+
+            <p>
+                
+            </p>
+
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+        </ng-template>
+    </mat-step>
+    <mat-step>
       <ng-template matStepLabel>Design or Import a Petri Net</ng-template>
       <ng-template matStepContent>
-            <p>The first step is to design or import a Petri net diagram using the <a [routerLink]="['/designer']">Designer</a> tool provided in this application or by importing an example Petri net from a list of resources available on the internet. To design a Petri net, go to the <a [routerLink]="['/designer']">Designer</a> and use the tools provided to add places, transitions, and arcs. To import a Petri net, select an example from this page or press the &quot;Import&quot; button and paste the Petri net diagram from the clipboard.</p>
+            <p>The first step is to design or import a Petri net diagram using the <a [routerLink]="['/designer']">Designer</a> tool provided in this application or by importing an example Petri net from a list of resources available on the internet. To design a Petri net, go to the Designer and use the tools provided to add places, transitions, and arcs. To import a Petri net, select an example from this page or press the &quot;Import&quot; button and paste the Petri net diagram from the clipboard.</p>
             <p>Prebuilt examples</p>
             <ul>
                 <li>
@@ -45,6 +81,7 @@
                     <a href="https://www.pnml.org/version-2009/examples/SharedMemory-Hlpn.pnml">High-level Petri net [shared memory] model</a>
                 </li>
             </ul>
+        <button mat-button matStepperPrevious>Back</button>
         <button mat-button matStepperNext>Next</button>
       </ng-template>
     </mat-step>
