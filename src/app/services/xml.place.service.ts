@@ -35,6 +35,7 @@ export class XMLPlaceService {
      */
     public getPlaceTokenSchemaName(id: string | null): string {
         const tokenSchema = Global.xmlDoc.querySelectorAll('place#' + id + ' > toolspecific[tool="dme"] > tokenSchema')
+
         if (tokenSchema.length > 0) {
             return String(tokenSchema[0].getAttribute('name'))
         } else {

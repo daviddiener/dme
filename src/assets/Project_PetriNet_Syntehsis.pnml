@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <pnml>
      <net id="" type="http://www.pnml.org/version-2009/grammar/ptnet">
           <name>
-               <text>Project_PetriNet_Syntehsis1430748661856.pnml</text>
+               <text>Project_PetriNet_Syntehsis1430748661856pnml</text>
           </name>
           <page id="p1-1430748661881">
-               <transition id="Node1430748661856716.4453427809592">
+               <transition id="Node14307486618567164453427809592">
                     <name>
                          <text>a</text>
                          <graphics>
@@ -16,7 +15,7 @@
                          <position x="184" y="184"/>
                     </graphics>
                </transition>
-               <transition id="Node14307486618564463.2833234168675">
+               <transition id="Node143074866185644632833234168675">
                     <name>
                          <text>x</text>
                          <graphics>
@@ -27,7 +26,7 @@
                          <position x="484" y="134"/>
                     </graphics>
                </transition>
-               <transition id="Node1430748661856275.8564070512748">
+               <transition id="Node14307486618562758564070512748">
                     <name>
                          <text>b</text>
                          <graphics>
@@ -38,7 +37,7 @@
                          <position x="634" y="34"/>
                     </graphics>
                </transition>
-               <transition id="Node14307486618561400.9495859361032">
+               <transition id="Node143074866185614009495859361032">
                     <name>
                          <text>y</text>
                          <graphics>
@@ -49,7 +48,7 @@
                          <position x="784" y="184"/>
                     </graphics>
                </transition>
-               <transition id="Node14307486618565272.499375013231">
+               <transition id="Node14307486618565272499375013231">
                     <name>
                          <text>c</text>
                          <graphics>
@@ -60,7 +59,7 @@
                          <position x="1034" y="184"/>
                     </graphics>
                </transition>
-               <transition id="Node14307486618567912.101337380881">
+               <transition id="Node14307486618567912101337380881">
                     <name>
                          <text>u</text>
                          <graphics>
@@ -71,7 +70,7 @@
                          <position x="484" y="134"/>
                     </graphics>
                </transition>
-               <transition id="Node14307486618563364.431789470342">
+               <transition id="Node14307486618563364431789470342">
                     <name>
                          <text>v</text>
                          <graphics>
@@ -82,7 +81,7 @@
                          <position x="784" y="134"/>
                     </graphics>
                </transition>
-               <place id="Node14307486618563891.4205001696546">
+               <place id="Node143074866185638914205001696546">
                     <name>
                          <text>p0</text>
                          <graphics>
@@ -96,7 +95,7 @@
                          <text>1</text>
                     </initialMarking>
                </place>
-               <place id="Node14307486618574282.246606203731">
+               <place id="Node14307486618574282246606203731">
                     <name>
                          <text>p1</text>
                          <graphics>
@@ -110,7 +109,7 @@
                          <text>0</text>
                     </initialMarking>
                </place>
-               <place id="Node14307486618577152.969994834407">
+               <place id="Node14307486618577152969994834407">
                     <name>
                          <text>p2</text>
                          <graphics>
@@ -124,7 +123,7 @@
                          <text>0</text>
                     </initialMarking>
                </place>
-               <place id="Node14307486618576652.202421517566">
+               <place id="Node14307486618576652202421517566">
                     <name>
                          <text>p3</text>
                          <graphics>
@@ -138,7 +137,7 @@
                          <text>0</text>
                     </initialMarking>
                </place>
-               <place id="Node14307486618579943.827038203226">
+               <place id="Node14307486618579943827038203226">
                     <name>
                          <text>p4</text>
                          <graphics>
@@ -152,7 +151,7 @@
                          <text>0</text>
                     </initialMarking>
                </place>
-               <place id="Node14307486618578290.013187215674">
+               <place id="Node14307486618578290013187215674">
                     <name>
                          <text>p5</text>
                          <graphics>
@@ -166,7 +165,7 @@
                          <text>0</text>
                     </initialMarking>
                </place>
-               <place id="Node14307486618575702.527705908753">
+               <place id="Node14307486618575702527705908753">
                     <name>
                          <text>p6</text>
                          <graphics>
@@ -181,119 +180,119 @@
                     </initialMarking>
                </place>
                <arc id="Node1430748661857"
-                    source="Node14307486618563891.4205001696546" target="Node1430748661856716.4453427809592">
+                    source="Node143074866185638914205001696546" target="Node14307486618567164453427809592">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node1430748661856716.4453427809592" target="Node14307486618574282.246606203731">
+                    source="Node14307486618567164453427809592" target="Node14307486618574282246606203731">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618574282.246606203731" target="Node14307486618564463.2833234168675">
+                    source="Node14307486618574282246606203731" target="Node143074866185644632833234168675">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618574282.246606203731" target="Node14307486618567912.101337380881">
+                    source="Node14307486618574282246606203731" target="Node14307486618567912101337380881">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618564463.2833234168675" target="Node14307486618577152.969994834407">
+                    source="Node143074866185644632833234168675" target="Node14307486618577152969994834407">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618577152.969994834407" target="Node1430748661856275.8564070512748">
+                    source="Node14307486618577152969994834407" target="Node14307486618562758564070512748">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618567912.101337380881" target="Node14307486618577152.969994834407">
+                    source="Node14307486618567912101337380881" target="Node14307486618577152969994834407">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node1430748661856275.8564070512748" target="Node14307486618576652.202421517566">
+                    source="Node14307486618562758564070512748" target="Node14307486618576652202421517566">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618576652.202421517566" target="Node14307486618561400.9495859361032">
+                    source="Node14307486618576652202421517566" target="Node143074866185614009495859361032">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618576652.202421517566" target="Node14307486618563364.431789470342">
+                    source="Node14307486618576652202421517566" target="Node14307486618563364431789470342">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618561400.9495859361032" target="Node14307486618579943.827038203226">
+                    source="Node143074866185614009495859361032" target="Node14307486618579943827038203226">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618579943.827038203226" target="Node14307486618565272.499375013231">
+                    source="Node14307486618579943827038203226" target="Node14307486618565272499375013231">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618563364.431789470342" target="Node14307486618579943.827038203226">
+                    source="Node14307486618563364431789470342" target="Node14307486618579943827038203226">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618567912.101337380881" target="Node14307486618578290.013187215674">
+                    source="Node14307486618567912101337380881" target="Node14307486618578290013187215674">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618578290.013187215674" target="Node14307486618563364.431789470342">
+                    source="Node14307486618578290013187215674" target="Node14307486618563364431789470342">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618564463.2833234168675" target="Node14307486618575702.527705908753">
+                    source="Node143074866185644632833234168675" target="Node14307486618575702527705908753">
                     <inscription>
                          <text>1</text>
                     </inscription>
                     <graphics/>
                </arc>
                <arc id="Node1430748661857"
-                    source="Node14307486618575702.527705908753" target="Node14307486618561400.9495859361032">
+                    source="Node14307486618575702527705908753" target="Node143074866185614009495859361032">
                     <inscription>
                          <text>1</text>
                     </inscription>

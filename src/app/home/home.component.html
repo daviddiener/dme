@@ -6,17 +6,16 @@
     <mat-step>
         <ng-template matStepLabel>What does this application do?</ng-template>
         <ng-template matStepContent>
-
-            <p>DME is a tool for business process and data modeling. It implements a protoypcial approach on data model extraction on the basis of business process models.</p>
-            <p>The <a [routerLink]="['/designer']">Designer</a> tool allows for the modeling of such business process models. They process models are based on an advanced type of Petri Nets (Carl Adam Petri in 1962, Kommunikation mit Automaten).</p>
-            <p>On the basis of this Petri Net, the application will <a [routerLink]="['/extractor']"> extract a data model </a>, following a set of rules for the extraction of the respective concepts.</p>
+            <p>DME is a protoypical tool for modeling business processes and data. The goal is a automatc data model extraction based on business process models. The designer tool can be used to create the business process models. The process models are based on an advanced type of Petri nets (next page). Based on this Petri net, a data model will be extracted by different extraction rules.</p>
+            <p>The <a [routerLink]="['/designer']" target="_blank">Designer</a> tool allows for the modeling of such business process models. They process models are based on an advanced type of Petri Nets.</p>
+            <p>On the basis of this Petri Net, the application will <a [routerLink]="['/extractor']" target="_blank"> extract a data model </a>, following a set of rules for the extraction of the respective concepts.</p>
             <button mat-button matStepperNext>Next</button>
         </ng-template>
     </mat-step>
     <mat-step>
         <ng-template matStepLabel>What are Petri Nets?</ng-template>
         <ng-template matStepContent>
-            <p>A Petri net consists of two main components: places and transitions. Places are represented by circles and can contain tokens, which are small dots that indicate the presence of a resource or a state. Transitions are represented by rectangles and define the actions or events that can occur in the system. Arcs connect places and transitions and indicate the flow of tokens between them.</p>
+            <p>A Petri net (Carl Adam Petri in 1962, Kommunikation mit Automaten) consists of two main components: places and transitions. Places are represented by circles and can contain tokens, which are small dots that indicate the presence of a resource or a state. Transitions are represented by rectangles and define the actions or events that can occur in the system. Arcs connect places and transitions and indicate the flow of tokens between them.</p>
 
             <p>The behavior of a Petri net is determined by its initial marking, which is the distribution of tokens among the places at the start of the system, and the firing rule, which defines when and how transitions can fire. When a transition fires, it consumes tokens from its input places and produces tokens in its output places, which may trigger other transitions to fire.</p>
 
@@ -28,7 +27,7 @@
             </p>
             <figure>
                 <img src="assets/barber_shop.png">
-                <figcaption>Example of a Petri Net. Dennis, Jack B. (2011): Petri Nets. In: Encyclopedia of Parallel Computing: Springer, Boston, MA, S. 1525–1530. Online verfügbar unter https://link.springer.com/referenceworkentry/10.1007/978-0-387-09766-4_134.</figcaption>
+                <figcaption>Example of a Petri Net. Adapted from Dennis, Jack B. (2011): Petri Nets. In: Encyclopedia of Parallel Computing: Springer, Boston, MA, S. 1525–1530. Online verfügbar unter https://link.springer.com/referenceworkentry/10.1007/978-0-387-09766-4_134.</figcaption>
             </figure>
 
             <p>
@@ -42,41 +41,41 @@
     <mat-step>
       <ng-template matStepLabel>Design or Import a Petri Net</ng-template>
       <ng-template matStepContent>
-            <p>The first step is to design or import a Petri net diagram using the <a [routerLink]="['/designer']">Designer</a> tool provided in this application or by importing an example Petri net from a list of resources available on the internet. To design a Petri net, go to the Designer and use the tools provided to add places, transitions, and arcs. To import a Petri net, select an example from this page or press the &quot;Import&quot; button and paste the Petri net diagram from the clipboard.</p>
+            <p>The first step is to design or import a Petri net diagram using the <a [routerLink]="['/designer']" target="_blank">Designer</a> tool provided in this application or by importing an example Petri net from a list of resources available on the internet. To design a Petri net, go to the Designer and use the tools provided to add places, transitions, and arcs. To import a Petri net, select an example from this page or press the &quot;Import&quot; button and paste the Petri net diagram from the clipboard.</p>
             <p>Prebuilt examples</p>
             <ul>
                 <li>
                     <button mat-button color="primary" mat-button (click)="openPNMLModel('launch_routing.pnml')">
-                        <mat-icon>open_in_browser</mat-icon>
+                        <mat-icon>open_in_browser</mat-icon> Open in Designer
                     </button>
                     <a>Launch Routing</a>
                 </li>
                 <li>
                     <button mat-button color="primary" mat-button (click)="openPNMLModel('recursive_inheritance.pnml')">
-                        <mat-icon>open_in_browser</mat-icon>
+                        <mat-icon>open_in_browser</mat-icon> Open in Designer
                     </button>
                     <a>Recursive Inheritance</a>
                 </li>
                 <li>
                     <button mat-button color="primary" mat-button (click)="openPNMLModel('Project_PetriNet_Syntehsis.pnml')">
-                        <mat-icon>open_in_browser</mat-icon>
+                        <mat-icon>open_in_browser</mat-icon> Open in Designer
                     </button>
                     <a href="https://github.com/irgangla/pntools/blob/master/example.pnml">Project_PetriNet_Syntehsis</a>
                 </li>
                 <li>
                     <button mat-button color="primary" mat-button (click)="openPNMLModel('signaling.pnml')">
-                        <mat-icon>open_in_browser</mat-icon>
+                        <mat-icon>open_in_browser</mat-icon> Open in Designer
                     </button>
                     <a href="https://git.ucr.ac.cr/JEISSON.HIDALGO/concurrente21a-jeisson_hidalgo/-/blob/bec510453b1d040ccc7eedde4f40e51862ae03f2/taskc/signaling/signaling.pnml">Signaling</a>
                 </li>
                 <li>
                     <button mat-button color="primary" mat-button (click)="openPNMLModel('execution_paths.pnml')">
-                        <mat-icon>open_in_browser</mat-icon>
+                        <mat-icon>open_in_browser</mat-icon> Open in Designer
                     </button>
                     <a href="https://git.ucr.ac.cr/JEISSON.HIDALGO/concurrente21b-jeisson_hidalgo-03/-/blob/02e300ebbd7a457a3789e7388700fe8d6ba67119/taskc/execution_paths/execution_paths.pnml">execution_paths</a></li>
                 <li>
                     <button mat-button color="primary" mat-button (click)="openPNMLModel('SharedMemory-Hlpn.pnml')">
-                        <mat-icon>open_in_browser</mat-icon>
+                        <mat-icon>open_in_browser</mat-icon> Open in Designer
                     </button>
                     <a href="https://www.pnml.org/version-2009/examples/SharedMemory-Hlpn.pnml">High-level Petri net [shared memory] model</a>
                 </li>
@@ -101,8 +100,14 @@
     </mat-step>
     <mat-step>
         <ng-template matStepLabel>Execute Data Model Extraction</ng-template>
-            <p>After completing the previous steps, you can extract a data model by going to the <a [routerLink]="['/extractor']"> data model extraction</a> page. The application will automatically generate a UML class model for you based on the Petri net model and token schemas and roles defined in Steps 2 and 3. The resulting data model can be used for the early phases of software development.</p>
-            <p>Congratulations! You have successfully modeled a Petri net diagram and extracted a data model from it.</p>
+            <p>After completing the previous steps, you can extract a data model by going to the <a [routerLink]="['/extractor']" target="_blank"> data model extraction</a> page. The application will automatically generate a UML class model for you based on the Petri net model and token schemas and roles defined in Steps 2 and 3.</p>
+
+            <figure>
+                <img src="assets/extractor_button.png">
+                <figcaption>Click on "Data Model Extractor" in the navigation bar.</figcaption>
+            </figure>
+
+            <p>The resulting data model can be used for the early phases of software development. Congratulations! You have successfully modeled a Petri net diagram and extracted a data model from it.</p>
         <button mat-button matStepperPrevious>Back</button>
       </mat-step>
   </mat-stepper>
