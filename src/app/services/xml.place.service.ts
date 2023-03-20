@@ -60,7 +60,7 @@ export class XMLPlaceService {
             
             // create token schema tag again if a name is provided
             if(dataObjectName!=''){
-                const toolspecific = node.appendChild(Global.xmlDoc.createElementNS('toolspecific', ''))
+                const toolspecific = node.appendChild(Global.xmlDoc.createElement('toolspecific'))
                 toolspecific.setAttribute('tool', 'dme')
                 toolspecific.setAttribute('version', appVersion)
                 const tokenSchema = toolspecific.appendChild(Global.xmlDoc.createElement('tokenSchema'))
