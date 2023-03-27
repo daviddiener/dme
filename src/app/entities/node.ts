@@ -96,6 +96,8 @@ export abstract class Node {
                 fontFamily: 'Arial',
                 fontSize: 12,
                 align: 'center',
+                wordWrap : true,
+                wordWrapWidth: 90
             })
         )
 
