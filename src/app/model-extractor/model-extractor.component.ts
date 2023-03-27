@@ -61,25 +61,17 @@ export class ModelExtractorComponent implements AfterViewInit {
 
     generateClassesFromRoles() {
         this.xmlTransitionService.getTransitionRolesDistinct().forEach((element) => {
-            if(element)
-                this.classes.push({
-                    'name': element, 
-                    'superClasses': [], 
-                    'attributes': [
-                        {
-                            name: element + '_id',
-                            type: 'string',
-                            isPrimaryKey: true,
-                            isPrimaryKeyCombi: true
-                        },
-                        {
-                            name: 'name',
-                            type: 'string',
-                            isPrimaryKey: false,
-                            isPrimaryKeyCombi: false
-                        }
-                    ]
-                })
+            if(element) {
+                // if the class does not exist already or will be later instantiated by a place anyways , create it
+                if (!this.classes.some((el) => el.name == element) && 
+                    !(this.xmlPlaceService.getDistinctTokenSchemaByName(element).length > 0)) {
+                    this.classes.push({
+                        'name': element, 
+                        'superClasses': [], 
+                        'attributes': [this.getPKCombination(element)]
+                    })
+                }
+            }
         })
     }
 
@@ -91,9 +83,6 @@ export class ModelExtractorComponent implements AfterViewInit {
             
             // add the PK here if it is not included by default. This is the case with inherited or combined PKs. 
             // We override the PK rather than leaving the old one, because the isPrimaryKeyCombi may be different
-            // if(!attributes.some(x => x.name == primary_key.name)) {
-            //     attributes.push(primary_key)
-            // }
             const existingIndex = attributes.findIndex((x) => x.name === primary_key.name);
             if (existingIndex !== -1) {
                 attributes[existingIndex] = primary_key;

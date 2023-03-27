@@ -88,7 +88,7 @@
       <ng-template matStepLabel>Define Token Schemas and Roles</ng-template>
       <ng-template matStepContent>
         <p>In this step, define token schemas for each place in the Petri net. Token schemas include the name, superclasses, and attributes of the token. To define a token schema, select the place and enter a token schema name. The field for the superclass and attribute definitions will appear, allowing you to enter the token schema information. If you do not define a token schema, the place name will be used for the data model generation in Step 4.</p>
-        <p>You can also define roles for each transition. A role represents a person, organization, or entity responsible for the occurrence of the transition. To define a role, select the transition and enter the name of the role in the role field. The roles will be converted into classes in the data model, and each class will be assigned the attributes "id" and "name."</p>
+        <p>You can also define roles for each transition. A role represents a person, organization, or entity responsible for the occurrence of the transition. To define a role, select the transition and enter the name of the role in the role field. The roles will be converted into classes in the data model, and each class will be assigned the attributes "id", given that the class is not further specified by a token schema with the same name as the role.</p>
         <button mat-button matStepperPrevious>Back</button>
         <button mat-button matStepperNext>Next</button>
       </ng-template>
