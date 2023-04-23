@@ -6,12 +6,11 @@ import { getUUID } from '../services/helper.service'
 import { XMLNodeService } from '../services/xml.node.service'
 
 /**
- * Enum which describe the specific node instances place, transition and class.
+ * Enum which describe the specific node instances place, transition.
  */
 export enum NodeType {
     place = 'place',
     transition = 'transition',
-    class = 'class',
 }
 
 /**
