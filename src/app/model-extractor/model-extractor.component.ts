@@ -51,9 +51,9 @@ export class ModelExtractorComponent implements AfterViewInit {
 
             this.generateClassesFromTokenSchemas()
 
-            this.generateCardinalitiesAroundTransitions()
+            this.generateAssociationsAroundTransitions()
 
-            this.generateCardinalitiesFromRoles()
+            this.generateAssociationsFromRoles()
 
             this.flushToPlantUML()
         } else alert('No valid xml string found')
@@ -116,7 +116,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
     }
 
-    generateCardinalitiesAroundTransitions() {
+    generateAssociationsAroundTransitions() {
         // iterate through all transitions, and for each transition thorugh each combination of source and target arcs
         Array.from(this.xmlTransitionService.getAllTransitions()).forEach((transition) => {
             this.xmlArcService.getAllArcsWithTarget(transition.getAttribute('id')).forEach(predecessorArc => {
@@ -167,7 +167,7 @@ export class ModelExtractorComponent implements AfterViewInit {
         })
     }
 
-    generateCardinalitiesFromRoles() {
+    generateAssociationsFromRoles() {
         Array.from(this.xmlTransitionService.getTransitionRoles()).forEach((element) => {
             this.xmlArcService.getAllArcsWithSource(element.getAttribute('id')).forEach((arc) => {
                 // check if the target node is a valid place
