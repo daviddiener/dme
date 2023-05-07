@@ -1,190 +1,314 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
-	<net id="mff79f693-8a77-4df4-a1ee-e7d25d434345" type="http://www.pnml.org/version-2009/grammar/highlevelnet">
-		<name>
-			<text>Launch Routing</text>
-		</name>
-		<page id="mff7sdf393-8a77-4df4-a1ee-e7d25d434345">
-			<place id="mff79f693-8a77-4df4-a1ee-e9d25d434312">
-				<graphics>
-					<position x="48" y="348"/>
-				</graphics>
-				<name>
-					<text>New Model Release</text>
-				</name>
-                <toolspecific tool="dme" version="1.3.0">
-                    <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Produktionsdaten" superClass="">
-                        <xs:element name="prod_id" type="xs:string" isPrimaryKey="true"/>
-                        <xs:element name="test" type="xs:date" isPrimaryKey="false"/>
-                    </tokenSchema>
+	<net id="ne8aa6769-080c-452b-aaf4-2b163dd723ed" type="http://www.pnml.org/version-2009/grammar/highlevelnet">
+    <name>
+        <text>Launch Routing</text>
+    </name>
+    <page id="a7ec6279c-021f-48c6-93cc-6105b439bb75">
+        <place id="ka63229c9-68b3-46db-b9f2-d0782fc164b6">
+            <graphics>
+                <position x="174" y="140"/>
+            </graphics>
+            <name>
+                <text>Partial LRR</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass="">
+                    <xs:element name="xlsx_asset" type="base64Binary" isPrimaryKey="false"/>
+                </tokenSchema>
+            </toolspecific>
+        </place>
+        <place id="zd4715195-370b-471e-9156-47ed3e7196fe">
+            <graphics>
+                <position x="169" y="305"/>
+            </graphics>
+            <name>
+                <text>Full LRR</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass="">
+                    <xs:element name="model" type="string" isPrimaryKey="false"/>
+                    <xs:element name="overwrite_launch_setting" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="exclude_engines" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="exclude_transmissions" type="boolean" isPrimaryKey="false"/>
+                </tokenSchema>
+            </toolspecific>
+        </place>
+        <transition id="e528fcd9f-2c21-4f61-ad1c-cb9a6858c28a">
+            <graphics>
+                <position x="300" y="140"/>
+            </graphics>
+            <name>
+                <text>Upload PNR+BR list</text>
+            </name>
+            <toolspecific tool="dme" version="1.4.2">
+                <role>
+                    <text>Q-ING</text>
+                </role>
+            </toolspecific>
+        </transition>
+        <transition id="me5c65bc3-59d9-4d7f-bcd9-bca8de4e6eae">
+            <graphics>
+                <position x="70" y="230"/>
+            </graphics>
+            <name>
+                <text>Create LRR</text>
+            </name>
+            <toolspecific tool="dme" version="1.4.2">
+                <role>
+                    <text>Q-ING</text>
+                </role>
+            </toolspecific>
+        </transition>
+        <arc id="z114500f7-7ec4-4b70-93d2-426041fbdd6f" source="me5c65bc3-59d9-4d7f-bcd9-bca8de4e6eae" target="ka63229c9-68b3-46db-b9f2-d0782fc164b6">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <arc id="j82a9527c-44a1-4d2a-86e3-69e16d6cdb8d" source="me5c65bc3-59d9-4d7f-bcd9-bca8de4e6eae" target="zd4715195-370b-471e-9156-47ed3e7196fe">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <arc id="jae0b19b2-4dc8-4254-8525-99e7243c02bf" source="ka63229c9-68b3-46db-b9f2-d0782fc164b6" target="e528fcd9f-2c21-4f61-ad1c-cb9a6858c28a">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <transition id="l6791c3ce-5024-4cb7-8bf3-32bde02407d8">
+            <graphics>
+                <position x="300" y="310"/>
+            </graphics>
+            <name>
+                <text>Fetch all PNR for selected BR</text>
+            </name>
+            <toolspecific tool="dme" version="1.4.2">
+                <role>
+                    <text>Dialog</text>
+                </role>
+            </toolspecific>
+        </transition>
+        <arc id="j51ad076d-2fb6-44cf-bf59-92a8137f5561" source="zd4715195-370b-471e-9156-47ed3e7196fe" target="l6791c3ce-5024-4cb7-8bf3-32bde02407d8">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <place id="ia5ce6bab-eb2e-49ff-9699-a35b9f700c1b">
+            <graphics>
+                <position x="180" y="420"/>
+            </graphics>
+            <name>
+                <text>Dialog Data</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Dialog" superClass="">
+                    <xs:element name="part_number" type="string" isPrimaryKey="false"/>
+                    <xs:element name="model" type="string" isPrimaryKey="false"/>
+                </tokenSchema>
+            </toolspecific>
+        </place>
+        <arc id="u2bd72cdf-09f2-4c5e-a4ce-ae235df20168" source="ia5ce6bab-eb2e-49ff-9699-a35b9f700c1b" target="l6791c3ce-5024-4cb7-8bf3-32bde02407d8">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <place id="tca895ac0-1ebe-46eb-9f0f-59040395c7c2">
+            <graphics>
+                <position x="439" y="230"/>
+            </graphics>
+            <name>
+                <text>LRR 1</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass="">
+                    <xs:element name="l_routing_request_id" type="string" isPrimaryKey="true"/>
+                    <xs:element name="denotation" type="string" isPrimaryKey="false"/>
+                    <xs:element name="pnr_br_list" type="string" isPrimaryKey="false"/>
+                    <xs:element name="launch_category" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="launch_supervisor" type="string" isPrimaryKey="false"/>
+                    <xs:element name="launch_qing" type="string" isPrimaryKey="false"/>
+                    <xs:element name="market" type="string" isPrimaryKey="false"/>
+                    <xs:element name="plant" type="string" isPrimaryKey="false"/>
+                    <xs:element name="plant_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="launch_period_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="launch_period_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="line" type="string" isPrimaryKey="false"/>
+                    <xs:element name="prod_date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="value_limit" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="sa_codes" type="string" isPrimaryKey="false"/>
+                    <xs:element name="branches" type="string" isPrimaryKey="false"/>
+                    <xs:element name="limit_mdp" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="priority_return" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="default_bin_sifi" type="string" isPrimaryKey="false"/>
+                    <xs:element name="default_bin_ut" type="string" isPrimaryKey="false"/>
+                    <xs:element name="default_bin_jax" type="string" isPrimaryKey="false"/>
+                    <xs:element name="default_bin_kamenz" type="string" isPrimaryKey="false"/>
+                    <xs:element name="default_bin_china" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_type" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_model" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_line" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_plant_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_million_counter" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_end_number_from" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_end_number_to" type="string" isPrimaryKey="false"/>
+                </tokenSchema>
+            </toolspecific>
+        </place>
+        <arc id="cd54727d0-cc3f-4bb1-9f5b-2ec8c0720ee5" source="e528fcd9f-2c21-4f61-ad1c-cb9a6858c28a" target="tca895ac0-1ebe-46eb-9f0f-59040395c7c2">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <arc id="y6694475b-8ad3-4281-8246-6c87b905820a" source="l6791c3ce-5024-4cb7-8bf3-32bde02407d8" target="tca895ac0-1ebe-46eb-9f0f-59040395c7c2">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <transition id="y5859650c-c7b2-40da-b076-983caad1032b">
+            <graphics>
+                <position x="577" y="230"/>
+            </graphics>
+            <name>
+                <text>Subtract all Clusters in which BR+PNR+Plant is marked "not launch relevant"</text>
+            </name>
+            <toolspecific tool="dme" version="1.4.2">
+                <role>
+                    <text>TEA-NG</text>
+                </role>
+            </toolspecific>
+        </transition>
+        <arc id="xa4349da5-7f43-4e00-ac00-9d031b69271d" source="tca895ac0-1ebe-46eb-9f0f-59040395c7c2" target="y5859650c-c7b2-40da-b076-983caad1032b">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <place id="g9defe9eb-b663-47a8-9461-34a147af7c3c">
+            <graphics>
+                <position x="700" y="230"/>
+            </graphics>
+            <name>
+                <text>LRR 2</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass=""/>
                 </toolspecific>
-			</place>
-			<place xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="a5a61ace0-d4c5-424a-93a0-f0312be96b5f">
-				<graphics>
-					<position x="66" y="136"/>
-				</graphics>
-				<name>
-					<text>Schadteil</text>
-				</name>
-                <toolspecific tool="dme" version="1.3.0">
-                    <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Schadteil" superClass="Produktionsdaten">
-                        <xs:element name="referenznummer" type="xs:integer" isPrimaryKey="true"/>
-                        <xs:element name="Hauptverantw." type="xs:string" isPrimaryKey="false"/>
-                    </tokenSchema>
+        </place>
+        <arc id="e2978e011-e5de-44f9-a353-d9d5e16519db" source="y5859650c-c7b2-40da-b076-983caad1032b" target="g9defe9eb-b663-47a8-9461-34a147af7c3c">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <transition id="p4561e490-0b4c-494b-ae9f-cf5d3abec814">
+            <graphics>
+                <position x="829" y="310"/>
+            </graphics>
+            <name>
+                <text>If US: Compare KGU List to identify the analysis location and Dealer Documents</text>
+            </name>
+            <toolspecific tool="dme" version="1.4.2">
+                <role>
+                    <text>TEA-NG</text>
+                </role>
+            </toolspecific>
+        </transition>
+        <arc id="b7b24e3c5-c8c2-491b-9791-de1ba2628794" source="g9defe9eb-b663-47a8-9461-34a147af7c3c" target="p4561e490-0b4c-494b-ae9f-cf5d3abec814">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <place id="redc5ce81-0815-4ea9-8874-fd0541bca45f">
+            <graphics>
+                <position x="700" y="390"/>
+            </graphics>
+            <name>
+                <text>KGU List</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="KGU_List" superClass=""/>
                 </toolspecific>
-			</place>
-			<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="ra502d455-dbf3-40a3-b168-15e00dd7a900">
-				<graphics>
-					<position x="206" y="345"/>
-				</graphics>
-				<name>
-					<text>Contract Assignment</text>
-				</name>
-                <toolspecific tool="dme" version="1.3.0">
-                    <role>
-                        <text>OTS</text>
-                    </role>
+        </place>
+        <arc id="b61e848d8-b09a-4abc-865e-f97df13bf7c3" source="redc5ce81-0815-4ea9-8874-fd0541bca45f" target="p4561e490-0b4c-494b-ae9f-cf5d3abec814">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <transition id="k4a3aee63-8e0b-4d0b-8f6a-fea88ea852c8">
+            <graphics>
+                <position x="1040" y="230"/>
+            </graphics>
+            <name>
+                <text>Save as Routing Entrys in TEA-NG</text>
+            </name>
+            <toolspecific tool="dme" version="1.4.2">
+                <role>
+                    <text>TEA-NG</text>
+                </role>
+            </toolspecific>
+        </transition>
+        <place id="p7437f8e5-6c1f-47da-9f09-b3b10980299a">
+            <graphics>
+                <position x="953" y="310"/>
+            </graphics>
+            <name>
+                <text>LRR 3</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass=""/>
                 </toolspecific>
-			</transition>
-			<transition id="ta5f22876-7a71-4519-8d75-e03097fd6120">
-				<graphics>
-					<position x="246" y="135"/>
-				</graphics>
-				<name>
-					<text>Call API</text>
-				</name>
-                <toolspecific tool="dme" version="1.3.0">
-                    <role>
-                        <text>TEA-NG</text>
-                    </role>
-                </toolspecific>
-			</transition>
-			<place xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="fc4f8a11f-0d30-42d0-9b91-0d40691c4817">
-				<graphics>
-					<position x="376" y="343"/>
-				</graphics>
-				<name>
-					<text>Routing Entry</text>
-				</name>
-                <toolspecific tool="dme" version="1.3.0">					
-				    <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="">
-                        <xs:element name="Schadteil" type="xs:string" isPrimaryKey="false"/>
-                        <xs:element name="BoolParam" type="xs:string" isPrimaryKey="false"/>
-                        <xs:element name="RE_ID" type="xs:string" isPrimaryKey="true"/>
-                        <xs:element name="object" type="base64Binary" isPrimaryKey="false"/>
-                    </tokenSchema>
-                </toolspecific>
-                </place>
-				<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="wa8ac73bb-741d-414d-aecb-77143c318d6b">
-					<graphics>
-						<position x="487" y="241"/>
-					</graphics>
-					<name>
-						<text>German Contract</text>
-					</name>
-                    <toolspecific tool="dme" version="1.3.0">
-                        <role>
-                            <text>OTS</text>
-                        </role>
-                    </toolspecific>
-				</transition>
-				<transition id="fa6246d65-4e78-4afc-8ec3-783501c9da2d">
-					<graphics>
-						<position x="459" y="437"/>
-					</graphics>
-					<name>
-						<text>US Contract</text>
-					</name>
-                    <toolspecific tool="dme" version="1.3.0">
-                        <role>
-                            <text>OTS</text>
-                        </role>
-                    </toolspecific>
-				</transition>
-				<place id="e860b0b97-fc96-421b-af26-cf394491e150">
-					<graphics>
-						<position x="571" y="359"/>
-					</graphics>
-					<name>
-						<text>Specified Routing Entry</text>
-					</name>
-					<toolspecific tool="dme" version="1.3.0">
-				        <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="Schadteil">
-                            <xs:element name="Schadteil" type="xs:string" isPrimaryKey="false"/>
-                        </tokenSchema>
-                    </toolspecific>
-                </place>
-				<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="gd23e3f77-82e2-40d9-80db-0e255576064c">
-					<graphics>
-						<position x="693" y="357"/>
-					</graphics>
-					<name>
-						<text>Documenting</text>
-					</name>
-                    <toolspecific tool="dme" version="1.3.0">
-                        <role>
-                            <text>TEA-NG</text>
-                        </role>
-                    </toolspecific>
-				</transition>
-				<place id="v3ad55bf0-9132-4596-b077-d2a21c17afcb">
-					<graphics>
-						<position x="834" y="358"/>
-					</graphics>
-					<name>
-						<text>Routing Request</text>
-					</name>
-                    <toolspecific tool="dme" version="1.3.0">
-                        <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Routing Request" superClass="">
-                            <xs:element name="RR_ID" type="xs:string" isPrimaryKey="true"/>
-                        </tokenSchema>
-                    </toolspecific>
-                </place>
-				<transition xmlns="http://www.pnml.org/version-2009/grammar/pnml" id="q2dd9948a-4d74-4e68-87fc-bf9bf904c3ba">
-					<graphics>
-						<position x="949" y="348"/>
-					</graphics>
-					<name>
-						<text>VEGA API</text>
-					</name>
-                    <toolspecific tool="dme" version="1.3.0">
-                        <role>
-                            <text>TEA-NG</text>
-                        </role>
-                    </toolspecific>
-				</transition>
-				<arc id="y925f6ae1-1cd9-40e0-a4fc-547cf8121d5d" source="a5a61ace0-d4c5-424a-93a0-f0312be96b5f" target="ta5f22876-7a71-4519-8d75-e03097fd6120">
-					<hlinscription>*</hlinscription>
-				</arc>
-				<arc id="x9b61df19-93a2-4322-8188-c46a6b68f40a" source="ta5f22876-7a71-4519-8d75-e03097fd6120" target="fc4f8a11f-0d30-42d0-9b91-0d40691c4817">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="mae5d41be-ce8a-4230-81e7-6452f7fb476d" source="mff79f693-8a77-4df4-a1ee-e9d25d434312" target="ra502d455-dbf3-40a3-b168-15e00dd7a900">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="jd3c28c34-3438-4d5b-84ae-a2be4d3ffc24" source="ra502d455-dbf3-40a3-b168-15e00dd7a900" target="fc4f8a11f-0d30-42d0-9b91-0d40691c4817">
-					<hlinscription>*</hlinscription>
-				</arc>
-				<arc id="b1ef81f02-8b31-4255-ac5c-cc727b6e5eef" source="fc4f8a11f-0d30-42d0-9b91-0d40691c4817" target="wa8ac73bb-741d-414d-aecb-77143c318d6b">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="q731242f0-5075-448a-b721-036776e875b0" source="fc4f8a11f-0d30-42d0-9b91-0d40691c4817" target="fa6246d65-4e78-4afc-8ec3-783501c9da2d">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="qc7faa032-4c55-4b6f-a55c-bf759f81e32e" source="wa8ac73bb-741d-414d-aecb-77143c318d6b" target="e860b0b97-fc96-421b-af26-cf394491e150">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="b1fdf98c3-5aed-4d24-ac08-c865315146a7" source="fa6246d65-4e78-4afc-8ec3-783501c9da2d" target="e860b0b97-fc96-421b-af26-cf394491e150">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="x409677cc-79e5-48b4-92f2-c81614243847" source="e860b0b97-fc96-421b-af26-cf394491e150" target="gd23e3f77-82e2-40d9-80db-0e255576064c">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="j97907b72-c4f9-4879-afda-792fb9d04238" source="gd23e3f77-82e2-40d9-80db-0e255576064c" target="v3ad55bf0-9132-4596-b077-d2a21c17afcb">
-					<hlinscription>1</hlinscription>
-				</arc>
-				<arc id="p40dd1cf0-151a-437a-aca0-aff10f223b3e" source="v3ad55bf0-9132-4596-b077-d2a21c17afcb" target="q2dd9948a-4d74-4e68-87fc-bf9bf904c3ba">
-					<hlinscription>1</hlinscription>
-				</arc>
-			</page>
-		</net>
-	</pnml>
+        </place>
+        <arc id="zb30dd785-7631-4606-97cd-92e403ad6c06" source="p4561e490-0b4c-494b-ae9f-cf5d3abec814" target="p7437f8e5-6c1f-47da-9f09-b3b10980299a">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <arc id="b96716f9c-1b3a-40c6-a8bf-a146dd4f8fe9" source="p7437f8e5-6c1f-47da-9f09-b3b10980299a" target="k4a3aee63-8e0b-4d0b-8f6a-fea88ea852c8">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <arc id="d631d9224-f79b-40b9-9178-3969e007a4db" source="g9defe9eb-b663-47a8-9461-34a147af7c3c" target="k4a3aee63-8e0b-4d0b-8f6a-fea88ea852c8">
+            <hlinscription>1</hlinscription>
+        </arc>
+        <place id="a5673094c-fafe-439f-b218-23f49e23de3a">
+            <graphics>
+                <position x="1169" y="230"/>
+            </graphics>
+            <name>
+                <text>Routing Entry</text>
+            </name>
+            <toolspecific xmlns="" tool="dme" version="1.4.2">
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="">
+                    <xs:element name="routing_entry_id" type="string" isPrimaryKey="true"/>
+                    <xs:element name="routing_cluster_id" type="string" isPrimaryKey="false"/>
+                    <xs:element name="m_routing_request_id" type="string" isPrimaryKey="false"/>
+                    <xs:element name="v_key" type="string" isPrimaryKey="false"/>
+                    <xs:element name="gala_id" type="string" isPrimaryKey="false"/>
+                    <xs:element name="branch" type="string" isPrimaryKey="false"/>
+                    <xs:element name="reparation_date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="reparation_date_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="market" type="string" isPrimaryKey="false"/>
+                    <xs:element name="storage_location" type="string" isPrimaryKey="false"/>
+                    <xs:element name="second_storage_location" type="string" isPrimaryKey="false"/>
+                    <xs:element name="unloading_point" type="string" isPrimaryKey="false"/>
+                    <xs:element name="warranty_factory" type="string" isPrimaryKey="false"/>
+                    <xs:element name="rule_name" type="string" isPrimaryKey="false"/>
+                    <xs:element name="valid_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="valid_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="max_r_parts" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="quota" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="part_number" type="string" isPrimaryKey="false"/>
+                    <xs:element name="damage_main_part" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="sca " type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="tga_claimed" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="value_limit" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="service_type" type="string" isPrimaryKey="false"/>
+                    <xs:element name="fin_model" type="string" isPrimaryKey="false"/>
+                    <xs:element name="fin_line" type="string" isPrimaryKey="false"/>
+                    <xs:element name="fin_plant_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="fin_million_counter" type="string" isPrimaryKey="false"/>
+                    <xs:element name="fin_end_number_from" type="string" isPrimaryKey="false"/>
+                    <xs:element name="fin_end_number_to" type="string" isPrimaryKey="false"/>
+                    <xs:element name="model_year_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="model_year_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="assembly_type" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_model" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_line" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_plant_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_million_counter" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_end_number_from" type="string" isPrimaryKey="false"/>
+                    <xs:element name="aggregate_end_number_to" type="string" isPrimaryKey="false"/>
+                    <xs:element name="special_equipment" type="string" isPrimaryKey="false"/>
+                    <xs:element name="running_time_from" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="running_time_to" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="mileage_from" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="mileage_to" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="registration_date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="registration_date_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="prod_date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="prod_date_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="dealer_number" type="string" isPrimaryKey="false"/>
+                    <xs:element name="dealer_documents" type="string" isPrimaryKey="false"/>
+                    <xs:element name="dealer_sds" type="string" isPrimaryKey="false"/>
+                    <xs:element name="isActive" type="boolean" isPrimaryKey="false"/>
+                </tokenSchema>
+            </toolspecific>
+        </place>
+        <arc id="c1ad4bf97-bd83-403e-8e6f-970940335aa0" source="k4a3aee63-8e0b-4d0b-8f6a-fea88ea852c8" target="a5673094c-fafe-439f-b218-23f49e23de3a">
+            <hlinscription xmlns=""><text>*</text></hlinscription>
+        </arc>
+    </page>
+    </net>
+</pnml>
