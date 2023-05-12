@@ -26,10 +26,10 @@
             </name>
             <toolspecific xmlns="" tool="dme" version="1.4.2">
                 <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass="">
-                    <xs:element name="model" type="string" isPrimaryKey="false"/>
-                    <xs:element name="overwrite_launch_setting" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="exclude_engines" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="exclude_transmissions" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****del" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****rite_*****h_setting" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****de_engines" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****de_transmissions" type="boolean" isPrimaryKey="false"/>
                 </tokenSchema>
             </toolspecific>
         </place>
@@ -77,7 +77,7 @@
             </name>
             <toolspecific tool="dme" version="1.4.2">
                 <role>
-                    <text>Dialog</text>
+                    <text>Monolog</text>
                 </role>
             </toolspecific>
         </transition>
@@ -89,12 +89,12 @@
                 <position x="180" y="420"/>
             </graphics>
             <name>
-                <text>Dialog Data</text>
+                <text>Monolog Data</text>
             </name>
             <toolspecific xmlns="" tool="dme" version="1.4.2">
-                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Dialog" superClass="">
-                    <xs:element name="part_number" type="string" isPrimaryKey="false"/>
-                    <xs:element name="model" type="string" isPrimaryKey="false"/>
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Monolog" superClass="">
+                    <xs:element name="*****number" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****del" type="string" isPrimaryKey="false"/>
                 </tokenSchema>
             </toolspecific>
         </place>
@@ -111,35 +111,35 @@
             <toolspecific xmlns="" tool="dme" version="1.4.2">
                 <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="LRR" superClass="">
                     <xs:element name="l_routing_request_id" type="string" isPrimaryKey="true"/>
-                    <xs:element name="denotation" type="string" isPrimaryKey="false"/>
-                    <xs:element name="pnr_br_list" type="string" isPrimaryKey="false"/>
-                    <xs:element name="launch_category" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="launch_supervisor" type="string" isPrimaryKey="false"/>
-                    <xs:element name="launch_qing" type="string" isPrimaryKey="false"/>
-                    <xs:element name="market" type="string" isPrimaryKey="false"/>
-                    <xs:element name="plant" type="string" isPrimaryKey="false"/>
-                    <xs:element name="plant_identifier" type="string" isPrimaryKey="false"/>
-                    <xs:element name="launch_period_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="launch_period_to" type="date" isPrimaryKey="false"/>
-                    <xs:element name="line" type="string" isPrimaryKey="false"/>
-                    <xs:element name="prod_date_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="value_limit" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="sa_codes" type="string" isPrimaryKey="false"/>
-                    <xs:element name="branches" type="string" isPrimaryKey="false"/>
-                    <xs:element name="limit_mdp" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="priority_return" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="default_bin_sifi" type="string" isPrimaryKey="false"/>
-                    <xs:element name="default_bin_ut" type="string" isPrimaryKey="false"/>
-                    <xs:element name="default_bin_jax" type="string" isPrimaryKey="false"/>
-                    <xs:element name="default_bin_kamenz" type="string" isPrimaryKey="false"/>
-                    <xs:element name="default_bin_china" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_type" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_model" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_line" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_plant_identifier" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_million_counter" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_end_number_from" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_end_number_to" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ation" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****r_list" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****h_category" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****h_supervisor" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****h_qing" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****t" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ant" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****h_period_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****h_period_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****ine" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****_limit" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****des" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****hes" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****_mdp" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****ity_return" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****lt_bin_sifi" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****lt_bin_ut" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****lt_bin_*" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****lt_bin_**" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****lt_bin_***" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_type" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_model" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_line" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****on_counter" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****umber_from" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****umber_to" type="string" isPrimaryKey="false"/>
                 </tokenSchema>
             </toolspecific>
         </place>
@@ -158,7 +158,7 @@
             </name>
             <toolspecific tool="dme" version="1.4.2">
                 <role>
-                    <text>TEA-NG</text>
+                    <text>Coffee-NG</text>
                 </role>
             </toolspecific>
         </transition>
@@ -184,11 +184,11 @@
                 <position x="829" y="310"/>
             </graphics>
             <name>
-                <text>If US: Compare KGU List to identify the analysis location and Dealer Documents</text>
+                <text>If US: Compare ABC List to identify the location and documents</text>
             </name>
             <toolspecific tool="dme" version="1.4.2">
                 <role>
-                    <text>TEA-NG</text>
+                    <text>Coffee-NG</text>
                 </role>
             </toolspecific>
         </transition>
@@ -200,10 +200,10 @@
                 <position x="700" y="390"/>
             </graphics>
             <name>
-                <text>KGU List</text>
+                <text>ABC List</text>
             </name>
             <toolspecific xmlns="" tool="dme" version="1.4.2">
-                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="KGU_List" superClass=""/>
+                <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="ABC_List" superClass=""/>
                 </toolspecific>
         </place>
         <arc id="b61e848d8-b09a-4abc-865e-f97df13bf7c3" source="redc5ce81-0815-4ea9-8874-fd0541bca45f" target="p4561e490-0b4c-494b-ae9f-cf5d3abec814">
@@ -214,11 +214,11 @@
                 <position x="1040" y="230"/>
             </graphics>
             <name>
-                <text>Save as Routing Entrys in TEA-NG</text>
+                <text>Save as Routing Entrys in Coffee-NG</text>
             </name>
             <toolspecific tool="dme" version="1.4.2">
                 <role>
-                    <text>TEA-NG</text>
+                    <text>Coffee-NG</text>
                 </role>
             </toolspecific>
         </transition>
@@ -252,57 +252,57 @@
             <toolspecific xmlns="" tool="dme" version="1.4.2">
                 <tokenSchema xmlns:xs="http://www.w3.org/2001/XMLSchema" name="RoutingEntry" superClass="">
                     <xs:element name="routing_entry_id" type="string" isPrimaryKey="true"/>
-                    <xs:element name="routing_cluster_id" type="string" isPrimaryKey="false"/>
-                    <xs:element name="m_routing_request_id" type="string" isPrimaryKey="false"/>
-                    <xs:element name="v_key" type="string" isPrimaryKey="false"/>
-                    <xs:element name="gala_id" type="string" isPrimaryKey="false"/>
-                    <xs:element name="branch" type="string" isPrimaryKey="false"/>
-                    <xs:element name="reparation_date_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="reparation_date_to" type="date" isPrimaryKey="false"/>
-                    <xs:element name="market" type="string" isPrimaryKey="false"/>
-                    <xs:element name="storage_location" type="string" isPrimaryKey="false"/>
-                    <xs:element name="second_storage_location" type="string" isPrimaryKey="false"/>
-                    <xs:element name="unloading_point" type="string" isPrimaryKey="false"/>
-                    <xs:element name="warranty_factory" type="string" isPrimaryKey="false"/>
-                    <xs:element name="rule_name" type="string" isPrimaryKey="false"/>
-                    <xs:element name="valid_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="valid_to" type="date" isPrimaryKey="false"/>
-                    <xs:element name="max_r_parts" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="quota" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="part_number" type="string" isPrimaryKey="false"/>
-                    <xs:element name="damage_main_part" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="sca " type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="tga_claimed" type="boolean" isPrimaryKey="false"/>
-                    <xs:element name="value_limit" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="service_type" type="string" isPrimaryKey="false"/>
-                    <xs:element name="fin_model" type="string" isPrimaryKey="false"/>
-                    <xs:element name="fin_line" type="string" isPrimaryKey="false"/>
-                    <xs:element name="fin_plant_identifier" type="string" isPrimaryKey="false"/>
-                    <xs:element name="fin_million_counter" type="string" isPrimaryKey="false"/>
-                    <xs:element name="fin_end_number_from" type="string" isPrimaryKey="false"/>
-                    <xs:element name="fin_end_number_to" type="string" isPrimaryKey="false"/>
-                    <xs:element name="model_year_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="model_year_to" type="date" isPrimaryKey="false"/>
-                    <xs:element name="assembly_type" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_model" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_line" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_plant_identifier" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_million_counter" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_end_number_from" type="string" isPrimaryKey="false"/>
-                    <xs:element name="aggregate_end_number_to" type="string" isPrimaryKey="false"/>
-                    <xs:element name="special_equipment" type="string" isPrimaryKey="false"/>
-                    <xs:element name="running_time_from" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="running_time_to" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="mileage_from" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="mileage_to" type="decimal" isPrimaryKey="false"/>
-                    <xs:element name="registration_date_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="registration_date_to" type="date" isPrimaryKey="false"/>
-                    <xs:element name="prod_date_from" type="date" isPrimaryKey="false"/>
-                    <xs:element name="prod_date_to" type="date" isPrimaryKey="false"/>
-                    <xs:element name="dealer_number" type="string" isPrimaryKey="false"/>
-                    <xs:element name="dealer_documents" type="string" isPrimaryKey="false"/>
-                    <xs:element name="dealer_sds" type="string" isPrimaryKey="false"/>
-                    <xs:element name="isActive" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****ng_cluster_id" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ting_request_id" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****h" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ata_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****ate_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****t" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ge_location" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****d_*****ge_location" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ding_point" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****nty_factory" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****name" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****_parts" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****ota" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****number" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****e_main_part" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****ca " type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****laimed" type="boolean" isPrimaryKey="false"/>
+                    <xs:element name="*****_limit" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****ce_type" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****odel" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ine" type="string" isPrimaryKey="false"/>
+                    <xs:element name="***_*****_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="***_*****on_counter" type="string" isPrimaryKey="false"/>
+                    <xs:element name="***_***_number_from" type="string" isPrimaryKey="false"/>
+                    <xs:element name="***_***_number_to" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****_year_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****_year_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****bly_type" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_model" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_line" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****_identifier" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****on_counter" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****_number_from" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****gate_*****_number_to" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****al_equipment" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ng_time_from" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****ng_time_to" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****ge_from" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****ge_to" type="decimal" isPrimaryKey="false"/>
+                    <xs:element name="*****tration_date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****tration_date_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****date_from" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****date_to" type="date" isPrimaryKey="false"/>
+                    <xs:element name="*****r_number" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****r_documents" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****r_sds" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*_key" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****id" type="string" isPrimaryKey="false"/>
+                    <xs:element name="*****ive" type="boolean" isPrimaryKey="false"/>
                 </tokenSchema>
             </toolspecific>
         </place>
