@@ -1,6 +1,6 @@
 # Data Model Extractor
 
-Read more about this project on my [blog](https://blog.daviddiener.de/blog/dme/).
+Read more about this project on my [blog](https://www.daviddiener.de/blog/dme/).
 
 The project is hosted on my website: [https://dme.daviddiener.de/#/home](https://dme.daviddiener.de/#/home)
 
